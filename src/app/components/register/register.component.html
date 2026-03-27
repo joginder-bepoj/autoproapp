@@ -1,0 +1,114 @@
+<ion-content [fullscreen]="true">
+  <div class="background-container">
+    <div class="login-wrapper">
+      <!-- Logo Branding -->
+      <div class="branding">
+        <img src="assets/images/aks_logo.png" alt="AutoProAPP Logo" class="logo">
+      </div>
+      <h5 class="title">CREATE AN ACCOUNT</h5>
+
+      <!-- Help Text -->
+      <div class="info-text">
+        <p>You must be a security professional to access the features of AutoProAPP. Getting an account is FREE! Not
+          only can you access all of the vehicle data with your account, but now you can use AutoProAPP to quickly
+          research products and purchase directly from American Key Supply.</p>
+        <br>
+        <p>Please help us create your account by completing the form fields below. Feel free to call us at (800)
+          692-1898
+          if you need any help.</p>
+      </div>
+
+      <!-- Register Form -->
+      <div class="login-form">
+
+        <h3 class="form-section-header">Contact Info</h3>
+
+        <ion-item lines="none" class="input-item">
+          <ion-input type="text" placeholder="First Name"></ion-input>
+        </ion-item>
+
+        <ion-item lines="none" class="input-item">
+          <ion-input type="text" placeholder="Last Name"></ion-input>
+        </ion-item>
+
+        <ion-item lines="none" class="input-item">
+          <ion-input type="tel" placeholder="Phone Number"></ion-input>
+        </ion-item>
+
+        <ion-item lines="none" class="input-item">
+          <ion-input type="email" placeholder="Email Address"></ion-input>
+        </ion-item>
+
+        <ion-item lines="none" class="input-item">
+          <ion-input type="password" placeholder="Password"></ion-input>
+        </ion-item>
+
+        <ion-item lines="none" class="input-item">
+          <ion-input type="password" placeholder="Confirm Password"></ion-input>
+        </ion-item>
+
+        <h3 class="form-section-header">Shipping Address</h3>
+
+        <ion-item lines="none" class="input-item">
+          <ion-input type="text" placeholder="Company Name"></ion-input>
+        </ion-item>
+
+        <ion-item lines="none" class="input-item">
+          <ion-input type="text" placeholder="Address Line 1"></ion-input>
+        </ion-item>
+
+        <ion-item lines="none" class="input-item">
+          <ion-input type="text" placeholder="Address Line 2 (Optional)"></ion-input>
+        </ion-item>
+
+        <ion-item lines="none" class="input-item">
+          <ion-input type="text" placeholder="City"></ion-input>
+        </ion-item>
+
+        <ion-item lines="none" class="input-item">
+          <ion-input type="text" placeholder="Zip / Postal Code"></ion-input>
+        </ion-item>
+
+        <ion-item lines="none" class="input-item select-item">
+          <ion-select label-placement="stacked" interface="popover" placeholder="United States" value="usa">
+            <ion-select-option value="usa">United States</ion-select-option>
+          </ion-select>
+        </ion-item>
+
+        <ion-item lines="none" class="input-item select-item">
+          <ion-select label-placement="stacked" interface="popover" placeholder="Select State">
+            <ion-select-option value="AL">Alabama</ion-select-option>
+            <ion-select-option value="AK">Alaska</ion-select-option>
+            <ion-select-option value="AZ">Arizona</ion-select-option>
+            <!-- Add more states if necessary, or just a few for demonstration -->
+          </ion-select>
+        </ion-item>
+
+        <h3 class="form-section-header">How Did You Hear About Us?</h3>
+
+        <ion-item lines="none" class="input-item select-item">
+          <ion-select label-placement="stacked" interface="popover" placeholder="">
+            <ion-select-option value="google">Google</ion-select-option>
+            <ion-select-option value="referral">Referral</ion-select-option>
+            <ion-select-option value="social">Social Media</ion-select-option>
+          </ion-select>
+        </ion-item>
+
+        <div class="form-footer">
+          <ion-button expand="block" class="login-btn">Register</ion-button>
+          <a routerLink="/login" class="forgot-link">Already have an account?</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer Branding -->
+    <!-- <div class="footer">
+      <div class="footer-logo">
+        <img src="assets/images/americankeysupply.png" alt="American Key Supply">
+      </div>
+      <div class="version">
+        Version 1.0.0
+      </div>
+    </div> -->
+  </div>
+</ion-content>
