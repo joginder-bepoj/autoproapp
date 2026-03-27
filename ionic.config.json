@@ -1,0 +1,7 @@
+{
+  "name": "autoproapp",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular-standalone"
+}
