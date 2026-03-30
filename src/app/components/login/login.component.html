@@ -1,49 +1,57 @@
-<!-- <ion-content [fullscreen]="true">
-  <h1>TEST RENDER - LOGIN</h1>
-</ion-content> -->
-
-<ion-content [fullscreen]="true">
-  <div class="background-container">
-    <div class="login-wrapper">
-      <!-- Logo Branding -->
-      <div class="branding">
-        <div class="logo-box">
-          <img src="assets/images/logo.png" alt="AutoProAPP Logo" class="logo">
-        </div>
-        <img src="assets/images/name-img.png" alt="AutoProAPP" class="app-name">
-      </div>
-
-      <!-- Help Text -->
-      <div class="info-text">
-        <p>To use AutoProAPP, you must have an account with American Key Supply. Please log in with your AKS account
-          info below.</p>
-        <p>Don't have an account yet? <a routerLink="/register">Create one now-really, it's easy!</a></p>
-      </div>
-
-      <!-- Login Form -->
-      <div class="login-form">
-        <ion-item lines="none" class="input-item">
-          <ion-input type="email" placeholder="Enter Email Address"></ion-input>
-        </ion-item>
-
-        <ion-item lines="none" class="input-item">
-          <ion-input type="password" placeholder="Enter Password"></ion-input>
-        </ion-item>
-
-        <div class="form-footer">
-          <ion-button expand="block" class="login-btn">Log In</ion-button>
-          <a href="#" class="forgot-link">Forgot Your Password?</a>
-        </div>
+﻿<ion-content [fullscreen]="true">
+  <div class="login-page">
+    <div class="visual-panel">
+      <div class="hero-content">
+        <img src="assets/images/logo.png" alt="Logo" class="logo" />
+        <h1 class="hero-title">AutoPro APP</h1>
+        <p class="hero-subtitle">
+          The Ultimate Resource for Automotive Locksmiths
+        </p>
       </div>
     </div>
 
-    <!-- Footer Branding -->
-    <div class="footer">
-      <div class="footer-logo">
-        <img src="assets/images/americankeysupply.png" alt="American Key Supply">
-      </div>
-      <div class="version">
-        Version 1.0.0
+    <div class="form-panel">
+      <div class="form-container d-flex flex-column align-items-center">
+        <div class="brand">
+          <img
+            class="m-auto mb-3"
+            src="assets/images/americankeysupply.png"
+            alt="American Key Supply"
+          />
+          <h2 class="form-title text-center">Log in to Your Account</h2>
+          <p class="form-subtitle">
+            Welcome back! Choose your preferred sign-in method.
+          </p>
+        </div>
+
+        <div class="form-input-group">
+          <ion-input
+            label="Email*"
+            label-placement="floating"
+            fill="outline"
+            placeholder="Enter your email"
+          ></ion-input>
+        </div>
+
+        <div class="form-input-group">
+          <ion-input
+            label="Password*"
+            label-placement="floating"
+            fill="outline"
+            type="password"
+            placeholder="Enter your password"
+          ></ion-input>
+        </div>
+
+        <div class="form-options w-100 mb-3">
+          <a href="#" class="forgot-link">Forgot password?</a>
+        </div>
+
+        <ion-button expand="block" class="login-btn">Sign In</ion-button>
+        <p class="signup-text">
+          New here? <a href="/register">Create an account</a> or
+          <a href="#">Sign up</a>
+        </p>
       </div>
     </div>
   </div>
