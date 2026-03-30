@@ -108,7 +108,7 @@
 }
 
 .brand-label {
-  color: #2569d6;
+  color: var(--main-bg-color);
   font-size: 14px;
   font-weight: 700;
   text-transform: uppercase;
@@ -134,7 +134,7 @@
 }
 
 .forgot-link {
-  color: #2569d6;
+  color: var( --main-bg-color);
   font-weight: 600;
   text-decoration: none;
 }
@@ -155,7 +155,7 @@
 }
 
 .signup-text a {
-  color: #2569d6;
+  color: var(--main-bg-color);
   font-weight: 600;
   text-decoration: none;
 }
