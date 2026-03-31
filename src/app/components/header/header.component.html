@@ -1,0 +1,12 @@
+<ion-header class="ion-no-border" mode="ios">
+  <div class="header-container">
+    <div class="logo-section">
+      <img src="assets/images/logo.png" alt="Logo" class="main-logo">
+    </div>
+    <div class="nav-section">
+      <div class="nav-item" *ngFor="let item of navItems">
+        <span class="nav-label">{{ item.label }}</span>
+      </div>
+    </div>
+  </div>
+</ion-header>
