@@ -1,12 +1,26 @@
-<ion-header class="ion-no-border" mode="ios">
-  <div class="header-container">
+<ion-header class="ion-no-border">
+  <div class="header-container container">
     <div class="logo-section">
-      <img src="assets/images/logo.png" alt="Logo" class="main-logo">
+      <img src="assets/images/logo.png" alt="Logo" class="main-logo me-2">
+      <h3 class="m-0">AutoPro</h3>
     </div>
-    <div class="nav-section">
+    <div class="nav-section desktop-nav">
       <div class="nav-item" *ngFor="let item of navItems">
-        <span class="nav-label">{{ item.label }}</span>
+        <span class="nav-label" [routerLink]="item.route">{{ item.label }}</span>
       </div>
+    </div>
+
+    <!-- Mobile Hamburger Toggle -->
+    <div class="mobile-toggle" (click)="toggleMenu()">
+      <ion-icon [name]="isMenuOpen ? 'close-outline' : 'menu-outline'"></ion-icon>
+    </div>
+  </div>
+
+  <!-- Mobile Menu Dropdown -->
+  <div class="mobile-menu" [class.open]="isMenuOpen">
+    <div [routerLink]="item.route" class="mobile-nav-item container" *ngFor="let item of navItems"
+      (click)="toggleMenu()">
+      <span class="nav-label">{{ item.label }}</span>
     </div>
   </div>
 </ion-header>

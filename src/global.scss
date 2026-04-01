@@ -52,8 +52,10 @@
   --ion-color-primary-shade: #4ca3c3;
   --ion-color-primary-tint: #68b2d1;
   --main-bg-color: #0085be;
+  --main-bg-color-rgb: 0, 133, 190;
   --border-color: #e5e8f0;
-  --text-color: #333333;
+  --text-color: #777777;
+  --dark-text-color: #0a0a0a;
   --ion-font-family: "Poppins", sans-serif;
   --serif-font-family: "Merriweather", serif;
 }
@@ -105,4 +107,19 @@ ion-select::part(label) {
 
 .select-wrapper {
   --padding-top: 0px !important;
+}
+
+ion-button {
+  --background: var(--main-bg-color);
+  --color: var(--ion-color-primary-contrast);
+  --border-radius: 8px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  margin: 0;
+  opacity: 0.8;
+  height: 45px;
+
+  &:hover {
+    opacity: 1;
+  }
 }

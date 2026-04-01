@@ -15,7 +15,7 @@
         <div class="brand">
           <img class="m-auto mb-3" src="assets/images/americankeysupply.png" alt="American Key Supply" />
           <h2 class="form-title text-center">Log in to Your Account</h2>
-          <p class="form-subtitle">
+          <p class="form-subtitle text-center">
             Welcome back! Choose your preferred sign-in method.
           </p>
         </div>
@@ -34,7 +34,7 @@
           <a href="#" class="forgot-link">Forgot password?</a>
         </div>
 
-        <ion-button expand="block" class="login-btn">&nbsp; Sign In &nbsp;</ion-button>
+        <ion-button expand="block" class="login-btn" (click)="login()"> &nbsp; Sign In &nbsp;</ion-button>
         <p class="signup-text">
           New here? <a routerLink="/register">Create an account</a>
         </p>

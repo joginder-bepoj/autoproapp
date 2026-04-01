@@ -3,13 +3,12 @@ import { IonApp, IonRouterOutlet } from '@ionic/angular/standalone';
 import { Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { HeaderComponent } from './components/header/header.component';
-import { FooterComponent } from './components/footer/footer.component';
 
 @Component({
   selector: 'app-root',
   templateUrl: 'app.component.html',
   standalone: true,
-  imports: [IonApp, IonRouterOutlet, HeaderComponent, FooterComponent],
+  imports: [IonApp, IonRouterOutlet, HeaderComponent],
 })
 export class AppComponent {
   showAppComponents: boolean = true;
@@ -24,7 +23,7 @@ export class AppComponent {
       } else {
         setTimeout(() => {
           this.showAppComponents = !url.includes('/login') && !url.includes('/register');
-        }, 350);
+        }, 150);
       }
     });
   }

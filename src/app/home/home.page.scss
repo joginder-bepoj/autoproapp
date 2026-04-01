@@ -1,0 +1,284 @@
+.home-content {
+  .hero-section {
+    position: relative;
+    background: url('/assets/images/car-bg.png') no-repeat right center / cover;
+    min-height: 600px;
+    display: flex;
+    align-items: center;
+
+    .hero-content {
+      max-width: 600px;
+
+      .hero-title {
+        font-size: 2.5rem;
+        font-weight: 600;
+        color: var(--dark-text-color);
+        line-height: 1.1;
+        margin-bottom: 20px;
+      }
+
+      .hero-subtitle {
+        font-size: 16px;
+        color: var(--text-color);
+        line-height: 1.5;
+        margin-bottom: 40px;
+      }
+
+      .hero-search-widget {
+        max-width: 450px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+
+        .widget-row {
+          display: flex;
+          align-items: center;
+          background: #f4f6f8;
+          border-radius: 10px;
+          padding: 4px 16px;
+          border: 1.5px solid transparent;
+          transition: all 0.2s ease;
+
+          &:focus-within {
+            border-color: var(--main-bg-color);
+            background: var(--ion-color-primary-contrast);
+          }
+
+          .input-icon {
+            color: var(--text-color);
+            font-size: 20px;
+            margin-right: 12px;
+          }
+
+          .trailing-icon {
+            color: var(--text-color);
+            font-size: 18px;
+          }
+
+          ion-input {
+            --padding-start: 0;
+            font-size: 1rem;
+            flex: 1;
+            margin: 0;
+          }
+        }
+
+
+      }
+    }
+  }
+
+  .hero-search-btn {
+    margin: 4px 0 0 0;
+    height: 36px;
+    font-weight: 500;
+    font-size: 16px;
+    --border-radius: 10px;
+    text-transform: capitalize;
+
+    .v-camera-btn {
+      color: var(--ion-color-primary-contrast);
+    }
+  }
+
+  .main-container {
+    margin: 0 auto;
+  }
+
+  .quick-search-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    margin-top: -60px;
+    position: relative;
+    z-index: 10;
+    margin-bottom: 60px;
+
+    .quick-card {
+      background: var(--ion-color-primary-contrast);
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+      display: flex;
+      flex-direction: column;
+
+      .q-icon {
+        font-size: 3rem;
+        margin-bottom: 20px;
+      }
+
+      .car-icon {
+        color: var(--text-color);
+      }
+
+      .key-icon {
+        color: var(--text-color);
+      }
+
+      .vin-icon {
+        color: var(--text-color);
+      }
+
+      .q-title {
+        font-size: 1.5rem;
+        font-weight: 500;
+        color: var(--dark-text-color);
+        margin-bottom: 16px;
+      }
+
+
+
+      .q-link {
+        color: var(--main-bg-color);
+        font-weight: 600;
+        text-decoration: none;
+        cursor: pointer;
+        font-size: 0.95rem;
+
+        &:hover {
+          text-decoration: underline;
+        }
+      }
+
+      .vin-actions {
+        display: flex;
+        gap: 8px;
+
+        .v-search-btn {
+          flex: 3;
+          height: 44px;
+        }
+
+        .v-camera-btn {
+          flex: 1;
+          height: 44px;
+          --padding-start: 0;
+          --padding-end: 0;
+        }
+      }
+    }
+  }
+
+  .q-input-row {
+    background: #f4f6f8;
+    border-radius: 8px;
+    padding: 4px 8px;
+    display: flex;
+    align-items: center;
+    margin-bottom: 12px;
+
+    ion-input {
+      flex: 1;
+      --padding-start: 0;
+    }
+
+    ion-icon {
+      color: var(--text-color);
+    }
+  }
+
+  .section-container {
+    margin-bottom: 60px;
+
+    .section-heading {
+      font-size: 2rem;
+      font-weight: 500;
+      color: var(--dark-text-color);
+      margin-bottom: 8px;
+    }
+
+    .section-subtext {
+      font-size: 1.1rem;
+      color: var(--text-color);
+      margin-bottom: 30px;
+    }
+  }
+
+  .tools-grid {
+    padding: 0;
+
+    .tool-card {
+      background: var(--ion-color-primary-contrast);
+      border-radius: 16px;
+      padding: 40px 20px;
+      height: 180px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      box-shadow: 0 4px 10px 6px rgba(0, 0, 0, 0.02);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      cursor: pointer;
+
+      &:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px 10px rgba(0, 0, 0, 0.05);
+      }
+
+      .tool-icon {
+        font-size: 3.5rem;
+        color: var(--dark-text-color);
+        margin-bottom: 20px;
+      }
+
+      .tool-label {
+        color: var(--dark-text-color);
+        font-size: 1rem;
+        font-weight: 500;
+        line-height: 1.2;
+        text-transform: uppercase;
+      }
+    }
+  }
+
+  .popular-gallery {
+    display: flex;
+    gap: 20px;
+    overflow-x: auto;
+    padding-bottom: 10px;
+
+    .popular-item {
+      flex: 0 0 300px;
+      background: var(--ion-color-primary-contrast);
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+      display: flex;
+      flex-direction: column;
+
+      img {
+        width: 100%;
+        height: 180px;
+        object-fit: cover;
+      }
+
+      span {
+        padding: 16px;
+        font-weight: 700;
+        color: var(--dark-text-color);
+        font-size: 1.1rem;
+      }
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .home-content {
+    .hero-section {
+      padding: 40px 20px;
+      background: none;
+
+      .hero-content {
+        .hero-title {
+          font-size: 2.2rem;
+        }
+      }
+    }
+
+    .quick-search-row {
+      grid-template-columns: 1fr;
+      margin-top: 20px;
+    }
+  }
+}

@@ -7,27 +7,15 @@ ion-content {
 ::ng-deep ion-input input:-webkit-autofill:hover,
 ::ng-deep ion-input input:-webkit-autofill:focus,
 ::ng-deep ion-input input:-webkit-autofill:active {
-  -webkit-box-shadow: 0 0 0 1000px #ffffff inset !important;
-  box-shadow: 0 0 0 1000px #ffffff inset !important;
-  -webkit-text-fill-color: #000000 !important;
-  caret-color: #000000;
+  -webkit-box-shadow: 0 0 0 1000px var(--ion-color-primary-contrast) inset !important;
+  box-shadow: 0 0 0 1000px var(--ion-color-primary-contrast) inset !important;
+  -webkit-text-fill-color: var(--dark-text-color) !important;
+  caret-color: var(--dark-text-color);
   transition: background-color 9999s ease-in-out 0s;
   border: none !important;
   outline: none !important;
   background: transparent !important;
   background-image: none !important;
-}
-
-::ng-deep ion-input {
-  --padding-top: 12px;
-  --padding-bottom: 12px;
-  --min-height: 44px;
-  display: flex;
-  align-items: center;
-  border: none !important;
-  outline: none !important;
-  box-shadow: none !important;
-  background: transparent !important;
 }
 
 .login-page {
@@ -45,7 +33,7 @@ ion-content {
   padding: 40px;
   overflow: hidden;
   background-image:
-    linear-gradient(rgba(0, 133, 190, 1), rgba(0, 133, 190, 0.6)),
+    linear-gradient(rgba(var(--main-bg-color-rgb), 1), rgba(var(--main-bg-color-rgb), 0.6)),
     url("/assets/images/main-bg.png");
   background-size: cover;
   background-position: center;
@@ -55,7 +43,7 @@ ion-content {
 .hero-content {
   position: relative;
   text-align: center;
-  color: #ffffff;
+  color: var(--ion-color-primary-contrast);
 
   .logo {
     width: 120px;
@@ -82,7 +70,7 @@ ion-content {
   align-items: center;
   justify-content: center;
   padding: 40px 60px;
-  background: #ffffff;
+  background: var(--ion-color-primary-contrast);
   position: relative;
 }
 
@@ -93,7 +81,7 @@ ion-content {
   left: -50px;
   width: 60px;
   height: 100%;
-  background: white;
+  background: var(--ion-color-primary-contrast);
   border-top-left-radius: 60px;
   border-bottom-left-radius: 60px;
 }
@@ -123,13 +111,13 @@ ion-content {
 .form-title {
   font-size: 18px;
   font-weight: 700;
-  color: #1a1f36;
+  color: var(--dark-text-color);
   margin-bottom: 6px;
 }
 
 .form-subtitle {
   font-size: 14px;
-  color: #8a94a6;
+  color: var(--text-color);
 }
 
 .form-input-group {
@@ -147,7 +135,7 @@ ion-content {
 .login-btn {
   --background: var(--main-bg-color);
   --border-radius: 100px;
-  height: 40px;
+  // height: 40px;
   font-weight: 700;
   font-size: 12px;
   padding: 0px 6px;
@@ -157,7 +145,7 @@ ion-content {
 .signup-text {
   text-align: center;
   font-size: 14px;
-  color: #5b6a8a;
+  color: var(--text-color);
   margin-top: 8px;
 }
 
@@ -171,3 +159,32 @@ ion-content {
 //   display: flex;
 //   align-items: center;
 // }
+
+@media (max-width: 768px) {
+  .login-page {
+    background-image:
+      linear-gradient(rgba(var(--main-bg-color-rgb), 1), rgba(var(--main-bg-color-rgb), 0.6));
+  }
+
+  .visual-panel {
+    display: none;
+  }
+
+  .form-panel {
+    border-radius: 0 100px;
+    width: 100%;
+    padding: 40px 32px;
+  }
+
+  .form-panel::before {
+    display: none;
+  }
+
+  .hero-title {
+    font-size: 32px;
+  }
+
+  .hero-subtitle {
+    font-size: 18px;
+  }
+}
