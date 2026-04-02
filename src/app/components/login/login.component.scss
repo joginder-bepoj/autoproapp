@@ -2,26 +2,14 @@ ion-content {
   --background: #ffffff !important;
 }
 
-::ng-deep ion-input input:-webkit-autofill,
-::ng-deep ion-input input:-webkit-autofill,
-::ng-deep ion-input input:-webkit-autofill:hover,
-::ng-deep ion-input input:-webkit-autofill:focus,
-::ng-deep ion-input input:-webkit-autofill:active {
-  -webkit-box-shadow: 0 0 0 1000px var(--ion-color-primary-contrast) inset !important;
-  box-shadow: 0 0 0 1000px var(--ion-color-primary-contrast) inset !important;
-  -webkit-text-fill-color: var(--dark-text-color) !important;
-  caret-color: var(--dark-text-color);
-  transition: background-color 9999s ease-in-out 0s;
-  border: none !important;
-  outline: none !important;
-  background: transparent !important;
-  background-image: none !important;
-}
+
 
 .login-page {
   display: flex;
   min-height: 100dvh;
   flex-direction: row;
+  padding-top: env(safe-area-inset-top, 0px);
+  box-sizing: border-box;
 }
 
 .visual-panel {
@@ -65,7 +53,7 @@ ion-content {
 
 .form-panel {
   width: 48%;
-  min-height: 100dvh;
+  min-height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;

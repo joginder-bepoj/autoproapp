@@ -1,4 +1,4 @@
-﻿<ion-content [fullscreen]="true">
+<div class="login-wrapper" [class.fullscreen]="true">
   <div class="login-page">
     <div class="visual-panel">
       <div class="hero-content">
@@ -21,13 +21,13 @@
         </div>
 
         <div class="form-input-group">
-          <ion-input label="Email*" label-placement="floating" fill="outline"
-            placeholder="Enter your email"></ion-input>
+          <ion-input label="Email*" label-placement="floating" fill="outline" placeholder="Enter your email"
+            [(ngModel)]="loginData.email"></ion-input>
         </div>
 
         <div class="form-input-group">
           <ion-input label="Password*" label-placement="floating" fill="outline" type="password"
-            placeholder="Enter your password"></ion-input>
+            placeholder="Enter your password" [(ngModel)]="loginData.password"></ion-input>
         </div>
 
         <div class="form-options w-100 mb-3">
@@ -41,4 +41,4 @@
       </div>
     </div>
   </div>
-</ion-content>
+</div>

@@ -123,3 +123,31 @@ ion-button {
     opacity: 1;
   }
 }
+
+ion-input input:-webkit-autofill,
+ion-input input:-webkit-autofill:hover,
+ion-input input:-webkit-autofill:focus,
+ion-input input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 1000px var(--input-autofill-bg, #ffffff) inset !important;
+  box-shadow: 0 0 0 1000px var(--input-autofill-bg, #ffffff) inset !important;
+  -webkit-text-fill-color: var(--dark-text-color) !important;
+  caret-color: var(--dark-text-color);
+  transition: background-color 9999s ease-in-out 0s;
+  border: none !important;
+  outline: none !important;
+  background: transparent !important;
+  background-image: none !important;
+}
+
+/* Global mobile padding adjustments */
+@media (max-width: 768px) {
+  .container {
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+  }
+
+  .card-box,
+  .profile-card {
+    padding: 20px !important;
+  }
+}

@@ -10,7 +10,7 @@ import { RouterLink } from '@angular/router';
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss'],
   standalone: true,
-  imports: [IonHeader, IonIcon, CommonModule, RouterLink]
+  imports: [IonIcon, CommonModule, RouterLink]
 })
 export class HeaderComponent implements OnInit {
 
@@ -19,7 +19,8 @@ export class HeaderComponent implements OnInit {
     { label: 'Settings', route: '/home' },
     { label: 'Cart', route: '/home' },
     { label: 'History', route: '/home' },
-    { label: 'Profile', route: '/login' },
+    { label: 'Profile', route: '/profile' },
+    { label: 'Login', route: '/login' },
   ];
 
 

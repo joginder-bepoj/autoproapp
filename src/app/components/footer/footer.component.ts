@@ -1,17 +1,15 @@
-import { Component, OnInit } from '@angular/core';
-import { IonFooter, IonToolbar, IonTitle } from "@ionic/angular/standalone";
+import { Component } from '@angular/core';
+import { RouterLink } from '@angular/router';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-footer',
   templateUrl: './footer.component.html',
   styleUrls: ['./footer.component.scss'],
   standalone: true,
-  imports: [IonFooter, IonToolbar, IonTitle]
+  imports: [RouterLink, CommonModule]
 })
-export class FooterComponent implements OnInit {
-
-  constructor() { }
-
-  ngOnInit() { }
+export class FooterComponent {
+  currentYear = new Date().getFullYear();
 
 }

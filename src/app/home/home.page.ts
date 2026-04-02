@@ -36,7 +36,6 @@ import {
   standalone: true,
   imports: [
     CommonModule,
-    IonContent,
     IonGrid,
     IonRow,
     IonCol,
