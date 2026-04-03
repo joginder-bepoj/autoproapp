@@ -1,16 +1,24 @@
 <div class="home-content">
-    <!-- Hero Section -->
-    <div class="container">
-        <div class="hero-section ">
+
+    <!-- ── Hero Section ──────────────────────────────────────────────── -->
+    <div class="hero-section">
+        <div class="container">
             <div class="hero-content">
-                <h1 class="hero-title">Find Vehicle Keys &<br>Locksmith Data Instantly</h1>
-                <p class="hero-subtitle">Search vehicle key data, locksmith tools,<br>and VIN information quickly and
-                    easily.</p>
+
+                <h1 class="hero-title">
+                    Find Vehicle Keys &<br>
+                    <span>Locksmith Data</span> Instantly
+                </h1>
+                <p class="hero-subtitle">
+                    Search vehicle key data, locksmith tools,<br>
+                    and VIN information quickly and easily.
+                </p>
+
                 <div class="hero-search-widget">
                     <div class="widget-row">
                         <ion-icon name="search-outline" class="input-icon"></ion-icon>
-                        <ion-input placeholder="Type your search"></ion-input>
-                        <ion-button class="hero-search-btn m-0" expand="block">Search</ion-button>
+                        <ion-input placeholder="Type your search…"></ion-input>
+                        <ion-button class="hero-search-btn" expand="block">Search</ion-button>
                     </div>
                     <div class="widget-row">
                         <ion-icon name="car-sport-outline" class="input-icon"></ion-icon>
@@ -18,58 +26,62 @@
                         <ion-icon name="chevron-forward-outline" class="trailing-icon"></ion-icon>
                     </div>
                 </div>
-            </div>
-        </div>
 
-        <div class="main-container">
-            <div class="quick-search-row">
-                <div class="quick-card">
-                    <ion-icon name="car-outline" class="q-icon car-icon"></ion-icon>
-                    <h3 class="q-title">Vehicle Search</h3>
-                    <div class="q-input-row">
-                        <ion-input placeholder="Type modal name..."></ion-input>
-                        <ion-button class="hero-search-btn m-0" expand="block">Search</ion-button>
-                    </div>
-                </div>
-
-                <div class="quick-card">
-                    <ion-icon name="key-outline" class="q-icon key-icon"></ion-icon>
-                    <h3 class="q-title">Key Supply Search</h3>
-                    <div class="q-input-row">
-                        <ion-input placeholder="Select product category"></ion-input>
-                        <ion-icon name="chevron-forward-outline"></ion-icon>
-                    </div>
-                </div>
-
-                <div class="quick-card">
-                    <ion-icon name="barcode-outline" class="q-icon vin-icon"></ion-icon>
-                    <h3 class="q-title">VIN Search</h3>
-                    <div class="q-input-row">
-                        <ion-input placeholder="Enter VIN..."></ion-input>
-                        <!-- <ion-icon name="camera-outline" class="v-camera-btn"></ion-icon> -->
-                        <ion-button class="hero-search-btn m-0 me-1" expand="block">Search</ion-button>
-                        <ion-button class="hero-search-btn m-0" expand="block"><ion-icon name="camera-outline"
-                                class="v-camera-btn"></ion-icon></ion-button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Tools & Resources Section -->
-            <div class="section-container">
-                <h2 class="section-heading">Tools & Resources</h2>
-                <p class="section-subtext">Explore our comprehensive set of tools and references.</p>
-
-                <ion-grid class="tools-grid">
-                    <ion-row>
-                        <ion-col size="12" size-md="4" *ngFor="let tool of tools">
-                            <div class="tool-card">
-                                <ion-icon [name]="tool.icon" class="tool-icon"></ion-icon>
-                                <div class="tool-label" [innerHTML]="tool.title"></div>
-                            </div>
-                        </ion-col>
-                    </ion-row>
-                </ion-grid>
             </div>
         </div>
     </div>
+
+    <div class="main-container container">
+
+        <div class="quick-search-row">
+
+            <div class="quick-card">
+                <ion-icon name="car-outline" class="q-icon car-icon"></ion-icon>
+                <h3 class="q-title">Vehicle Search</h3>
+                <div class="q-input-row">
+                    <ion-input placeholder="Type modal name..."></ion-input>
+                    <ion-button class="hero-search-btn m-0" expand="block">Search</ion-button>
+                </div>
+            </div>
+
+            <div class="quick-card">
+                <ion-icon name="key-outline" class="q-icon key-icon"></ion-icon>
+                <h3 class="q-title">Key Supply Search</h3>
+                <div class="q-input-row">
+                    <ion-input placeholder="Select product category"></ion-input>
+                    <ion-icon name="chevron-forward-outline"></ion-icon>
+                </div>
+            </div>
+
+            <div class="quick-card">
+                <ion-icon name="barcode-outline" class="q-icon vin-icon"></ion-icon>
+                <h3 class="q-title">VIN Search</h3>
+                <div class="q-input-row">
+                    <ion-input placeholder="Enter VIN..."></ion-input>
+                    <!-- <ion-icon name="camera-outline" class="v-camera-btn"></ion-icon> -->
+                    <ion-button class="hero-search-btn m-0 me-1" expand="block">Search</ion-button>
+                    <ion-button class="hero-search-btn m-0" expand="block"><ion-icon name="camera-outline"
+                            class="v-camera-btn"></ion-icon></ion-button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tools & Resources Section -->
+    <div class="section-container container">
+        <h2 class="section-heading">Tools & Resources</h2>
+        <p class="section-subtext">Explore our comprehensive set of tools and references.</p>
+
+        <ion-grid class="tools-grid">
+            <ion-row>
+                <ion-col size="12" size-md="4" *ngFor="let tool of tools">
+                    <div class="tool-card">
+                        <ion-icon [name]="tool.icon" class="tool-icon"></ion-icon>
+                        <div class="tool-label" [innerHTML]="tool.title"></div>
+                    </div>
+                </ion-col>
+            </ion-row>
+        </ion-grid>
+    </div>
+
 </div>

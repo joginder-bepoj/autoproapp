@@ -1,10 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IonContent, IonIcon, IonButton, IonInput } from '@ionic/angular/standalone';
+import { IonIcon, IonButton, IonInput } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { calendarOutline, syncOutline, phonePortraitOutline, trashOutline, addOutline, shieldCheckmarkOutline, starOutline, ribbonOutline, pieChartOutline, carOutline, pencilOutline, keyOutline, bulbOutline, chatboxEllipsesOutline, bagHandleOutline, cartOutline, clipboardOutline, medalOutline, carSportOutline } from 'ionicons/icons';
-import { HeaderComponent } from '../header/header.component';
-import { FooterComponent } from '../footer/footer.component';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-profile',
@@ -15,7 +14,7 @@ import { FooterComponent } from '../footer/footer.component';
 })
 export class ProfileComponent implements OnInit {
 
-  constructor() {
+  constructor(private router: Router) {
     addIcons({ calendarOutline, syncOutline, phonePortraitOutline, trashOutline, addOutline, shieldCheckmarkOutline, starOutline, ribbonOutline, pieChartOutline, carOutline, pencilOutline, keyOutline, bulbOutline, chatboxEllipsesOutline, bagHandleOutline, cartOutline, clipboardOutline, medalOutline, carSportOutline });
   }
 
@@ -103,5 +102,9 @@ export class ProfileComponent implements OnInit {
   ]
 
   ngOnInit() { }
+
+  changePassword() {
+    this.router.navigate(['/change-password']);
+  }
 
 }

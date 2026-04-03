@@ -14,9 +14,13 @@
       <div class="form-container d-flex flex-column align-items-center">
         <div class="brand">
           <img class="m-auto mb-3" src="assets/images/americankeysupply.png" alt="American Key Supply" />
-          <h2 class="form-title text-center">Log in to Your Account</h2>
-          <p class="form-subtitle text-center">
+          <h2 class="form-title text-center" *ngIf="!forgotPass">Log in to Your Account</h2>
+          <h2 class="form-title text-center" *ngIf="forgotPass">Forgot Password</h2>
+          <p class="form-subtitle text-center" *ngIf="!forgotPass">
             Welcome back! Choose your preferred sign-in method.
+          </p>
+          <p class="form-subtitle text-center" *ngIf="forgotPass">
+            Enter your email address and we'll send you a link to reset your password.
           </p>
         </div>
 
@@ -25,16 +29,20 @@
             [(ngModel)]="loginData.email"></ion-input>
         </div>
 
-        <div class="form-input-group">
+        <div class="form-input-group" *ngIf="!forgotPass">
           <ion-input label="Password*" label-placement="floating" fill="outline" type="password"
             placeholder="Enter your password" [(ngModel)]="loginData.password"></ion-input>
         </div>
 
         <div class="form-options w-100 mb-3">
-          <a href="#" class="forgot-link">Forgot password?</a>
+          <a class="forgot-link" *ngIf="!forgotPass" (click)="forgotPass = true">Forgot password?</a>
+          <a class="forgot-link" *ngIf="forgotPass" (click)="forgotPass = false">Back to Login!</a>
         </div>
 
-        <ion-button expand="block" class="login-btn" (click)="login()"> &nbsp; Sign In &nbsp;</ion-button>
+        <ion-button *ngIf="!forgotPass" expand="block" class="login-btn" (click)="login()"> &nbsp; Sign In
+          &nbsp;</ion-button>
+        <ion-button *ngIf="forgotPass" expand="block" class="login-btn" (click)="resetPassword()"> &nbsp; Reset
+          Password &nbsp;</ion-button>
         <p class="signup-text">
           New here? <a routerLink="/register">Create an account</a>
         </p>

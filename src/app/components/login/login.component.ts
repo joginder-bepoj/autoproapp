@@ -1,3 +1,4 @@
+import { NgIf } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
@@ -9,7 +10,7 @@ import { ApiService } from 'src/app/services/api-service';
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss'],
   standalone: true,
-  imports: [IonInput, IonButton, RouterLink, FormsModule],
+  imports: [IonInput, IonButton, RouterLink, FormsModule, NgIf],
 })
 export class LoginComponent implements OnInit {
 
@@ -18,6 +19,8 @@ export class LoginComponent implements OnInit {
     email: '',
     password: ''
   }
+  forgotPass = false;
+
   ngOnInit() {
 
   }
@@ -26,12 +29,26 @@ export class LoginComponent implements OnInit {
     this.router.navigate(['/home']);
     this.apiService.login({ email: this.loginData.email, password: this.loginData.password }).subscribe({
       next: (res: any) => {
-        alert(JSON.stringify(res));
+        // alert(JSON.stringify(res));
         this.router.navigate(['/home']);
       },
       error: (err: any) => {
         console.log(err);
       }
+
     });
+  }
+
+  resetPassword() {
+    this.router.navigate(['/home']);
+    // this.apiService.resetPassword({ email: this.loginData.email }).subscribe({
+    //   next: (res: any) => {
+    //     alert(JSON.stringify(res));
+    //     this.forgotPass = false;
+    //   },
+    //   error: (err: any) => {
+    //     console.log(err);
+    //   }
+    // });
   }
 }

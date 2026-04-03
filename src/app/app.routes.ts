@@ -25,5 +25,9 @@ export const routes: Routes = [
   {
     path: 'change-password',
     loadComponent: () => import('./components/change-password/change-password.component').then((m) => m.ChangePasswordComponent),
+  },
+  {
+    path: 'feedback',
+    loadComponent: () => import('./components/feedback/feedback.component').then((m) => m.FeedbackComponent),
   }
 ];
