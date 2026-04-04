@@ -13,12 +13,15 @@ import { FooterComponent } from './components/footer/footer.component';
 })
 export class AppComponent {
   showAppComponents: boolean = true;
+  isHomePage: boolean = false;
 
   constructor(private router: Router) {
     this.router.events.pipe(
       filter(event => event instanceof NavigationEnd)
     ).subscribe((event: any) => {
       const url = event.urlAfterRedirects || event.url;
+      this.isHomePage = url === '/home' || url.startsWith('/home?');
+      
       if (this.showAppComponents) {
         this.showAppComponents = !url.includes('/login') && !url.includes('/register');
       } else {

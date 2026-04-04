@@ -1,87 +1,104 @@
 <div class="home-content">
 
-    <!-- ── Hero Section ──────────────────────────────────────────────── -->
-    <div class="hero-section">
-        <div class="container">
-            <div class="hero-content">
-
-                <h1 class="hero-title">
-                    Find Vehicle Keys &<br>
-                    <span>Locksmith Data</span> Instantly
-                </h1>
-                <p class="hero-subtitle">
-                    Search vehicle key data, locksmith tools,<br>
-                    and VIN information quickly and easily.
-                </p>
-
-                <div class="hero-search-widget">
-                    <div class="widget-row">
-                        <ion-icon name="search-outline" class="input-icon"></ion-icon>
-                        <ion-input placeholder="Type your search…"></ion-input>
-                        <ion-button class="hero-search-btn" expand="block">Search</ion-button>
-                    </div>
-                    <div class="widget-row">
-                        <ion-icon name="car-sport-outline" class="input-icon"></ion-icon>
-                        <ion-input placeholder="Select vehicle make"></ion-input>
-                        <ion-icon name="chevron-forward-outline" class="trailing-icon"></ion-icon>
-                    </div>
-                </div>
-
-            </div>
-        </div>
+  <!-- ── Premium Hero Section ────────────────────────────────────────── -->
+  <div class="hero-section">
+    <div class="hero-bg-wrapper">
+      <div class="hero-overlay"></div>
+      <img src="/assets/images/car_hero_bg_.jpg" alt="Hero background" class="hero-bg-img">
     </div>
 
-    <div class="main-container container">
+    <div class="container hero-container">
+      <div class="hero-main-content">
+        <h1 class="hero-main-title">Precision Key <br> Solutions</h1>
+        <p class="hero-top-text">Search vehicle key data, locksmith tools, and VIN information quickly and easily.</p>
 
-        <div class="quick-search-row">
+        <!-- Search Tabs -->
+        <!-- <div class="search-tabs">
+          <button class="tab-btn active">Key Blanks</button>
+          <button class="tab-btn">Remotes</button>
+          <button class="tab-btn">Tools</button>
+        </div> -->
 
-            <div class="quick-card">
-                <ion-icon name="car-outline" class="q-icon car-icon"></ion-icon>
-                <h3 class="q-title">Vehicle Search</h3>
-                <div class="q-input-row">
-                    <ion-input placeholder="Type modal name..."></ion-input>
-                    <ion-button class="hero-search-btn m-0" expand="block">Search</ion-button>
-                </div>
-            </div>
-
-            <div class="quick-card">
-                <ion-icon name="key-outline" class="q-icon key-icon"></ion-icon>
-                <h3 class="q-title">Key Supply Search</h3>
-                <div class="q-input-row">
-                    <ion-input placeholder="Select product category"></ion-input>
-                    <ion-icon name="chevron-forward-outline"></ion-icon>
-                </div>
-            </div>
-
-            <div class="quick-card">
-                <ion-icon name="barcode-outline" class="q-icon vin-icon"></ion-icon>
-                <h3 class="q-title">VIN Search</h3>
-                <div class="q-input-row">
-                    <ion-input placeholder="Enter VIN..."></ion-input>
-                    <!-- <ion-icon name="camera-outline" class="v-camera-btn"></ion-icon> -->
-                    <ion-button class="hero-search-btn m-0 me-1" expand="block">Search</ion-button>
-                    <ion-button class="hero-search-btn m-0" expand="block"><ion-icon name="camera-outline"
-                            class="v-camera-btn"></ion-icon></ion-button>
-                </div>
-            </div>
+        <!-- Floating Search Widget -->
+        <div class="hero-search-card">
+          <div class="search-field">
+            <ion-icon name="car-outline" class="field-icon"></ion-icon>
+            <span class="field-label">Select vehicle make</span>
+            <ion-icon name="chevron-down-outline" class="field-icon ms-auto"></ion-icon>
+          </div>
+          <div class="field-divider"></div>
+          <div class="search-field">
+            <ion-icon name="search-outline" class="field-icon"></ion-icon>
+            <input type="text" placeholder="Type your search..." class="inner-input">
+          </div>
+          <button class="btn-search">
+            Search
+          </button>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="main-container container">
+    <!-- Existing Quick Search Cards preservation -->
+    <div class="quick-search-row">
+      <!-- Card 1: Vehicle Search -->
+      <div class="quick-card">
+        <ion-icon name="car-outline" class="q-card-icon"></ion-icon>
+        <h3 class="q-title">Vehicle Search</h3>
+        <div class="q-input-row">
+          <ion-input placeholder="Type modal name..."></ion-input>
+          <button class="inner-search-btn">Search</button>
+        </div>
+      </div>
+
+      <!-- Card 2: Key Supply Search -->
+      <div class="quick-card">
+        <ion-icon name="key-outline" class="q-card-icon"></ion-icon>
+        <h3 class="q-title">Key Supply Search</h3>
+        <div class="q-input-row">
+          <span class="placeholder-text">Select product category</span>
+          <ion-icon name="chevron-forward-outline" class="ms-auto me-2 text-muted"></ion-icon>
+        </div>
+      </div>
+
+      <!-- Card 3: VIN Search -->
+      <div class="quick-card">
+        <ion-icon name="barcode-outline" class="q-card-icon"></ion-icon>
+        <h3 class="q-title">VIN Search</h3>
+        <div class="q-input-row">
+          <ion-input placeholder="Enter VIN..."></ion-input>
+          <div class="action-btns d-flex">
+            <button class="inner-search-btn me-2">Search</button>
+            <button class="icon-camera-btn">
+              <ion-icon name="camera-outline"></ion-icon>
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- Tools & Resources Section -->
-    <div class="section-container container">
+    <div class="section-container">
+      <div class="section-header">
         <h2 class="section-heading">Tools & Resources</h2>
         <p class="section-subtext">Explore our comprehensive set of tools and references.</p>
+      </div>
 
-        <ion-grid class="tools-grid">
-            <ion-row>
-                <ion-col size="12" size-md="4" *ngFor="let tool of tools">
-                    <div class="tool-card">
-                        <ion-icon [name]="tool.icon" class="tool-icon"></ion-icon>
-                        <div class="tool-label" [innerHTML]="tool.title"></div>
-                    </div>
-                </ion-col>
-            </ion-row>
-        </ion-grid>
+      <ion-grid class="tools-grid">
+        <ion-row>
+          <ion-col size="12" size-md="4" *ngFor="let tool of tools">
+            <div class="tool-card">
+              <div class="tool-icon-wrapper">
+                <ion-icon [name]="tool.icon" class="tool-icon"></ion-icon>
+              </div>
+              <div class="tool-label" [innerHTML]="tool.title"></div>
+              <div class="tool-arrow"><ion-icon name="arrow-forward-outline"></ion-icon></div>
+            </div>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
     </div>
+  </div>
 
 </div>

@@ -1,26 +1,39 @@
-<div class="header-wrapper">
+<header class="main-header" [class.scrolled]="isScrolled" [class.menu-open]="isMenuOpen">
   <div class="header-container container">
-    <div class="logo-section" routerLink="/home">
-      <img src="assets/images/logo.png" alt="Logo" class="main-logo me-2">
-      <h3 class="m-0">AutoPro</h3>
-    </div>
-    <div class="nav-section desktop-nav">
-      <div class="nav-item" *ngFor="let item of navItems">
-        <span class="nav-label" [routerLink]="item.route">{{ item.label }}</span>
+
+    <!-- Logo -->
+    <div class="logo-section" [routerLink]="['/home']">
+      <div class="logo-circle">
+        <img src="assets/images/logo.png" alt="AutoPro Logo">
       </div>
+      <span class="logo-text">AutoPro</span>
     </div>
 
-    <!-- Mobile Hamburger Toggle -->
-    <div class="mobile-toggle" (click)="toggleMenu()">
-      <ion-icon [name]="isMenuOpen ? 'close-outline' : 'menu-outline'"></ion-icon>
+    <!-- Navigation links -->
+    <nav class="nav-links">
+      <a *ngFor="let item of navItems" [routerLink]="[item.route]" class="nav-item">{{item.label}}</a>
+    </nav>
+
+    <!-- Header Actions -->
+    <div class="header-actions">
+      <button class="action-link sign-in" routerLink="/profile">
+        <ion-icon name="person-circle-outline"></ion-icon>
+        <span>Sign in</span>
+      </button>
+      <!-- <button class="btn-primary submit-btn">
+        Submit Listing
+      </button> -->
+
+      <!-- Mobile Menu Toggle -->
+      <button class="mobile-toggle" (click)="toggleMenu()">
+        <ion-icon [name]="isMenuOpen ? 'close-outline' : 'menu-outline'"></ion-icon>
+      </button>
     </div>
+
   </div>
 
-  <!-- Mobile Menu Dropdown -->
+  <!-- Mobile Menu Overlay -->
   <div class="mobile-menu" [class.open]="isMenuOpen">
-    <div [routerLink]="item.route" class="mobile-nav-item container" *ngFor="let item of navItems"
-      (click)="toggleMenu()">
-      <span class="nav-label">{{ item.label }}</span>
-    </div>
+    <a *ngFor="let item of navItems" [routerLink]="[item.route]" (click)="isMenuOpen = false">{{item.label}}</a>
   </div>
-</div>
+</header>

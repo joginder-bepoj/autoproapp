@@ -4,13 +4,14 @@ import { IonIcon, IonButton, IonInput } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { calendarOutline, syncOutline, phonePortraitOutline, trashOutline, addOutline, shieldCheckmarkOutline, starOutline, ribbonOutline, pieChartOutline, carOutline, pencilOutline, keyOutline, bulbOutline, chatboxEllipsesOutline, bagHandleOutline, cartOutline, clipboardOutline, medalOutline, carSportOutline } from 'ionicons/icons';
 import { Router } from '@angular/router';
+import { BreadcrumbsComponent } from '../../shared/components/breadcrumbs/breadcrumbs.component';
 
 @Component({
   selector: 'app-profile',
   templateUrl: './profile.component.html',
   styleUrls: ['./profile.component.scss'],
   standalone: true,
-  imports: [CommonModule, IonIcon, IonButton, IonInput]
+  imports: [CommonModule, IonIcon, IonButton, IonInput, BreadcrumbsComponent]
 })
 export class ProfileComponent implements OnInit {
 

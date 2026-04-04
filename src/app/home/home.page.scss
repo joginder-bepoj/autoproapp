@@ -1,335 +1,443 @@
 .home-content {
+  background: #f8fafc;
 
   // ── Hero Section ──────────────────────────────────────────────────────────
   .hero-section {
     position: relative;
-    min-height: 620px;
+    height: 100vh;
+    min-height: 700px;
     display: flex;
     align-items: center;
     overflow: hidden;
-    background: linear-gradient(110deg, #e8f4fd 0%, #eef9ff 45%, #f0fafe 100%);
 
-    &::before {
-      content: '';
+    .hero-bg-wrapper {
       position: absolute;
       inset: 0;
-      background-image:
-        radial-gradient(circle at 80% 50%, rgba(0, 133, 190, 0.07) 0%, transparent 60%),
-        linear-gradient(rgba(0, 133, 190, 0.03) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(0, 133, 190, 0.03) 1px, transparent 1px);
-      background-size: 100% 100%, 40px 40px, 40px 40px;
-      pointer-events: none;
       z-index: 0;
+
+      .hero-bg-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transform: scale(1.05);
+        filter: brightness(0.7);
+      }
+
+      .hero-overlay {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(180deg, rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0.2) 50%, rgba(0, 0, 0, 0.5) 100%);
+        z-index: 1;
+      }
     }
 
-    .container {
-      position: relative;
-      z-index: 1;
-      display: flex;
-      align-items: center;
-      min-height: 620px;
-      background: url('/assets/images/main-car-bg.png') no-repeat right center / 52%;
-    }
-
-    .hero-content {
-      max-width: 540px;
-      padding: 60px 0;
+    .hero-container {
       position: relative;
       z-index: 2;
+      // padding-top: 80px; // Space for header
+    }
 
-      .hero-title {
-        font-size: 3rem;
-        font-weight: 700;
-        color: #0a0a0a;
-        line-height: 1.15;
-        margin-bottom: 18px;
-        letter-spacing: -0.5px;
+    .hero-main-content {
+      max-width: 900px;
+      margin: 0;
+      // text-align: center;
+      color: #fff;
 
-        span {
-          background: var(--main-bg-color);
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
-          background-clip: text;
+      .hero-top-text {
+        font-size: 16px;
+        font-weight: 500;
+        margin-bottom: 48px;
+        color: rgba(255, 255, 255, 0.9);
+        letter-spacing: 0.5px;
+
+        a {
+          color: #fff;
+          text-decoration: underline;
+          margin-left: 8px;
+
+          &:hover {
+            opacity: 0.8;
+          }
         }
       }
 
-      .hero-subtitle {
-        font-size: 16px;
-        color: #6b7280;
-        line-height: 1.7;
-        margin-bottom: 40px;
-        max-width: 440px;
+      .hero-main-title {
+        font-size: 4rem;
+        font-weight: 700;
+        line-height: 1.1;
+        letter-spacing: -2px;
+        margin-bottom: 16px;
+        text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+
+        @media (max-width: 768px) {
+          font-size: 2.5rem;
+          letter-spacing: -0.5px;
+        }
+      }
+    }
+
+    // Search Tabs
+    .search-tabs {
+      display: inline-flex;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border-radius: 12px 12px 0 0;
+      padding: 6px;
+      margin-bottom: 0;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-bottom: none;
+
+      .tab-btn {
+        background: transparent;
+        border: none;
+        color: #fff;
+        padding: 10px 24px;
+        font-size: 14px;
+        font-weight: 700;
+        cursor: pointer;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+
+        &.active {
+          background: #fff;
+          color: #333;
+        }
+
+        &:hover:not(.active) {
+          background: rgba(255, 255, 255, 0.15);
+        }
+      }
+    }
+
+    // Reverting to Horizontal Search Widget
+    .hero-search-card {
+      background: #fff;
+      border-radius: 0 16px 16px 16px;
+      padding: 6px 12px;
+      display: flex;
+      align-items: center;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+      max-width: 900px;
+      width: 100%;
+      margin: 0;
+
+      @media (max-width: 900px) {
+        flex-direction: column;
+        border-radius: 16px;
+        gap: 10px;
       }
 
-      .hero-search-widget {
-        max-width: 460px;
+      .search-field {
+        flex: 1;
+        padding: 15px 25px;
         display: flex;
-        flex-direction: column;
+        align-items: center;
+        cursor: pointer;
+        transition: background 0.2s;
+        border-radius: 10px;
         gap: 12px;
 
-        .widget-row {
-          display: flex;
-          align-items: center;
-          background: rgba(255, 255, 255, 0.85);
-          backdrop-filter: blur(8px);
-          -webkit-backdrop-filter: blur(8px);
-          border-radius: 14px;
-          padding: 6px 8px 6px 18px;
-          border: 1.5px solid rgba(0, 133, 190, 0.12);
-          box-shadow: 0 2px 12px rgba(0, 133, 190, 0.06);
-          transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        &:hover {
+          background: #f8fafc;
+        }
 
-          &:focus-within {
-            border-color: var(--main-bg-color);
-            box-shadow: 0 0 0 4px rgba(0, 133, 190, 0.1);
-            background: #ffffff;
-          }
+        .field-icon {
+          font-size: 20px;
+          color: #94a3b8;
+        }
 
-          .input-icon {
-            color: #9ca3af;
-            font-size: 20px;
-            margin-right: 12px;
-            flex-shrink: 0;
-          }
+        .inner-input {
+          flex: 1;
+          background: transparent;
+          border: none;
+          outline: none;
+          font-size: 15px;
+          font-weight: 500;
+          color: #334155;
+          padding: 4px 0;
 
-          .trailing-icon {
-            color: #9ca3af;
-            font-size: 18px;
-            flex-shrink: 0;
-            margin-left: 8px;
+          &::placeholder {
+            color: #94a3b8;
           }
+        }
 
-          ion-input {
-            --padding-start: 0;
-            --padding-end: 0;
-            --highlight-height: 0;
-            font-size: 14px;
-            font-weight: 450;
-            flex: 1;
-            margin: 0;
-            color: #0a0a0a;
-          }
+        .field-label {
+          color: #334155;
+          font-weight: 600;
+          font-size: 15px;
+        }
+
+        @media (max-width: 900px) {
+          width: 100%;
+          border-bottom: 1px solid #f1f5f9;
+        }
+      }
+
+      .field-divider {
+        width: 1px;
+        height: 40px;
+        background: #e2e8f0;
+
+        @media (max-width: 900px) {
+          display: none;
+        }
+      }
+
+      .btn-search {
+        background: var(--main-bg-color);
+        color: #fff;
+        border: none;
+        padding: 12px 30px;
+        border-radius: 12px;
+        font-weight: 700;
+        font-size: 16px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin-left: 10px;
+
+        &:hover {
+          background: var(--ion-color-primary-shade);
+          transform: translateY(-2px);
+          box-shadow: 0 8px 20px rgba(var(--main-bg-color-rgb), 0.3);
+        }
+
+        @media (max-width: 900px) {
+          width: 100%;
+          margin-left: 0;
+          justify-content: center;
         }
       }
     }
   }
 
-  // ── Search Button ──────────────────────────────────────────────────────────
-  .hero-search-btn {
-    margin: 0;
-    height: 40px;
-    font-weight: 600;
-    font-size: 14px;
-    --border-radius: 10px;
-    text-transform: none;
-    letter-spacing: 0.2px;
-    flex-shrink: 0;
-    --background: var(--main-bg-color);
-    --box-shadow: 0 4px 14px rgba(0, 133, 190, 0.35);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-
-    .v-camera-btn {
-      color: var(--ion-color-primary-contrast);
-    }
-  }
-
-  // ── Main Container ─────────────────────────────────────────────────────────
+  // ── Main Content Container ────────────────────────────────────────────────
   .main-container {
-    margin: 0 auto;
-    padding-top: 8px;
-    padding-bottom: 60px;
+    margin-top: -60px;
+    position: relative;
+    z-index: 10;
+    padding-bottom: 80px;
   }
 
-  // ── Quick Search Cards ─────────────────────────────────────────────────────
+  // ── Luxury Quick Search Cards ─────────────────────────────────────────────
   .quick-search-row {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 24px;
-    margin-top: -56px;
-    position: relative;
-    z-index: 10;
-    margin-bottom: 72px;
+    gap: 30px;
+    margin-bottom: 80px;
+
+    @media (max-width: 1024px) {
+      grid-template-columns: 1fr;
+      margin-top: 40px;
+    }
 
     .quick-card {
-      background: rgba(255, 255, 255, 0.92);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border-radius: 20px;
-      padding: 28px 24px 20px;
-      border: 1px solid rgba(0, 133, 190, 0.08);
-      box-shadow:
-        0 4px 6px rgba(0, 0, 0, 0.04),
-        0 10px 30px rgba(0, 0, 0, 0.06);
-      display: flex;
-      flex-direction: column;
-      transition: transform 0.25s ease, box-shadow 0.25s ease;
-      cursor: default;
+      background: #fff;
+      border-radius: 24px;
+      padding: 48px 32px;
+      border: 1px solid rgba(0, 0, 0, 0.03);
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.08);
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+
+      @media (max-width: 768px) {
+        padding: 30px 20px;
+        border-radius: 20px;
+      }
 
       &:hover {
-        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.06), 0 20px 44px rgba(0, 0, 0, 0.1);
+        transform: translateY(-8px);
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.12);
+
+        @media (max-width: 768px) {
+          transform: translateY(-4px);
+        }
       }
 
-      .q-icon {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 2.2rem;
-        width: 56px;
-        height: 56px;
-        flex-shrink: 0;
-        margin-bottom: 16px;
-        color: var(--text-color);
-        border-radius: 14px;
-      }
-
-      .car-icon,
-      .key-icon,
-      .vin-icon {
-        color: var(--text-color);
+      .q-card-icon {
+        font-size: 36px;
+        color: #555;
+        margin-bottom: 20px;
+        display: block;
       }
 
       .q-title {
-        font-size: 1.1rem;
-        font-weight: 600;
-        color: #0a0a0a;
-        margin-bottom: 16px;
-        letter-spacing: -0.2px;
+        font-size: 18px;
+        font-weight: 700;
+        color: #0f172a;
+        margin-bottom: 24px;
+      }
+
+      .q-input-row {
+        background: #f8fafc;
+        border-radius: 14px;
+        padding: 6px 6px 6px 16px;
+        display: flex;
+        align-items: center;
+        border: 1px solid #e2e8f0;
+        transition: all 0.3s;
+        min-height: 52px;
+
+        &:focus-within {
+          background: #fff;
+          border-color: var(--main-bg-color);
+          box-shadow: 0 0 0 4px rgba(var(--main-bg-color-rgb), 0.1);
+        }
+
+        ion-input {
+          --padding-start: 0;
+          font-size: 14px;
+          font-weight: 500;
+          color: #334155;
+        }
+
+        .placeholder-text {
+          font-size: 14px;
+          font-weight: 500;
+          color: #64748b;
+        }
+
+        .inner-search-btn {
+          background: var(--main-bg-color);
+          color: #fff;
+          border: none;
+          padding: 10px 20px;
+          border-radius: 10px;
+          font-weight: 600;
+          font-size: 13px;
+          cursor: pointer;
+          transition: background 0.2s;
+
+          &:hover {
+            opacity: 0.9;
+          }
+        }
+
+        .icon-camera-btn {
+          background: #fff;
+          border: 1px solid #e2e8f0;
+          color: #64748b;
+          width: 38px;
+          height: 38px;
+          border-radius: 10px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          font-size: 18px;
+          transition: all 0.2s;
+
+          &:hover {
+            color: var(--main-bg-color);
+            border-color: var(--main-bg-color);
+          }
+        }
       }
     }
   }
 
-  // ── Input Row inside Quick Cards ───────────────────────────────────────────
-  .q-input-row {
-    background: #f4f7fb;
-    border-radius: 10px;
-    padding: 4px 8px;
-    display: flex;
-    align-items: center;
-    margin-bottom: 12px;
-    border: 1.5px solid transparent;
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
-
-    &:focus-within {
-      border-color: rgba(0, 133, 190, 0.4);
-      box-shadow: 0 0 0 3px rgba(0, 133, 190, 0.08);
-      background: #ffffff;
-    }
-
-    ion-input {
-      flex: 1;
-      --padding-start: 4px;
-      --highlight-height: 0;
-      font-size: 14px;
-    }
-
-    ion-icon {
-      color: #9ca3af;
-      font-size: 18px;
-    }
-  }
-
-  // ── Tools & Resources Section ──────────────────────────────────────────────
+  // ── Tools Section ─────────────────────────────────────────────────────────
   .section-container {
-    margin-bottom: 60px;
-    padding-top: 20px;
+    .section-header {
+      margin-bottom: 40px;
 
-    .section-heading {
-      font-size: 1.8rem;
-      font-weight: 700;
-      color: #0a0a0a;
-      margin-bottom: 6px;
-      letter-spacing: -0.3px;
+      .section-heading {
+        font-size: 32px;
+        font-weight: 800;
+        color: #0f172a;
+        margin-bottom: 8px;
+      }
+
+      .section-subtext {
+        color: #64748b;
+        font-size: 16px;
+      }
     }
-
-    .section-subtext {
-      font-size: 1rem;
-      color: #6b7280;
-      margin-bottom: 32px;
-    }
-  }
-
-  .tools-grid {
-    padding: 0;
 
     .tool-card {
-      background: rgba(255, 255, 255, 0.9);
-      border-radius: 18px;
-      padding: 36px 20px;
-      height: 175px;
+      background: #fff;
+      border-radius: 20px;
+      padding: 45px 30px;
+
+      @media (max-width: 768px) {
+        padding: 30px 20px;
+      }
+
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
       text-align: center;
-      border: 1px solid rgba(0, 133, 190, 0.07);
-      box-shadow:
-        0 2px 4px rgba(0, 0, 0, 0.03),
-        0 6px 20px rgba(0, 0, 0, 0.04);
-      transition: transform 0.25s ease, box-shadow 0.25s ease;
+      height: 100%;
+      border: none;
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      position: relative;
       cursor: pointer;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
 
       &:hover {
-        transform: translateY(-6px);
-        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.06), 0 20px 44px rgba(0, 0, 0, 0.1);
+        transform: translateY(-5px);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+
+        .tool-arrow {
+          opacity: 1;
+          transform: translateX(0);
+        }
       }
 
-      .tool-icon {
-        display: block;
-        font-size: 2.8rem;
-        color: var(--dark-text-color);
-        margin-bottom: 16px;
-        transition: color 0.25s ease;
+      .tool-icon-wrapper {
+        width: 70px;
+        height: 70px;
+        background: #f8fafc;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 24px;
+        transition: all 0.3s;
+
+        .tool-icon {
+          font-size: 34px;
+          color: #334155;
+        }
       }
 
-      &:hover .tool-icon {
-        color: var(--main-bg-color);
+      &:hover .tool-icon-wrapper {
+        background: rgba(var(--main-bg-color-rgb), 0.1);
+
+        .tool-icon {
+          color: var(--main-bg-color);
+        }
       }
 
       .tool-label {
-        color: #374151;
-        font-size: 0.88rem;
-        font-weight: 600;
-        line-height: 1.3;
-        text-transform: uppercase;
-        letter-spacing: 0.4px;
-        transition: color 0.25s ease;
+        font-size: 16px;
+        font-weight: 700;
+        color: #0f172a;
+        line-height: 1.4;
       }
 
-      &:hover .tool-label {
+      .tool-arrow {
+        position: absolute;
+        bottom: 20px;
+        right: 20px;
         color: var(--main-bg-color);
+        font-size: 20px;
+        opacity: 0;
+        transform: translateX(-10px);
+        transition: all 0.3s;
       }
     }
   }
 }
 
-// ── Responsive ─────────────────────────────────────────────────────────────
+
 @media (max-width: 768px) {
-  .home-content {
-    .hero-section {
-      padding: 40px 0 60px;
-      min-height: auto;
+  .tools-grid {
+    padding: 0%;
+  }
 
-      .container {
-        background: none;
-        min-height: auto;
-      }
-
-      .hero-content {
-        padding: 0;
-
-        .hero-title {
-          font-size: 2.2rem;
-        }
-      }
-    }
-
-    .quick-card {
-      box-shadow: 0 6px 24px rgba(0, 133, 190, 0.08) !important;
-    }
-
-    .quick-search-row {
-      grid-template-columns: 1fr;
-      margin-top: 20px;
-    }
+  .home-content .hero-section .hero-search-card {
+    padding: 12px;
   }
 }

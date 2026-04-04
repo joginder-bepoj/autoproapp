@@ -1,0 +1,20 @@
+<div class="breadcrumbs-container">
+  <nav class="breadcrumb-nav">
+    <!-- Home Link -->
+    <a *ngIf="!isHome" routerLink="/home" class="breadcrumb-item home-link">
+      Home
+    </a>
+
+    <ng-container *ngFor="let breadcrumb of breadcrumbs; let last = last">
+      <ion-icon name="chevron-forward-outline" class="breadcrumb-sep"></ion-icon>
+      
+      <a *ngIf="!last" [routerLink]="breadcrumb.url" class="breadcrumb-item">
+        {{ breadcrumb.label }}
+      </a>
+      
+      <span *ngIf="last" class="breadcrumb-item active">
+        {{ breadcrumb.label }}
+      </span>
+    </ng-container>
+  </nav>
+</div>

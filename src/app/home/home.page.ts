@@ -1,11 +1,9 @@
 import { Component } from '@angular/core';
 import {
-  IonContent,
   IonGrid,
   IonRow,
   IonCol,
   IonInput,
-  IonButton,
   IonIcon
 } from '@ionic/angular/standalone';
 import { CommonModule } from '@angular/common';
@@ -23,7 +21,7 @@ import {
   carOutline,
   notificationsOutline,
   personCircleOutline,
-  barcodeOutline, carSportOutline
+  barcodeOutline, carSportOutline, arrowForwardOutline, chevronDownOutline
 } from 'ionicons/icons';
 
 
@@ -40,7 +38,6 @@ import {
     IonRow,
     IonCol,
     IonInput,
-    IonButton,
     IonIcon
   ],
 })
@@ -49,9 +46,9 @@ export class HomePage {
     { title: 'KEY CODES\nPIN CODES', icon: 'speedometer-outline' },
     { title: 'KEY BLANK\nCROSS-REF', icon: 'key-outline' },
     { title: 'LOCKSMITH\nREFERENCES', icon: 'book-outline' },
-    { title: 'TOOL\nREFERENCES', icon: 'construct-outline' },
-    { title: 'ARTICLES &\nTUTORIALS', icon: 'document-text-outline' },
-    { title: 'TECH\nTALK', icon: 'people-outline' },
+    { title: 'SOFTWARE &\nUPDATES', icon: 'construct-outline' },
+    { title: 'TECHNICAL\nARTICLES', icon: 'document-text-outline' },
+    { title: 'PROFESSIONAL\nTALK', icon: 'people-outline' },
   ];
 
   popularSearches = [
@@ -61,7 +58,7 @@ export class HomePage {
   ];
 
   constructor() {
-    addIcons({ searchOutline, carSportOutline, chevronForwardOutline, carOutline, keyOutline, barcodeOutline, cameraOutline, speedometerOutline, bookOutline, constructOutline, documentTextOutline, peopleOutline, notificationsOutline, personCircleOutline });
+    addIcons({ searchOutline, carSportOutline, chevronForwardOutline, carOutline, keyOutline, barcodeOutline, cameraOutline, speedometerOutline, bookOutline, constructOutline, documentTextOutline, peopleOutline, notificationsOutline, personCircleOutline, arrowForwardOutline, chevronDownOutline });
   }
 }
 

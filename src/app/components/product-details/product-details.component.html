@@ -1,0 +1,97 @@
+<div class="product-details-container" *ngIf="product">
+  <!-- Header / Breadcrumb -->
+  <div class="page-top-nav container">
+    <app-breadcrumbs></app-breadcrumbs>
+    <div class="header-actions">
+      <button class="action-circle-btn" title="Share">
+        <ion-icon name="share-outline"></ion-icon>
+      </button>
+      <button class="action-circle-btn" title="Add to Wishlist">
+        <ion-icon name="heart-outline"></ion-icon>
+      </button>
+    </div>
+  </div>
+
+  <div class="main-content container">
+    <div class="product-viewer">
+      <!-- Image Display (Large) -->
+      <div class="main-image-card">
+        <div class="status-overlay" [ngClass]="{'in-stock': product.status === 'In Stock'}">
+          {{ product.status }}
+        </div>
+        <img [src]="product.imageUrl" [alt]="product.title" onerror="this.src='/assets/images/logo.png'">
+      </div>
+      
+      <!-- Quick Specs Icons -->
+      <div class="specs-mini-grid">
+         <div class="mini-spec-item" *ngFor="let spec of product.specifications.slice(0, 3)">
+           <ion-icon name="checkmark-circle-outline"></ion-icon>
+           <span>{{ spec.label }}: {{ spec.value }}</span>
+         </div>
+      </div>
+    </div>
+
+    <!-- Product Information Sidebar -->
+    <div class="product-info-panel">
+      <div class="info-header">
+        <h1 class="product-title">{{ product.title }}</h1>
+        <div class="product-meta">
+           <span class="meta-badge sku-badge">ID: {{ product.id }}</span>
+           <span class="meta-badge model-badge">Model: {{ product.modelNumber }}</span>
+        </div>
+      </div>
+
+      <div class="price-action-card">
+        <div class="price-row">
+           <span class="price-value">${{ product.price | number:'1.2-2' }}</span>
+           <span class="stock-status" *ngIf="product.status === 'In Stock'">
+              <ion-icon name="checkmark-circle-outline"></ion-icon> Ready to Ship
+           </span>
+        </div>
+
+        <div class="action-grid">
+          <div class="qty-control">
+             <button class="qty-btn" (click)="decrementQty()" [disabled]="selectedQty <= 1">
+               <ion-icon name="remove-outline"></ion-icon>
+             </button>
+             <span class="qty-num">{{ selectedQty }}</span>
+             <button class="qty-btn" (click)="incrementQty()">
+               <ion-icon name="add-outline"></ion-icon>
+             </button>
+          </div>
+          <button class="add-to-cart-btn" (click)="addToCart()">
+            <ion-icon name="cart-outline"></ion-icon>
+            ADD TO CART
+          </button>
+        </div>
+      </div>
+
+      <!-- Description and Extended Details -->
+      <div class="description-section">
+        <h3 class="section-title">Description</h3>
+        <p class="description-text">{{ product.description }}</p>
+      </div>
+
+      <!-- Tabs / Accordions for Compatibility and Specs -->
+      <div class="compatibility-section">
+         <h3 class="section-title"><ion-icon name="car-outline"></ion-icon> Vehicle Compatibility</h3>
+         <div class="compatibility-list">
+            <div class="vehicle-item" *ngFor="let vehicle of product.compatibilityTabs[0].vehicles">
+               <ion-icon name="checkmark-circle-outline"></ion-icon>
+               <span>{{ vehicle }}</span>
+            </div>
+         </div>
+      </div>
+
+       <div class="specs-section">
+         <h3 class="section-title"><ion-icon name="build-outline"></ion-icon> Technical Specifications</h3>
+         <div class="specs-table">
+            <div class="specs-row" *ngFor="let spec of product.specifications">
+               <span class="specs-label">{{ spec.label }}</span>
+               <span class="specs-value">{{ spec.value }}</span>
+            </div>
+         </div>
+      </div>
+    </div>
+  </div>
+</div>

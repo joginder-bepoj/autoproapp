@@ -1,0 +1,58 @@
+<div class="product-page-container container">
+  <!-- Dynamic Breadcrumbs -->
+  <app-breadcrumbs></app-breadcrumbs>
+
+  <!-- Search Results Header -->
+  <header class="results-header">
+    <h1 class="results-title">
+      {{ searchQuery ? searchQuery : 'All Products' }}
+    </h1>
+    <p class="results-subtitle">Find the best products for your needs according to your search</p>
+  </header>
+
+  <!-- Product Grid -->
+  <div class="product-grid">
+    <div class="product-card" *ngFor="let product of filteredProducts">
+      <!-- Top Overlay Tags -->
+      <div class="card-overlay-top">
+        <span class="status-tag" [ngClass]="{'out-of-stock': product.status === 'Out of Stock'}">
+          {{ product.status }}
+        </span>
+      </div>
+
+      <!-- Image Section -->
+      <div class="image-section" [routerLink]="['/product-details', product.id]">
+        <img [src]="product.imageUrl" [alt]="product.title" onerror="this.src='/assets/images/logo.png'">
+      </div>
+
+      <!-- Info Section -->
+      <div class="info-section">
+        <p class="sku-text">{{ product.category }} | {{ product.sku }}</p>
+        <h3 class="product-name" [title]="product.title" [routerLink]="['/product-details', product.id]">{{ product.title }}</h3>
+
+        <div class="price-section">
+          <ng-container *ngIf="product.showPrice; else loginRequired">
+            <span class="price-amt">${{ product.price | number:'1.2-2' }}</span>
+          </ng-container>
+          <ng-template #loginRequired>
+            <span class="login-prompt">Login to see price</span>
+          </ng-template>
+        </div>
+
+        <!-- Call to Action -->
+        <div class="cta-section">
+          <button class="action-btn primary-btn" (click)="addToCart(product)">
+            {{ product.status === 'In Stock' ? 'ADD TO CART' : 'PRE-ORDER' }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Empty State -->
+  <div class="empty-state" *ngIf="filteredProducts.length === 0">
+    <ion-icon name="search-outline" class="empty-icon"></ion-icon>
+    <h3>No results found</h3>
+    <p>Try searching for something else or browse our full catalog.</p>
+  </div>
+</div>
