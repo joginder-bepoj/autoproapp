@@ -4,13 +4,13 @@
   <div class="hero-section">
     <div class="hero-bg-wrapper">
       <div class="hero-overlay"></div>
-      <img src="/assets/images/car_hero_bg_.jpg" alt="Hero background" class="hero-bg-img">
+      <img src="/assets/images/aks-hero-bg.png" alt="Hero background" class="hero-bg-img">
     </div>
 
     <div class="container hero-container">
       <div class="hero-main-content">
-        <h1 class="hero-main-title">Precision Key <br> Solutions</h1>
-        <p class="hero-top-text">Search vehicle key data, locksmith tools, and VIN information quickly and easily.</p>
+        <h1 class="hero-main-title">Professional Automotive <br> Key Solutions</h1>
+        <p class="hero-top-text">Your all-in-one platform for vehicle key data, specialized locksmith tools, and real-time VIN decoding.</p>
 
         <!-- Search Tabs -->
         <!-- <div class="search-tabs">
@@ -29,9 +29,9 @@
           <div class="field-divider"></div>
           <div class="search-field">
             <ion-icon name="search-outline" class="field-icon"></ion-icon>
-            <input type="text" placeholder="Type your search..." class="inner-input">
+            <input type="text" placeholder="Type your search..." class="inner-input" [(ngModel)]="mainSearchQuery" (keyup.enter)="onMainSearch()">
           </div>
-          <button class="btn-search">
+          <button class="btn-search" (click)="onMainSearch()">
             Search
           </button>
         </div>
@@ -47,8 +47,8 @@
         <ion-icon name="car-outline" class="q-card-icon"></ion-icon>
         <h3 class="q-title">Vehicle Search</h3>
         <div class="q-input-row">
-          <ion-input placeholder="Type modal name..."></ion-input>
-          <button class="inner-search-btn">Search</button>
+          <ion-input placeholder="Type modal name..." [(ngModel)]="vehicleSearchQuery" (keyup.enter)="onVehicleSearch()"></ion-input>
+          <button class="inner-search-btn" (click)="onVehicleSearch()">Search</button>
         </div>
       </div>
 
@@ -67,9 +67,9 @@
         <ion-icon name="barcode-outline" class="q-card-icon"></ion-icon>
         <h3 class="q-title">VIN Search</h3>
         <div class="q-input-row">
-          <ion-input placeholder="Enter VIN..."></ion-input>
+          <ion-input placeholder="Enter VIN..." [(ngModel)]="vinSearchQuery" (keyup.enter)="onVinSearch()"></ion-input>
           <div class="action-btns d-flex">
-            <button class="inner-search-btn me-2">Search</button>
+            <button class="inner-search-btn me-2" (click)="onVinSearch()">Search</button>
             <button class="icon-camera-btn">
               <ion-icon name="camera-outline"></ion-icon>
             </button>

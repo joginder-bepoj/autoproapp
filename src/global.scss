@@ -163,6 +163,6 @@ ion-input input:-webkit-autofill:active {
 }
 
 /* Adjust content padding for fixed header on non-home pages */
-ion-content.has-header:not(.is-home) {
-  --padding-top: 65px;
-}
+// ion-content.has-header:not(.is-home) {
+//   --padding-top: 65px;
+// }

@@ -1,20 +1,21 @@
-import { Component, OnInit, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { Component, OnInit, CUSTOM_ELEMENTS_SCHEMA, inject } from '@angular/core';
 import { CommonModule, DecimalPipe } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { addIcons } from 'ionicons';
 import { BreadcrumbsComponent } from '../../shared/components/breadcrumbs/breadcrumbs.component';
-import { addOutline, removeOutline, cartOutline, heartOutline, shareOutline, chevronForwardOutline, checkmarkCircleOutline, carOutline, buildOutline } from 'ionicons/icons';
+import { addOutline, removeOutline, cartOutline, heartOutline, shareOutline, chevronForwardOutline, checkmarkCircleOutline, carOutline, buildOutline, alertCircleOutline } from 'ionicons/icons';
+import { ApiService } from '../../services/api-service';
+import { finalize } from 'rxjs';
 
 interface ProductDetails {
   id: string;
   sku: string;
   title: string;
   price: number;
-  status: 'In Stock' | 'In Stock Soon' | 'Out of Stock';
+  status: string;
   imageUrl: string;
   category: string;
-  vatsValue: string;
   itemNumber: string;
   modelNumber: string;
   description: string;
@@ -39,58 +40,66 @@ interface ProductDetails {
 export class ProductDetailsComponent implements OnInit {
   product: ProductDetails | null = null;
   selectedQty: number = 1;
+  loading: boolean = false;
+  error: string | null = null;
 
-  constructor(private route: ActivatedRoute) {
-    addIcons({ addOutline, removeOutline, cartOutline, heartOutline, shareOutline, chevronForwardOutline, checkmarkCircleOutline, carOutline, buildOutline });
+  private apiService = inject(ApiService);
+  private route = inject(ActivatedRoute);
+
+  constructor() {
+    addIcons({ addOutline, removeOutline, cartOutline, heartOutline, shareOutline, chevronForwardOutline, checkmarkCircleOutline, carOutline, buildOutline, alertCircleOutline });
   }
 
   ngOnInit() {
     this.route.paramMap.subscribe(params => {
       const id = params.get('id');
-      this.loadProduct(id);
+      if (id) {
+        this.fetchProduct(id);
+      }
     });
   }
 
-  loadProduct(id: string | null) {
-    // Mock data based on the "old" design provided
-    this.product = {
-      id: id || '1502',
-      sku: 'STR-597603',
-      title: 'Ford 1996-2006 H72 w/Mercury Logo Transponder Key (STRATTEC)',
-      price: 17.85,
-      status: 'In Stock',
-      imageUrl: '/assets/images/logo.png',
-      category: 'Transponder Keys',
-      vatsValue: 'N/A',
-      itemNumber: '#1502',
-      modelNumber: 'STR-597603',
-      description: 'High-quality transponder key for Ford vehicles. Features the original Mercury logo and is manufactured by STRATTEC for maximum reliability and exact fitment. This key requires professional programming by a locksmith or dealer.',
-      compatibilityTabs: [
-        {
-          title: 'Compatible Vehicles',
-          vehicles: [
-            'Ford Cobra 1997',
-            'Ford Crown Victoria 1998-2002',
-            'Ford Excursion 2000-2006',
-            'Ford Expedition 1997-2002',
-            'Ford Explorer 1998-2001',
-            'Ford Explorer Sport 1999-2001',
-            'Ford F150 1999-2003',
-            'Ford F150 Light Duty 1999-2003',
-            'Ford F150 Heritage 2004',
-            'Ford F250 1999-2003',
-            'Ford F250 Light Duty 1999-2003'
-          ]
+  fetchProduct(id: string) {
+    this.loading = true;
+    this.error = null;
+
+    this.apiService.getProductDetail(parseInt(id))
+      .pipe(finalize(() => this.loading = false))
+      .subscribe(
+        (res: any) => {
+          if (res) {
+            this.product = {
+              id: id,
+              sku: res.item_code || res.sku || 'N/A',
+              title: res.item_name || res.title,
+              price: parseFloat(res.price) || 0,
+              status: res.stock_status || 'In Stock',
+              imageUrl: res.image || '/assets/images/logo.png',
+              category: res.category_name || 'Automotive',
+              itemNumber: `#${id}`,
+              modelNumber: res.item_code || 'STR-597603',
+              description: res.description || 'Professional automotive key solution. Please consult with a certified locksmith for programming and cutting.',
+              compatibilityTabs: res.compatibility || [
+                {
+                  title: 'Compatible Vehicles',
+                  vehicles: ['Loading compatibility data...']
+                }
+              ],
+              specifications: res.specs || [
+                { label: 'Manufacturer', value: res.manufacturer || 'AutoPro' },
+                { label: 'Technical Code', value: res.item_code || 'N/A' },
+                { label: 'Item Type', value: res.category_name || 'Key' }
+              ]
+            };
+          } else {
+            this.error = 'Product information not available.';
+          }
+        },
+        (err) => {
+          console.error('Fetch product details error', err);
+          this.error = 'Failed to load product details. Please try again later.';
         }
-      ],
-      specifications: [
-        { label: 'Manufacturer', value: 'STRATTEC' },
-        { label: 'Chip Type', value: 'Transponder' },
-        { label: 'Key Way', value: 'H72' },
-        { label: 'Logo', value: 'Mercury' },
-        { label: 'VATs Value', value: 'N/A' }
-      ]
-    };
+      );
   }
 
   incrementQty() {
@@ -109,3 +118,4 @@ export class ProductDetailsComponent implements OnInit {
     }
   }
 }
+

@@ -7,6 +7,8 @@ import {
   IonIcon
 } from '@ionic/angular/standalone';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import { addIcons } from 'ionicons';
 import {
   cameraOutline,
@@ -34,6 +36,7 @@ import {
   standalone: true,
   imports: [
     CommonModule,
+    FormsModule,
     IonGrid,
     IonRow,
     IonCol,
@@ -42,6 +45,10 @@ import {
   ],
 })
 export class HomePage {
+  mainSearchQuery: string = '';
+  vehicleSearchQuery: string = '';
+  vinSearchQuery: string = '';
+
   tools = [
     { title: 'KEY CODES\nPIN CODES', icon: 'speedometer-outline' },
     { title: 'KEY BLANK\nCROSS-REF', icon: 'key-outline' },
@@ -57,8 +64,26 @@ export class HomePage {
     { label: 'Latest Gear', image: 'assets/images/logo.png' },
   ];
 
-  constructor() {
+  constructor(private router: Router) {
     addIcons({ searchOutline, carSportOutline, chevronForwardOutline, carOutline, keyOutline, barcodeOutline, cameraOutline, speedometerOutline, bookOutline, constructOutline, documentTextOutline, peopleOutline, notificationsOutline, personCircleOutline, arrowForwardOutline, chevronDownOutline });
+  }
+
+  onMainSearch() {
+    if (this.mainSearchQuery.trim()) {
+      this.router.navigate(['/product-list'], { queryParams: { q: this.mainSearchQuery } });
+    }
+  }
+
+  onVehicleSearch() {
+    if (this.vehicleSearchQuery.trim()) {
+      this.router.navigate(['/product-list'], { queryParams: { q: this.vehicleSearchQuery } });
+    }
+  }
+
+  onVinSearch() {
+    if (this.vinSearchQuery.trim()) {
+      this.router.navigate(['/product-list'], { queryParams: { q: this.vinSearchQuery } });
+    }
   }
 }
 

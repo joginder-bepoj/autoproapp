@@ -1,10 +1,13 @@
-import { Component, HostListener, OnInit, inject } from '@angular/core';
-import { IonHeader, IonIcon, IonContent } from "@ionic/angular/standalone";
+import { Component, inject, OnInit } from '@angular/core';
+import { IonIcon } from "@ionic/angular/standalone";
 import { addIcons } from 'ionicons';
 import { searchOutline, chevronBackOutline, chevronDownOutline, notificationsOutline, personCircleOutline, menuOutline, closeOutline, carOutline, logInOutline, addCircleOutline } from 'ionicons/icons';
 import { CommonModule } from '@angular/common';
-import { RouterLink, Router, NavigationEnd } from '@angular/router';
-import { filter } from 'rxjs/operators';
+import { RouterLink } from '@angular/router';
+
+import { UtilService } from '../../services/util.service';
+import { ApiService } from '../../services/api-service';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-header',
@@ -24,61 +27,39 @@ export class HeaderComponent implements OnInit {
 
   ];
 
-
   isMenuOpen = false;
-  isScrolled = false;
-  isHomePage = true;
 
-  private router = inject(Router);
-
-  @HostListener('window:scroll', [])
-  onWindowScroll() {
-    if (!this.isHomePage) {
-      this.isScrolled = true;
-    } else {
-      this.isScrolled = window.scrollY > 20;
-    }
-  }
-
-  @HostListener('document:ionScroll', ['$event'])
-  onIonScroll(event: any) {
-    if (!this.isHomePage) {
-      this.isScrolled = true;
-    } else {
-      this.isScrolled = event.detail.scrollTop > 20;
-    }
-  }
-
+  private utilService = inject(UtilService);
+  private apiService = inject(ApiService);
+  public userProfile$: Observable<any> = this.utilService.currentUser$;
 
   constructor() {
     addIcons({ searchOutline, chevronBackOutline, chevronDownOutline, notificationsOutline, personCircleOutline, menuOutline, closeOutline, carOutline, logInOutline, addCircleOutline });
+  }
+
+  ngOnInit(): void {
+    const user = this.utilService.getUserProfile();
+    console.log(user)
+    if (this.utilService.isLoggedIn() && (!user || !user?.firstName)) {
+      this.apiService.getCustomerProfile().subscribe(
+        (profile: any) => {
+          if (profile && profile?.data) {
+            this.utilService.setUserProfile(profile.data);
+          }
+        },
+        (err) => {
+          console.error('Initial login sync failed:', err);
+        }
+      );
+    }
   }
 
   toggleMenu() {
     this.isMenuOpen = !this.isMenuOpen;
   }
 
-
-  ngOnInit() {
-    this.router.events.pipe(
-      filter(event => event instanceof NavigationEnd)
-    ).subscribe((event: any) => {
-      this.checkRoute(event.urlAfterRedirects || event.url);
-    });
-
-    // Initial check
-    this.checkRoute(this.router.url);
-  }
-
-  private checkRoute(url: string) {
-    this.isHomePage = url === '/home' || url.startsWith('/home?');
-    // If not home page, we want it to look "scrolled" (solid) by default
-    if (!this.isHomePage) {
-      this.isScrolled = true;
-    } else {
-      // Re-run scroll check for home page
-      this.onWindowScroll();
-    }
+  logout() {
+    this.utilService.logout();
   }
 
 }

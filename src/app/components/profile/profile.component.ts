@@ -2,9 +2,11 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonIcon, IonButton, IonInput } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { calendarOutline, syncOutline, phonePortraitOutline, trashOutline, addOutline, shieldCheckmarkOutline, starOutline, ribbonOutline, pieChartOutline, carOutline, pencilOutline, keyOutline, bulbOutline, chatboxEllipsesOutline, bagHandleOutline, cartOutline, clipboardOutline, medalOutline, carSportOutline } from 'ionicons/icons';
+import { calendarOutline, syncOutline, phonePortraitOutline, trashOutline, addOutline, shieldCheckmarkOutline, starOutline, ribbonOutline, pieChartOutline, carOutline, pencilOutline, keyOutline, bulbOutline, chatboxEllipsesOutline, bagHandleOutline, cartOutline, clipboardOutline, medalOutline, carSportOutline, mailOutline } from 'ionicons/icons';
 import { Router } from '@angular/router';
 import { BreadcrumbsComponent } from '../../shared/components/breadcrumbs/breadcrumbs.component';
+import { UtilService } from '../../services/util.service';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-profile',
@@ -15,8 +17,14 @@ import { BreadcrumbsComponent } from '../../shared/components/breadcrumbs/breadc
 })
 export class ProfileComponent implements OnInit {
 
-  constructor(private router: Router) {
-    addIcons({ calendarOutline, syncOutline, phonePortraitOutline, trashOutline, addOutline, shieldCheckmarkOutline, starOutline, ribbonOutline, pieChartOutline, carOutline, pencilOutline, keyOutline, bulbOutline, chatboxEllipsesOutline, bagHandleOutline, cartOutline, clipboardOutline, medalOutline, carSportOutline });
+  public userProfile$: Observable<any>;
+
+  constructor(
+    private router: Router,
+    private utilService: UtilService
+  ) {
+    addIcons({ calendarOutline, syncOutline, phonePortraitOutline, trashOutline, addOutline, shieldCheckmarkOutline, starOutline, ribbonOutline, pieChartOutline, carOutline, pencilOutline, keyOutline, bulbOutline, chatboxEllipsesOutline, bagHandleOutline, cartOutline, clipboardOutline, medalOutline, carSportOutline, mailOutline });
+    this.userProfile$ = this.utilService.currentUser$;
   }
 
   userDetailsOptions = [

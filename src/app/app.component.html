@@ -1,13 +1,11 @@
 <ion-app>
-  @if (showAppComponents) {
+  <ion-content>
+    @if (showAppComponents) {
     <app-header></app-header>
-  }
-  
-  <!-- Use standard div for scrolling if window:scroll is preferred, or standard ion-content -->
-  <ion-content [scrollEvents]="true" [class.is-home]="isHomePage" [class.has-header]="showAppComponents">
+    }
     <router-outlet></router-outlet>
     @if (showAppComponents) {
-      <app-footer></app-footer>
+    <app-footer></app-footer>
     }
   </ion-content>
 </ion-app>

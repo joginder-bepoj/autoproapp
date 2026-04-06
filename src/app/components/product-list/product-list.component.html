@@ -1,19 +1,31 @@
 <div class="product-page-container container">
-  <!-- Dynamic Breadcrumbs -->
   <app-breadcrumbs></app-breadcrumbs>
 
   <!-- Search Results Header -->
-  <header class="results-header">
+  <header class="results-header" *ngIf="!loading">
     <h1 class="results-title">
       {{ searchQuery ? searchQuery : 'All Products' }}
     </h1>
-    <p class="results-subtitle">Find the best products for your needs according to your search</p>
+    <p class="results-subtitle" *ngIf="products.length > 0">Find the best products for your needs according to your
+      search ({{products.length}} items)</p>
   </header>
 
+  <!-- Loading State -->
+  <div class="loading-state" *ngIf="loading">
+    <ion-spinner name="crescent"></ion-spinner>
+    <p>Searching for your products...</p>
+  </div>
+
+  <!-- Error State -->
+  <div class="error-state" *ngIf="error && !loading">
+    <ion-icon name="alert-circle-outline"></ion-icon>
+    <p>{{error}}</p>
+    <ion-button (click)="fetchProducts()" fill="outline">Retry Search</ion-button>
+  </div>
+
   <!-- Product Grid -->
-  <div class="product-grid">
-    <div class="product-card" *ngFor="let product of filteredProducts">
-      <!-- Top Overlay Tags -->
+  <div class="product-grid" *ngIf="!loading && !error && products.length > 0">
+    <div class="product-card" *ngFor="let product of products">
       <div class="card-overlay-top">
         <span class="status-tag" [ngClass]="{'out-of-stock': product.status === 'Out of Stock'}">
           {{ product.status }}
@@ -22,20 +34,21 @@
 
       <!-- Image Section -->
       <div class="image-section" [routerLink]="['/product-details', product.id]">
-        <img [src]="product.imageUrl" [alt]="product.title" onerror="this.src='/assets/images/logo.png'">
+        <img [src]="product.image" [alt]="product.name" onerror="this.src='/assets/images/logo.png'">
       </div>
 
       <!-- Info Section -->
       <div class="info-section">
         <p class="sku-text">{{ product.category }} | {{ product.sku }}</p>
-        <h3 class="product-name" [title]="product.title" [routerLink]="['/product-details', product.id]">{{ product.title }}</h3>
+        <h3 class="product-name" [title]="product.name" [routerLink]="['/product-details', product.id]">{{ product.name
+          }}</h3>
 
         <div class="price-section">
-          <ng-container *ngIf="product.showPrice; else loginRequired">
+          <ng-container *ngIf="isLoggedIn ; else loginRequired">
             <span class="price-amt">${{ product.price | number:'1.2-2' }}</span>
           </ng-container>
           <ng-template #loginRequired>
-            <span class="login-prompt">Login to see price</span>
+            <span class="login-prompt" routerLink="/login">Login to see price</span>
           </ng-template>
         </div>
 
@@ -50,9 +63,11 @@
   </div>
 
   <!-- Empty State -->
-  <div class="empty-state" *ngIf="filteredProducts.length === 0">
+  <div class="empty-state" *ngIf="!loading && !error && products.length === 0">
     <ion-icon name="search-outline" class="empty-icon"></ion-icon>
     <h3>No results found</h3>
-    <p>Try searching for something else or browse our full catalog.</p>
+    <p>We couldn't find any results for "<strong>{{searchQuery}}</strong>". Try searching for something else or browse
+      our full catalog.</p>
+    <ion-button routerLink="/home" fill="clear">Back to Home</ion-button>
   </div>
 </div>

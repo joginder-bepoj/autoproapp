@@ -1,4 +1,4 @@
-<header class="main-header" [class.scrolled]="isScrolled" [class.menu-open]="isMenuOpen">
+<header class="main-header" [class.menu-open]="isMenuOpen">
   <div class="header-container container">
 
     <!-- Logo -->
@@ -16,13 +16,18 @@
 
     <!-- Header Actions -->
     <div class="header-actions">
-      <button class="action-link sign-in" routerLink="/profile">
-        <ion-icon name="person-circle-outline"></ion-icon>
-        <span>Sign in</span>
-      </button>
-      <!-- <button class="btn-primary submit-btn">
-        Submit Listing
-      </button> -->
+      <ng-container *ngIf="userProfile$ | async as user; else guest">
+        <button class="action-link sign-in" routerLink="/profile">
+          <ion-icon name="person-circle-outline"></ion-icon>
+          <span>{{ user.firstName || 'Account' }}</span>
+        </button>
+      </ng-container>
+      <ng-template #guest>
+        <button class="action-link sign-in" routerLink="/login">
+          <ion-icon name="person-circle-outline"></ion-icon>
+          <span>Sign in</span>
+        </button>
+      </ng-template>
 
       <!-- Mobile Menu Toggle -->
       <button class="mobile-toggle" (click)="toggleMenu()">
@@ -35,5 +40,6 @@
   <!-- Mobile Menu Overlay -->
   <div class="mobile-menu" [class.open]="isMenuOpen">
     <a *ngFor="let item of navItems" [routerLink]="[item.route]" (click)="isMenuOpen = false">{{item.label}}</a>
+    <a *ngIf="(userProfile$ | async)" (click)="logout(); isMenuOpen = false" class="logout-link">Logout</a>
   </div>
 </header>

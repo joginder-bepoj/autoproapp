@@ -51,10 +51,10 @@ export class FeedbackComponent implements OnInit {
   readonly ratingLabels = ['Poor', 'Fair', 'Good', 'Great', 'Excellent'];
 
   readonly categories: FeedbackCategory[] = [
-    { label: 'Bug Report',   value: 'bug',        icon: 'bug-outline' },
-    { label: 'Suggestion',   value: 'suggestion', icon: 'bulb-outline' },
-    { label: 'General',      value: 'general',    icon: 'help-circle-outline' },
-    { label: 'Compliment',   value: 'compliment', icon: 'thumbs-up-outline' },
+    { label: 'Bug Report', value: 'bug', icon: 'bug-outline' },
+    { label: 'Suggestion', value: 'suggestion', icon: 'bulb-outline' },
+    { label: 'General', value: 'general', icon: 'help-circle-outline' },
+    { label: 'Compliment', value: 'compliment', icon: 'thumbs-up-outline' },
   ];
 
   constructor() {
@@ -79,7 +79,7 @@ export class FeedbackComponent implements OnInit {
     });
   }
 
-  ngOnInit() {}
+  ngOnInit() { }
 
   selectCategory(value: string) {
     this.selectedCategory = this.selectedCategory === value ? '' : value;

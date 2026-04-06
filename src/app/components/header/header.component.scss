@@ -1,51 +1,48 @@
-.main-header {
-  position: fixed;
+:host {
+  display: block;
+  width: 100%;
+  position: sticky;
   top: 0;
-  left: 0;
-  right: 0;
-  height: 90px;
   z-index: 1000;
+}
+
+.main-header {
+  width: 100%;
+  height: 70px;
   display: flex;
   align-items: center;
-  padding: 0 40px;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  background: transparent;
+  padding: 0px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 4px 25px rgba(0, 0, 0, 0.08);
+  box-sizing: border-box;
 
-  &.scrolled,
   &.menu-open {
-    background: rgba(255, 255, 255, 0.95);
-    height: 75px;
-    box-shadow: 0 4px 25px rgba(0, 0, 0, 0.08);
+    box-shadow: none;
+    background-color: white;
+  }
 
-    &.menu-open {
-      box-shadow: none;
-      background-color: white;
+  .logo-section .logo-text {
+    color: var(--dark-text-color);
+  }
+
+  .nav-links .nav-item {
+    color: var(--dark-text-color);
+
+    &:hover {
+      color: var(--main-bg-color, #0085be) !important;
     }
+  }
 
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-
-    .logo-section .logo-text {
+  .header-actions {
+    .action-link {
       color: var(--dark-text-color);
     }
+  }
 
-    .nav-links .nav-item {
-      color: var(--dark-text-color);
-
-      &:hover {
-        color: var(--main-bg-color) !important;
-      }
-    }
-
-    .header-actions {
-      .action-link {
-        color: var(--dark-text-color);
-      }
-    }
-
-    .mobile-toggle {
-      color: var(--dark-text-color);
-    }
+  .mobile-toggle {
+    color: var(--dark-text-color);
   }
 
   .header-container {
@@ -76,7 +73,7 @@
     .logo-text {
       font-size: 24px;
       font-weight: 800;
-      color: #fff;
+      color: var(--dark-text-color);
       letter-spacing: -0.8px;
       transition: color 0.3s ease;
     }
@@ -89,7 +86,7 @@
 
     .nav-item {
       text-decoration: none;
-      color: #fff;
+      color: var(--dark-text-color);
       font-size: 15px;
       font-weight: 600;
       display: flex;
@@ -115,7 +112,7 @@
       }
 
       &:hover {
-        color: #fff !important;
+        color: var(--main-bg-color, #0085be) !important;
 
         &::after {
           width: 100%;
@@ -132,7 +129,7 @@
     .action-link {
       background: none;
       border: none;
-      color: #fff;
+      color: var(--dark-text-color);
       font-size: 15px;
       font-weight: 600;
       display: flex;
@@ -155,22 +152,20 @@
     .submit-btn {
       padding: 12px 28px;
       border-radius: 12px;
-      background: rgba(255, 255, 255, 0.15);
-      border: 1px solid rgba(255, 255, 255, 0.3);
+      background: var(--dark-text-color, #0c1c2c);
+      border: 1px solid var(--dark-text-color, #0c1c2c);
       color: #fff;
       font-weight: 700;
       font-size: 14px;
       cursor: pointer;
       transition: all 0.3s ease;
-      backdrop-filter: blur(8px);
       text-transform: none;
 
       &:hover {
-        background: #fff;
-        color: var(--main-bg-color);
+        background: var(--main-bg-color, #0085be);
+        border-color: var(--main-bg-color, #0085be);
         transform: translateY(-2px);
-        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
-        border-color: #fff;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
       }
     }
   }
@@ -179,7 +174,7 @@
     display: none;
     background: none;
     border: none;
-    color: #fff;
+    color: var(--dark-text-color, #0c1c2c);
     font-size: 32px;
     cursor: pointer;
     padding: 4px;
@@ -191,19 +186,6 @@
   }
 }
 
-.main-header.scrolled,
-.main-header.menu-open {
-  .submit-btn {
-    background: var(--dark-text-color);
-    color: #fff;
-    border-color: var(--dark-text-color);
-
-    &:hover {
-      background: var(--main-bg-color, #0085be);
-      border-color: var(--main-bg-color, #0085be);
-    }
-  }
-}
 
 .mobile-menu {
   display: none;
@@ -227,7 +209,7 @@
 
   a {
     text-decoration: none;
-    color: var(--dark-text-color, #0c1c2c);
+    color: var(--dark-text-color);
     font-size: 16px;
     font-weight: 600;
     padding: 12px 0;

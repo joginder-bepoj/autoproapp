@@ -3,44 +3,51 @@
 
     <!-- Profile Header Card -->
     <app-breadcrumbs></app-breadcrumbs>
-    <div class="d-flex w-100 gap-3 profile-outer-card">
-      <div class="profile-card w-100">
-        <div class="avatar-lg">PT</div>
-        <div class="profile-info">
-          <h2 class="user-name">Pooja Thakur</h2>
-          <p class="member-since">
-            <ion-icon name="calendar-outline"></ion-icon>
-            Member since December 2019
-          </p>
-          <ion-button (click)="changePassword()" class="update-btn">
-            Change Password
-          </ion-button>
+    <ng-container *ngIf="userProfile$ | async as user; else loading">
+      <div class="d-flex w-100 gap-3 profile-outer-card">
+        <div class="profile-card w-100">
+          <div class="avatar-lg">{{ (user.firstName || 'U').substring(0, 1) }}</div>
+          <div class="profile-info">
+            <h2 class="user-name">{{ user.firstName }} {{ user.lastName }}</h2>
+            <p class="member-since">
+              <ion-icon name="calendar-outline"></ion-icon>
+              Member ID: {{ user.customerID }}
+            </p>
+            <ion-button (click)="changePassword()" class="update-btn">
+              Change Password
+            </ion-button>
+          </div>
         </div>
-      </div>
 
-      <!-- Display Name Card -->
-      <div class="display-name-card card-box flex-column w-100">
-        <div class="left-col mb-2">
-          <label># of Logins:</label>
-          <div class="login-badge">
-            <ion-icon name="sync-outline"></ion-icon>
-            12
+        <!-- Display Name Card -->
+        <div class="display-name-card card-box flex-column w-100">
+          <div class="left-col mb-2">
+            <label>Email Address:</label>
+            <div class="login-badge">
+              <ion-icon name="mail-outline"></ion-icon>
+              {{ user.email }}
+            </div>
           </div>
-        </div>
-        <div class="left-col">
-          <label>Display Name</label>
-        </div>
-        <div class="right-col">
-          <div class="input-wrapper">
-            <ion-input type="text" value="Pooja Thakur"></ion-input>
+          <div class="left-col">
+            <label>Contact Phone</label>
           </div>
-          <ion-button class="update-btn">
-            <ion-icon slot="start" name="sync-outline"></ion-icon>
-            Update
-          </ion-button>
+          <div class="right-col">
+            <div class="input-wrapper">
+              <ion-input type="text" [value]="user.phoneNumber"></ion-input>
+            </div>
+            <ion-button class="update-btn">
+              <ion-icon slot="start" name="sync-outline"></ion-icon>
+              Update
+            </ion-button>
+          </div>
         </div>
       </div>
-    </div>
+    </ng-container>
+    <ng-template #loading>
+      <div class="profile-card p-4 text-center">
+        <p>Loading profile details...</p>
+      </div>
+    </ng-template>
 
     <!-- Devices Card -->
     <div class="devices-card card-box">
