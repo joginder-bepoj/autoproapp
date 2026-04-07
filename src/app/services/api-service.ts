@@ -9,7 +9,8 @@ export class ApiService {
   // private utilService = inject(UtilService);
 
   constructor(private http: HttpClient) { }
-  private api_base_url = '/V1/';
+  // private api_base_url = '/V1/';
+  private api_base_url = environment.api_base_url;
 
   // customer apis
   login(data: any) {
