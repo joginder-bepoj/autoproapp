@@ -194,14 +194,14 @@
         display: flex;
         align-items: center;
         gap: 10px;
+        opacity: 0.8;
         cursor: pointer;
         transition: all 0.3s ease;
         margin-left: 10px;
 
         &:hover {
-          background: var(--ion-color-primary-shade);
-          transform: translateY(-2px);
-          box-shadow: 0 8px 20px rgba(var(--main-bg-color-rgb), 0.3);
+          opacity: 1;
+          box-shadow: 0 10px 25px rgba(var(--main-bg-color-rgb), 0.3);
         }
 
         @media (max-width: 900px) {
@@ -225,8 +225,9 @@
   .quick-search-row {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 30px;
+    gap: 12px;
     margin-bottom: 80px;
+
 
     @media (max-width: 1024px) {
       grid-template-columns: 1fr;
@@ -307,10 +308,12 @@
           font-weight: 600;
           font-size: 13px;
           cursor: pointer;
-          transition: background 0.2s;
+          opacity: 0.8;
+          transition: all 0.3s ease;
 
           &:hover {
-            opacity: 0.9;
+            opacity: 1;
+            transform: none !important;
           }
         }
 
@@ -355,7 +358,17 @@
       }
     }
 
+    .tools-grid {
+      padding: 0;
+
+      ion-row {
+        --ion-grid-column-padding: 6px; // Total 12px between columns
+        row-gap: 12px;
+      }
+    }
+
     .tool-card {
+
       background: #fff;
       border-radius: 20px;
       padding: 45px 30px;

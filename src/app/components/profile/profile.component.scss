@@ -154,14 +154,12 @@
     }
 
     .update-btn {
-      --background: var(--main-bg-color);
-      --color: white;
       height: 48px;
       margin: 0;
-      font-weight: 600;
+      font-weight: 700;
       text-transform: none;
-      --border-radius: 8px;
-      min-width: 130px;
+      --border-radius: 12px;
+      min-width: 140px;
       font-size: 1.05rem;
 
       ion-icon {

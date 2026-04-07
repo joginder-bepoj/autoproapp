@@ -1,21 +1,21 @@
 import { Component, OnInit, CUSTOM_ELEMENTS_SCHEMA, inject } from '@angular/core';
 import { CommonModule, DecimalPipe } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
-import { ActivatedRoute, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { addIcons } from 'ionicons';
 import { BreadcrumbsComponent } from '../../shared/components/breadcrumbs/breadcrumbs.component';
-import { addOutline, removeOutline, cartOutline, heartOutline, optionsOutline, chevronForwardOutline } from 'ionicons/icons';
+import { addOutline, removeOutline, cartOutline, heartOutline, optionsOutline, chevronForwardOutline, alertCircleOutline, searchOutline } from 'ionicons/icons';
 import { ApiService } from '../../services/api-service';
 import { finalize } from 'rxjs';
 import { UtilService } from 'src/app/services/util.service';
 
 interface Product {
-  id: string;
-  sku: string;
+  itemID: string;
+  modelName: string;
   name: string;
   price: number;
   qty: number;
-  status: string;
+  inStock: boolean;
   image: string;
   category: string;
 }
@@ -35,14 +35,17 @@ export class ProductListComponent implements OnInit {
   error: string | null = null;
   totalResults: number = 0;
   isLoggedIn: boolean = false;
-  baseUrl = ''
+  baseUrl: string;
+  breadcrumb: any[] = [];
+
+
   private apiService = inject(ApiService);
   private route = inject(ActivatedRoute);
   private utilService = inject(UtilService);
 
-  constructor() {
+  constructor(private router: Router) {
     this.baseUrl = this.utilService.getImgBaseUrl();
-    addIcons({ addOutline, removeOutline, cartOutline, heartOutline, optionsOutline, chevronForwardOutline });
+    addIcons({ addOutline, removeOutline, cartOutline, heartOutline, optionsOutline, chevronForwardOutline, alertCircleOutline, searchOutline });
   }
 
   ngOnInit() {
@@ -86,6 +89,18 @@ export class ProductListComponent implements OnInit {
     if (product.qty > 1) {
       product.qty--;
     }
+  }
+
+  getImageBaseUrl() {
+    return this.utilService.getImgBaseUrl();
+  }
+
+  getProductStatus(product: Product) {
+    return product.inStock ? 'ADD TO CART' : 'IN STOCK SOON';
+  }
+
+  navigateToDetails(id: string) {
+    this.router.navigate([this.searchQuery, 'product-details', id]);
   }
 }
 

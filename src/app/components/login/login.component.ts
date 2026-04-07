@@ -21,7 +21,13 @@ export class LoginComponent implements OnInit {
     private alertController: AlertController,
     private utilService: UtilService
   ) { }
-  ngOnInit(): void { }
+  ngOnInit(): void {
+    let privateKey = this.utilService.getPrivateKey();
+    console.log(privateKey)
+    if (privateKey) {
+      this.router.navigate(['/home']);
+    }
+  }
   loginData = {
     email: '',
     password: ''
@@ -45,22 +51,7 @@ export class LoginComponent implements OnInit {
         if (privateKey) {
           this.utilService.setPrivateKey(privateKey);
           this.utilService.setLoginEmail(this.loginData.email);
-
-          this.apiService.getCustomerProfile().subscribe(
-            (profile: any) => {
-              if (profile && profile.data) {
-                this.utilService.setUserProfile(profile.data);
-                this.router.navigate(['/home']);
-                console.log('Profile loaded:', profile.data);
-              } else {
-                this.showAlert('Login Failed', 'User profile not found.');
-              }
-            },
-            (err: any) => {
-              this.showAlert('Error', 'Failed to fetch user profile.');
-              console.error('Profile fetch error', err);
-            }
-          );
+          this.router.navigate(['/home']);
         } else {
           const errorMsg = this.utilService.parseErrorMessage(res);
           this.showAlert('Login Failed', errorMsg);

@@ -5,16 +5,13 @@
       Home
     </a>
 
-    <ng-container *ngFor="let breadcrumb of breadcrumbs; let last = last">
+    <ng-container *ngFor="let item of breadcrumb; let last = last">
       <ion-icon name="chevron-forward-outline" class="breadcrumb-sep"></ion-icon>
-      
-      <a *ngIf="!last" [routerLink]="breadcrumb.url" class="breadcrumb-item">
-        {{ breadcrumb.label }}
+
+      <a (click)="navigateTo(item)" class="breadcrumb-item">
+        {{ item.label | titlecase }}
       </a>
-      
-      <span *ngIf="last" class="breadcrumb-item active">
-        {{ breadcrumb.label }}
-      </span>
     </ng-container>
+
   </nav>
 </div>

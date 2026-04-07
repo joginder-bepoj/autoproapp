@@ -4,6 +4,8 @@ import { Router, NavigationEnd, RouterOutlet } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { HeaderComponent } from './components/header/header.component';
 import { FooterComponent } from './components/footer/footer.component';
+import { UtilService } from './services/util.service';
+import { ApiService } from './services/api-service';
 
 @Component({
   selector: 'app-root',
@@ -15,13 +17,13 @@ export class AppComponent {
   showAppComponents: boolean = true;
   isHomePage: boolean = false;
 
-  constructor(private router: Router) {
+  constructor(private router: Router, private utilService: UtilService, private apiService: ApiService) {
     this.router.events.pipe(
       filter(event => event instanceof NavigationEnd)
     ).subscribe((event: any) => {
       const url = event.urlAfterRedirects || event.url;
       this.isHomePage = url === '/home' || url.startsWith('/home?');
-      
+
       if (this.showAppComponents) {
         this.showAppComponents = !url.includes('/login') && !url.includes('/register');
       } else {
@@ -30,5 +32,33 @@ export class AppComponent {
         }, 150);
       }
     });
+  }
+
+  ngOnInit() {
+    let privateKey = this.utilService.getPrivateKey();
+
+    if (privateKey) {
+      this.apiService.getCustomerProfile().subscribe(
+        (profile: any) => {
+          if (profile && profile?.data) {
+            this.utilService.setUserProfile(profile.data);
+          }
+        },
+        (err) => {
+          console.error('Initial login sync failed:', err);
+        }
+      );
+
+      this.apiService.getCartItems().subscribe(
+        (cart: any) => {
+          if (cart && cart?.data) {
+            this.utilService.setCart(cart.data);
+          }
+        },
+        (err) => {
+          console.error('Initial login sync failed:', err);
+        }
+      );
+    }
   }
 }

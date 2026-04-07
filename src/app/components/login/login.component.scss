@@ -121,13 +121,11 @@ ion-content {
 }
 
 .login-btn {
-  --background: var(--main-bg-color);
   --border-radius: 100px;
-  // height: 40px;
   font-weight: 700;
-  font-size: 12px;
-  padding: 0px 6px;
-  min-width: 125px;
+  font-size: 13px;
+  min-width: 135px;
+  height: 48px;
 }
 
 .signup-text {

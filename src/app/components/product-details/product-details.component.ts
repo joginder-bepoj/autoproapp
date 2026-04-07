@@ -4,29 +4,36 @@ import { IonicModule } from '@ionic/angular';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { addIcons } from 'ionicons';
 import { BreadcrumbsComponent } from '../../shared/components/breadcrumbs/breadcrumbs.component';
-import { addOutline, removeOutline, cartOutline, heartOutline, shareOutline, chevronForwardOutline, checkmarkCircleOutline, carOutline, buildOutline, alertCircleOutline } from 'ionicons/icons';
+import { addOutline, removeOutline, cartOutline, heartOutline, shareOutline, chevronForwardOutline, chevronDownOutline, checkmarkCircleOutline, carOutline, buildOutline, alertCircleOutline, checkmarkOutline, closeOutline } from 'ionicons/icons';
 import { ApiService } from '../../services/api-service';
 import { finalize } from 'rxjs';
+import { UtilService } from 'src/app/services/util.service';
+
+interface OptionValue {
+  id: string | number;
+  name: string;
+}
+
+interface ProductOption {
+  id: string | number;
+  name: string;
+  type: string;
+  required: boolean;
+  values: OptionValue[];
+}
 
 interface ProductDetails {
-  id: string;
+  itemID: string;
   sku: string;
-  title: string;
+  name: string;
   price: number;
   status: string;
-  imageUrl: string;
+  image: string;
   category: string;
-  itemNumber: string;
-  modelNumber: string;
+  modelName: string;
   description: string;
-  compatibilityTabs: {
-      title: string;
-      vehicles: string[];
-  }[];
-  specifications: {
-      label: string;
-      value: string;
-  }[];
+  qtyOrder: number;
+  options?: ProductOption[];
 }
 
 @Component({
@@ -38,21 +45,30 @@ interface ProductDetails {
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class ProductDetailsComponent implements OnInit {
+  breadcrumb: any = [];
   product: ProductDetails | null = null;
   selectedQty: number = 1;
   loading: boolean = false;
   error: string | null = null;
-
+  selectedOptions: any = {};
   private apiService = inject(ApiService);
   private route = inject(ActivatedRoute);
 
-  constructor() {
-    addIcons({ addOutline, removeOutline, cartOutline, heartOutline, shareOutline, chevronForwardOutline, checkmarkCircleOutline, carOutline, buildOutline, alertCircleOutline });
+
+  constructor(private utilService: UtilService) {
+    addIcons({ addOutline, removeOutline, cartOutline, heartOutline, shareOutline, chevronForwardOutline, chevronDownOutline, checkmarkCircleOutline, carOutline, buildOutline, alertCircleOutline, checkmarkOutline, closeOutline });
   }
 
   ngOnInit() {
     this.route.paramMap.subscribe(params => {
+      const search = params.get('search');
       const id = params.get('id');
+      this.breadcrumb = [];
+
+      if (search) {
+        this.breadcrumb.push({ label: 'Products', url: '/product-list', query: { q: search } });
+      }
+
       if (id) {
         this.fetchProduct(id);
       }
@@ -68,30 +84,10 @@ export class ProductDetailsComponent implements OnInit {
       .subscribe(
         (res: any) => {
           if (res) {
-            this.product = {
-              id: id,
-              sku: res.item_code || res.sku || 'N/A',
-              title: res.item_name || res.title,
-              price: parseFloat(res.price) || 0,
-              status: res.stock_status || 'In Stock',
-              imageUrl: res.image || '/assets/images/logo.png',
-              category: res.category_name || 'Automotive',
-              itemNumber: `#${id}`,
-              modelNumber: res.item_code || 'STR-597603',
-              description: res.description || 'Professional automotive key solution. Please consult with a certified locksmith for programming and cutting.',
-              compatibilityTabs: res.compatibility || [
-                {
-                  title: 'Compatible Vehicles',
-                  vehicles: ['Loading compatibility data...']
-                }
-              ],
-              specifications: res.specs || [
-                { label: 'Manufacturer', value: res.manufacturer || 'AutoPro' },
-                { label: 'Technical Code', value: res.item_code || 'N/A' },
-                { label: 'Item Type', value: res.category_name || 'Key' }
-              ]
-            };
+            this.product = res.data;
           } else {
+
+
             this.error = 'Product information not available.';
           }
         },
@@ -103,19 +99,27 @@ export class ProductDetailsComponent implements OnInit {
   }
 
   incrementQty() {
-    this.selectedQty++;
+    this.product && this.product.qtyOrder++;
   }
 
   decrementQty() {
-    if (this.selectedQty > 1) {
-      this.selectedQty--;
+    if (this.product && this.product.qtyOrder > 1) {
+      this.product.qtyOrder--;
     }
   }
 
+  getImageBaseUrl() {
+    return this.utilService.getImgBaseUrl();
+  }
+
+  onOptionChange(optionId: any, value: any) {
+    this.selectedOptions[optionId] = value;
+  }
+
+
   addToCart() {
-    if (this.product) {
-      console.log('Adding to cart:', this.product.title, 'Qty:', this.selectedQty);
-    }
+
+    this.utilService.addToCart(this.product);
   }
 }
 

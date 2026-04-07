@@ -344,12 +344,15 @@
 .btn-primary {
   background: var(--main-bg-color);
   color: #ffffff;
-  opacity: 0.85;
+  opacity: 0.8;
+  border-radius: 12px;
+  font-weight: 700;
+  transition: all 0.3s ease;
 
   &:hover:not(:disabled) {
     opacity: 1;
-    box-shadow: 0 6px 16px rgba(0, 133, 190, 0.35);
-    transform: translateY(-1px);
+    transform: none !important;
+    box-shadow: 0 10px 20px rgba(var(--main-bg-color-rgb), 0.2);
   }
 }
 

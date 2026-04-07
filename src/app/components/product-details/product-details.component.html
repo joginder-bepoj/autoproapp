@@ -15,7 +15,7 @@
   <ng-container *ngIf="product && !loading && !error">
     <!-- Navigation and Actions Header -->
     <header class="page-top-nav">
-      <app-breadcrumbs></app-breadcrumbs>
+      <app-breadcrumbs [breadcrumb]="breadcrumb"></app-breadcrumbs>
       <div class="header-actions">
         <button class="action-circle-btn"><ion-icon name="heart-outline"></ion-icon></button>
         <button class="action-circle-btn"><ion-icon name="share-outline"></ion-icon></button>
@@ -26,13 +26,14 @@
       <!-- Left Column: Gallery / Previews -->
       <section class="product-viewer">
         <div class="main-image-card">
-          <img [src]="product.imageUrl" [alt]="product.title" onerror="this.src='/assets/images/logo.png'">
-          <div class="status-overlay" [ngClass]="{'in-stock': product.status === 'In Stock'}">
+          <img [src]="getImageBaseUrl() + product.image" [alt]="product.name"
+            onerror="this.src='/assets/images/logo.png'">
+          <!-- <div class="status-overlay" [ngClass]="{'in-stock': product.status === 'In Stock'}">
             {{ product.status }}
-          </div>
+          </div> -->
         </div>
 
-        <div class="specs-mini-grid">
+        <!-- <div class="specs-mini-grid">
           <div class="mini-spec-item">
             <ion-icon name="checkmark-circle-outline"></ion-icon>
             <span>OEM Quality</span>
@@ -45,7 +46,7 @@
             <ion-icon name="build-outline"></ion-icon>
             <span>Pro Grade</span>
           </div>
-        </div>
+        </div> -->
       </section>
 
       <!-- Right Column: Product Detail and UI Actions -->
@@ -54,64 +55,69 @@
           <div class="product-meta">
             <span class="meta-badge" *ngIf="product.category">{{ product.category }}</span>
           </div>
-          <h1 class="product-title">{{ product.title }}</h1>
+          <h1 class="product-title">{{ product.name }}</h1>
+          <div class="d-flex align-items-center gap-2">
+            <p class="product-sku">Item: {{ product.itemID || '' }}</p>
+            <p> | </p>
+            <p class="product-sku">Model: {{ product.modelName || '' }}</p>
+          </div>
+
+        </div>
+
+        <!-- Product Options Section -->
+        <div class="product-options-section" *ngIf="product.options && product.options.length > 0">
+          <div *ngFor="let option of product.options" class="option-item">
+            <label class="option-label">
+              {{ option.name }}
+              <span class="required-star" *ngIf="option.required">*</span>
+            </label>
+
+            <!-- Select Option -->
+            <div *ngIf="option.type === 'select'" class="option-input-wrapper">
+              <ion-select [placeholder]="'Select ' + option.name"
+                (ionChange)="onOptionChange(option.id, $event.detail.value)" toggleIcon="chevron-down-outline"
+                interface="popover" class="custom-select">
+                <ion-select-option *ngFor="let val of option.values" [value]="val.id">
+                  {{ val.name }}
+                </ion-select-option>
+              </ion-select>
+            </div>
+
+            <!-- Text Option -->
+            <div *ngIf="option.type === 'text'" class="option-input-wrapper">
+              <ion-input [placeholder]="'Enter ' + option.name"
+                (ionInput)="onOptionChange(option.id, $event.target.value)" class="custom-input">
+              </ion-input>
+            </div>
+          </div>
         </div>
 
         <div class="price-action-card">
           <div class="price-row">
+            <p class="vast-value">Vast Value :</p>
             <h2 class="price-value">${{ product.price | number:'1.2-2' }}</h2>
-            <div class="stock-status">
-              <ion-icon name="checkmark-circle-outline"></ion-icon>
-              <span>{{ product.status }}</span>
-            </div>
           </div>
 
           <div class="action-grid">
             <div class="qty-control">
               <button class="qty-btn" (click)="decrementQty()"><ion-icon name="remove-outline"></ion-icon></button>
-              <span class="qty-num">{{ selectedQty }}</span>
+              <span class="qty-num">{{ product.qtyOrder }}</span>
               <button class="qty-btn" (click)="incrementQty()"><ion-icon name="add-outline"></ion-icon></button>
             </div>
-            <button class="add-to-cart-btn" (click)="addToCart()">
+            <button class="add-to-cart-btn mt-3" (click)="addToCart()">
               <ion-icon name="cart-outline"></ion-icon>
               ADD TO CART
             </button>
           </div>
         </div>
 
-        <div class="description-section">
-          <h3 class="section-title">Product Description</h3>
-          <p class="description-text">{{ product.description }}</p>
-        </div>
 
-        <!-- Dynamic Specs Table -->
-        <div class="specs-section" *ngIf="product.specifications?.length">
-          <h3 class="section-title">
-            <ion-icon name="options-outline"></ion-icon>
-            Technical Specifications
-          </h3>
-          <div class="specs-table">
-            <div class="specs-row" *ngFor="let spec of product.specifications">
-              <span class="specs-label">{{ spec.label }}</span>
-              <span class="specs-value">{{ spec.value }}</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Dynamic Compatibility (Simplified for now) -->
-        <div class="compatibility-section" *ngIf="product.compatibilityTabs?.length">
-          <h3 class="section-title">
-            <ion-icon name="car-outline"></ion-icon>
-            Vehicle Compatibility
-          </h3>
-          <div class="compatibility-list">
-            <div class="vehicle-item" *ngFor="let vehicle of product.compatibilityTabs[0].vehicles">
-              <ion-icon name="chevron-forward-outline"></ion-icon>
-              {{ vehicle }}
-            </div>
-          </div>
-        </div>
       </section>
     </main>
+    <div class="description-section">
+      <h3 class="section-title">Product Description</h3>
+      <div [innerHTML]="product.description" class="outer-table-box"></div>
+    </div>
   </ng-container>
+
 </div>

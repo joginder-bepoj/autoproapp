@@ -1,20 +1,20 @@
 import { Component, inject, OnInit } from '@angular/core';
-import { IonIcon } from "@ionic/angular/standalone";
+import { IonIcon, IonBadge } from "@ionic/angular/standalone";
 import { addIcons } from 'ionicons';
-import { searchOutline, chevronBackOutline, chevronDownOutline, notificationsOutline, personCircleOutline, menuOutline, closeOutline, carOutline, logInOutline, addCircleOutline } from 'ionicons/icons';
+import { searchOutline, chevronBackOutline, chevronDownOutline, notificationsOutline, personCircleOutline, menuOutline, closeOutline, carOutline, logInOutline, addCircleOutline, } from 'ionicons/icons';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 
 import { UtilService } from '../../services/util.service';
 import { ApiService } from '../../services/api-service';
-import { Observable } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-header',
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss'],
   standalone: true,
-  imports: [IonIcon, CommonModule, RouterLink]
+  imports: [IonBadge, IonIcon, CommonModule, RouterLink]
 })
 export class HeaderComponent implements OnInit {
 
@@ -22,15 +22,17 @@ export class HeaderComponent implements OnInit {
     { label: 'Home', route: '/home' },
     { label: 'Settings', route: '/home' },
     { label: 'History', route: '/home' },
-    { label: 'Cart', route: '/home' },
+    { label: 'Cart', route: '/cart' },
     { label: 'Login', route: '/login' },
 
   ];
 
   isMenuOpen = false;
+  cartQty = 0;
+  cartSubscription: Subscription | undefined;
 
   private utilService = inject(UtilService);
-  private apiService = inject(ApiService);
+  // private apiService = inject(ApiService);
   public userProfile$: Observable<any> = this.utilService.currentUser$;
 
   constructor() {
@@ -38,20 +40,17 @@ export class HeaderComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    const user = this.utilService.getUserProfile();
-    console.log(user)
-    if (this.utilService.isLoggedIn() && (!user || !user?.firstName)) {
-      this.apiService.getCustomerProfile().subscribe(
-        (profile: any) => {
-          if (profile && profile?.data) {
-            this.utilService.setUserProfile(profile.data);
-          }
-        },
-        (err) => {
-          console.error('Initial login sync failed:', err);
-        }
-      );
-    }
+    this.cartSubscription = this.utilService.cart$.subscribe((cart) => {
+      if (cart) {
+        this.cartQty = cart.cartQty;
+      } else {
+        this.cartQty = 0;
+      }
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.cartSubscription?.unsubscribe();
   }
 
   toggleMenu() {
@@ -61,5 +60,6 @@ export class HeaderComponent implements OnInit {
   logout() {
     this.utilService.logout();
   }
+
 
 }

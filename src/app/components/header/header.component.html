@@ -1,4 +1,4 @@
-<header class="main-header" [class.menu-open]="isMenuOpen">
+<header id="app-header" class="main-header" [class.menu-open]="isMenuOpen">
   <div class="header-container container">
 
     <!-- Logo -->
@@ -11,8 +11,13 @@
 
     <!-- Navigation links -->
     <nav class="nav-links">
-      <a *ngFor="let item of navItems" [routerLink]="[item.route]" class="nav-item">{{item.label}}</a>
+      <div class="nav-item" *ngFor="let item of navItems">
+        <a [routerLink]="[item.route]" class="nav-item">{{item.label}}</a>
+        <ion-badge color="danger" class="cart-badge"
+          *ngIf="item.label === 'Cart' && cartQty > 0">{{cartQty}}</ion-badge>
+      </div>
     </nav>
+
 
     <!-- Header Actions -->
     <div class="header-actions">
@@ -38,7 +43,7 @@
   </div>
 
   <!-- Mobile Menu Overlay -->
-  <div class="mobile-menu" [class.open]="isMenuOpen">
+  <div class="mobile-menu container" [class.open]="isMenuOpen">
     <a *ngFor="let item of navItems" [routerLink]="[item.route]" (click)="isMenuOpen = false">{{item.label}}</a>
     <a *ngIf="(userProfile$ | async)" (click)="logout(); isMenuOpen = false" class="logout-link">Logout</a>
   </div>

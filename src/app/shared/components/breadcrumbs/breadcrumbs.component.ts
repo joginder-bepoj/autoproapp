@@ -1,7 +1,6 @@
-import { Component, OnInit, OnDestroy, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { Component, OnInit, OnDestroy, CUSTOM_ELEMENTS_SCHEMA, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule, Router, ActivatedRoute, NavigationEnd } from '@angular/router';
-import { filter, takeUntil } from 'rxjs/operators';
+import { RouterModule, Router, ActivatedRoute } from '@angular/router';
 import { Subject } from 'rxjs';
 import { IonicModule } from '@ionic/angular';
 import { addIcons } from 'ionicons';
@@ -9,7 +8,8 @@ import { homeOutline, chevronForwardOutline } from 'ionicons/icons';
 
 interface Breadcrumb {
   label: string;
-  url: string;
+  url: string | null;
+  query?: any;
 }
 
 @Component({
@@ -21,7 +21,7 @@ interface Breadcrumb {
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class BreadcrumbsComponent implements OnInit, OnDestroy {
-  breadcrumbs: Breadcrumb[] = [];
+  @Input() breadcrumb: Breadcrumb[] = [];
   isHome: boolean = false;
   private destroy$ = new Subject<void>();
 
@@ -33,20 +33,7 @@ export class BreadcrumbsComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.router.events.pipe(
-      filter(event => event instanceof NavigationEnd),
-      takeUntil(this.destroy$)
-    ).subscribe(() => {
-      this.updateBreadcrumbs();
-    });
-
-    // Initial build
-    this.updateBreadcrumbs();
-  }
-
-  private updateBreadcrumbs() {
-    this.isHome = this.router.url === '/home' || this.router.url === '/' || this.router.url === '/tabs/home';
-    this.breadcrumbs = this.createBreadcrumbs(this.activatedRoute.root);
+    console.log(this.breadcrumb, 'i am the breadcrumb');
   }
 
   ngOnDestroy() {
@@ -54,31 +41,15 @@ export class BreadcrumbsComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
-  private createBreadcrumbs(route: ActivatedRoute, url: string = '', breadcrumbs: Breadcrumb[] = []): Breadcrumb[] {
-    const children: ActivatedRoute[] = route.children;
+  navigateTo(item: Breadcrumb) {
+    if (!item.url) return;
 
-    if (children.length === 0) {
-      return breadcrumbs;
+    if (item.query) {
+      this.router.navigate([item.url], { queryParams: item.query });
+    } else {
+      this.router.navigate([item.url]);
     }
-
-    for (const child of children) {
-      const routeURL: string = child.snapshot.url.map(segment => segment.path).join('/');
-      if (routeURL !== '') {
-        url += `/${routeURL}`;
-      }
-
-      const label = child.snapshot.data['breadcrumb'];
-      if (label && label !== 'Home') {
-        // Prevent duplicate labels if same breadcrumb is defined on multiple levels
-        const isDuplicate = breadcrumbs.some(b => b.label === label && b.url === url);
-        if (!isDuplicate) {
-          breadcrumbs.push({ label, url });
-        }
-      }
-
-      return this.createBreadcrumbs(child, url, breadcrumbs);
-    }
-
-    return breadcrumbs;
   }
+
 }
+

@@ -1,5 +1,7 @@
 <div class="product-page-container container">
-  <app-breadcrumbs></app-breadcrumbs>
+  <div class="breadcrumb-nav">
+    <app-breadcrumbs [breadcrumb]="breadcrumb"></app-breadcrumbs>
+  </div>
 
   <!-- Search Results Header -->
   <header class="results-header" *ngIf="!loading">
@@ -26,21 +28,25 @@
   <!-- Product Grid -->
   <div class="product-grid" *ngIf="!loading && !error && products.length > 0">
     <div class="product-card" *ngFor="let product of products">
-      <div class="card-overlay-top">
+      <!-- <div class="card-overlay-top">
         <span class="status-tag" [ngClass]="{'out-of-stock': product.status === 'Out of Stock'}">
           {{ product.status }}
         </span>
-      </div>
+      </div> -->
 
       <!-- Image Section -->
-      <div class="image-section" [routerLink]="['/product-details', product.id]">
-        <img [src]="product.image" [alt]="product.name" onerror="this.src='/assets/images/logo.png'">
+      <div class="image-section" (click)="navigateToDetails(product.itemID)">
+
+        <img [src]="getImageBaseUrl() + product.image || '/assets/images/logo.png'" [alt]="product.name">
       </div>
 
       <!-- Info Section -->
       <div class="info-section">
-        <p class="sku-text">{{ product.category }} | {{ product.sku }}</p>
-        <h3 class="product-name" [title]="product.name" [routerLink]="['/product-details', product.id]">{{ product.name
+        <p class="sku-text">#{{ product?.itemID }} | {{ product?.modelName }}</p>
+        <h3 class="product-name" [title]="product.name" [routerLink]="['/product-details', product.itemID]"
+          [queryParams]="{ q: searchQuery }">{{
+
+          product.name
           }}</h3>
 
         <div class="price-section">
@@ -54,8 +60,9 @@
 
         <!-- Call to Action -->
         <div class="cta-section">
-          <button class="action-btn primary-btn" (click)="addToCart(product)">
-            {{ product.status === 'In Stock' ? 'ADD TO CART' : 'PRE-ORDER' }}
+          <button [ngClass]="{'out-of-stock': !product.inStock}" class="action-btn primary-btn"
+            (click)="addToCart(product)">
+            {{getProductStatus(product)}}
           </button>
         </div>
       </div>

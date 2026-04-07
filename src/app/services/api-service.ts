@@ -1,18 +1,17 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable, inject } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { environment } from 'src/environments/environment.prod';
-
-import { UtilService } from './util.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ApiService {
-  private utilService = inject(UtilService);
+  // private utilService = inject(UtilService);
 
   constructor(private http: HttpClient) { }
   private api_base_url = '/V1/';
 
+  // customer apis
   login(data: any) {
     return this.http.post(this.api_base_url + 'customer/login', data);
   }
@@ -21,23 +20,35 @@ export class ApiService {
     return this.http.get(this.api_base_url + 'customer/info', data);
   }
 
+  submitFeedback(data: any) {
+    return this.http.post(this.api_base_url + 'customer/feedback', data);
+  }
+
+  // isLoggedIn(): boolean {
+  //   return this.utilService.isLoggedIn();
+  // }
+
+  // logout() {
+  //   this.utilService.logout();
+  // }
+
+  // product apis
+
   searchProducts(searchTerm: string) {
     return this.http.get(this.api_base_url + 'product-search/' + searchTerm);
   }
 
   getProductDetail(itemID: number) {
-    return this.http.get(this.api_base_url + 'product/detail/' + itemID);
+    return this.http.get(this.api_base_url + 'product-info/' + itemID);
   }
 
-  submitFeedback(data: any) {
-    return this.http.post(this.api_base_url + 'customer/feedback', data);
+  // cart apis
+
+  getCartItems() {
+    return this.http.get(this.api_base_url + 'cart');
   }
 
-  isLoggedIn(): boolean {
-    return this.utilService.isLoggedIn();
-  }
-
-  logout() {
-    this.utilService.logout();
+  addToCart(data: any) {
+    return this.http.post(this.api_base_url + 'cart/add', data);
   }
 }

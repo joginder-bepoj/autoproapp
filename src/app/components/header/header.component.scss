@@ -8,27 +8,32 @@
 
 .main-header {
   width: 100%;
-  height: 70px;
+  min-height: 70px;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  padding: 0px;
+  padding: 0;
+  padding-top: env(safe-area-inset-top, 0px);
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   box-shadow: 0 4px 25px rgba(0, 0, 0, 0.08);
   box-sizing: border-box;
+  position: relative;
 
   &.menu-open {
-    box-shadow: none;
-    background-color: white;
+    .header-container {
+      box-shadow: none;
+      background-color: white;
+    }
   }
 
   .logo-section .logo-text {
-    color: var(--dark-text-color);
+    color: var(--text-color-light);
   }
 
   .nav-links .nav-item {
-    color: var(--dark-text-color);
+    color: var(--text-color-light);
 
     &:hover {
       color: var(--main-bg-color, #0085be) !important;
@@ -37,20 +42,25 @@
 
   .header-actions {
     .action-link {
-      color: var(--dark-text-color);
+      color: var(--text-color-light);
     }
   }
 
   .mobile-toggle {
-    color: var(--dark-text-color);
+    color: var(--text-color-light);
   }
 
   .header-container {
     width: 100%;
+    height: 70px; // Fixed height for content
     margin: 0 auto;
+    background: rgba(255, 255, 255, 0.95);
     display: flex;
     align-items: center;
     justify-content: space-between;
+    position: relative;
+    z-index: 1010;
+    padding: 0 20px;
   }
 
   // Logo Section
@@ -73,7 +83,7 @@
     .logo-text {
       font-size: 24px;
       font-weight: 800;
-      color: var(--dark-text-color);
+      color: var(--text-color-light);
       letter-spacing: -0.8px;
       transition: color 0.3s ease;
     }
@@ -86,7 +96,7 @@
 
     .nav-item {
       text-decoration: none;
-      color: var(--dark-text-color);
+      color: var(--text-color-light);
       font-size: 15px;
       font-weight: 600;
       display: flex;
@@ -118,8 +128,26 @@
           width: 100%;
         }
       }
+
+      .cart-badge {
+        position: absolute;
+        top: -6px;
+        right: -11px;
+        --padding-start: 4px;
+        --padding-end: 4px;
+        font-size: 10px;
+        min-width: 18px;
+        height: 18px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        background-color: var(--main-bg-color);
+        color: var(--ion-color-primary-contrast);
+      }
     }
   }
+
 
   .header-actions {
     display: flex;
@@ -129,7 +157,7 @@
     .action-link {
       background: none;
       border: none;
-      color: var(--dark-text-color);
+      color: var(--text-color-light);
       font-size: 15px;
       font-weight: 600;
       display: flex;
@@ -152,20 +180,22 @@
     .submit-btn {
       padding: 12px 28px;
       border-radius: 12px;
-      background: var(--dark-text-color, #0c1c2c);
-      border: 1px solid var(--dark-text-color, #0c1c2c);
+      background: var(--text-color-light);
+      border: 1px solid var(--text-color-light);
       color: #fff;
       font-weight: 700;
       font-size: 14px;
       cursor: pointer;
       transition: all 0.3s ease;
       text-transform: none;
+      opacity: 0.8;
 
       &:hover {
+        opacity: 1;
         background: var(--main-bg-color, #0085be);
         border-color: var(--main-bg-color, #0085be);
-        transform: translateY(-2px);
-        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        transform: none !important;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
       }
     }
   }
@@ -174,7 +204,7 @@
     display: none;
     background: none;
     border: none;
-    color: var(--dark-text-color, #0c1c2c);
+    color: var(--text-color-light);
     font-size: 32px;
     cursor: pointer;
     padding: 4px;
@@ -190,7 +220,7 @@
 .mobile-menu {
   display: none;
   position: absolute;
-  top: 95%;
+  top: 100%;
   left: 0;
   right: 0;
   background: white;
@@ -198,18 +228,18 @@
   flex-direction: column;
   gap: 10px;
   transform: translateY(-150%);
-  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  z-index: 999;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-  border-top: 1px solid #f1f5f9;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 1000;
 
   &.open {
     transform: translateY(0);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    border-top: 1px solid #f1f5f9;
   }
 
   a {
     text-decoration: none;
-    color: var(--dark-text-color);
+    color: var(--text-color-light);
     font-size: 16px;
     font-weight: 600;
     padding: 12px 0;
