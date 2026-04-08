@@ -4,7 +4,8 @@
 
 export const environment = {
   production: false,
-  api_base_url: "/V1/"
+  api_base_url: "/V1/",
+  api_firebase_url: "https://autoproapp2017.firebaseio.com/"
 };
 
 /*

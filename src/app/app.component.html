@@ -8,4 +8,10 @@
     <app-footer></app-footer>
     }
   </ion-content>
+
+  @if (loading$ | async) {
+  <div class="global-loader-overlay">
+    <div class="loader-box"></div>
+  </div>
+  }
 </ion-app>

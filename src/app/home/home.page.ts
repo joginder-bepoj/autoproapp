@@ -85,5 +85,9 @@ export class HomePage {
       this.router.navigate(['/product-list'], { queryParams: { q: this.vinSearchQuery } });
     }
   }
+
+  openCategoryPage() {
+    this.router.navigate(['/category']);
+  }
 }
 

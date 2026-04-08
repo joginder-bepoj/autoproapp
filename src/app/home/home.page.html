@@ -10,7 +10,8 @@
     <div class="container hero-container">
       <div class="hero-main-content">
         <h1 class="hero-main-title">Professional Automotive <br> Key Solutions</h1>
-        <p class="hero-top-text">Your all-in-one platform for vehicle key data, specialized locksmith tools, and real-time VIN decoding.</p>
+        <p class="hero-top-text">Your all-in-one platform for vehicle key data, specialized locksmith tools, and
+          real-time VIN decoding.</p>
 
         <!-- Search Tabs -->
         <!-- <div class="search-tabs">
@@ -21,7 +22,7 @@
 
         <!-- Floating Search Widget -->
         <div class="hero-search-card">
-          <div class="search-field">
+          <div class="search-field" (click)="openCategoryPage()">
             <ion-icon name="car-outline" class="field-icon"></ion-icon>
             <span class="field-label">Select vehicle make</span>
             <ion-icon name="chevron-down-outline" class="field-icon ms-auto"></ion-icon>
@@ -29,7 +30,8 @@
           <div class="field-divider"></div>
           <div class="search-field">
             <ion-icon name="search-outline" class="field-icon"></ion-icon>
-            <input type="text" placeholder="Type your search..." class="inner-input" [(ngModel)]="mainSearchQuery" (keyup.enter)="onMainSearch()">
+            <input type="text" placeholder="Type your search..." class="inner-input" [(ngModel)]="mainSearchQuery"
+              (keyup.enter)="onMainSearch()">
           </div>
           <button class="btn-search" (click)="onMainSearch()">
             Search
@@ -47,7 +49,8 @@
         <ion-icon name="car-outline" class="q-card-icon"></ion-icon>
         <h3 class="q-title">Vehicle Search</h3>
         <div class="q-input-row">
-          <ion-input placeholder="Type modal name..." [(ngModel)]="vehicleSearchQuery" (keyup.enter)="onVehicleSearch()"></ion-input>
+          <ion-input placeholder="Type modal name..." [(ngModel)]="vehicleSearchQuery"
+            (keyup.enter)="onVehicleSearch()"></ion-input>
           <button class="inner-search-btn" (click)="onVehicleSearch()">Search</button>
         </div>
       </div>

@@ -1,0 +1,86 @@
+<div class="category-page">
+  <div class="container">
+    <app-breadcrumbs [breadcrumb]="breadcrumb"></app-breadcrumbs>
+  </div>
+
+  <div class="category-hero">
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+      <div class="progress-indicator">
+        <div class="progress-bar-container">
+          <div class="progress-bar" [style.width.%]="(currentStep / 3) * 100"></div>
+        </div>
+        <p class="step-text">Step {{currentStep}} of 3</p>
+      </div>
+      <h1>Find Your Vehicle</h1>
+      <p>Select your vehicle details to browse compatible parts.</p>
+    </div>
+  </div>
+
+  <div class="selection-container">
+    <div class="steps-card glass">
+      <div class="steps-wrapper">
+        <!-- Step 1: Make -->
+        <div class="step-column" [class.active]="currentStep >= 1">
+          <div class="step-header">
+            <span class="step-badge">1</span>
+            <label>Level 1: Make</label>
+          </div>
+          <div class="step-body">
+            <ion-item lines="none" class="custom-item">
+              <ion-select placeholder="Select Make" [(ngModel)]="selectedMake" (ionChange)="onMakeChange(selectedMake)"
+                interface="popover" toggleIcon="chevron-forward-outline">
+                <ion-select-option *ngFor="let make of makes" [value]="make">{{make.make}}</ion-select-option>
+                <ion-select-option *ngIf="!makes || makes.length == 0" disabled>No Makes Available</ion-select-option>
+              </ion-select>
+            </ion-item>
+          </div>
+        </div>
+
+        <!-- Step 2: Model -->
+        <div class="step-column" [class.active]="currentStep >= 2" [class.disabled]="currentStep <= 1 || !selectedMake">
+          <div class="step-header">
+            <span class="step-badge">2</span>
+            <label>Level 2: Model</label>
+          </div>
+          <div class="step-body">
+            <ion-item lines="none" class="custom-item">
+              <ion-select placeholder="Select Model" [(ngModel)]="selectedModel"
+                (ionChange)="onModelChange(selectedModel)" [disabled]="!selectedMake" interface="popover"
+                toggleIcon="chevron-forward-outline">
+                <ion-select-option *ngFor="let model of selectedMake.model"
+                  [value]="model">{{model.modelName}}</ion-select-option>
+                <ion-select-option *ngIf="selectedMake && selectedMake.model.length === 0" disabled>No Models
+                  Available</ion-select-option>
+              </ion-select>
+            </ion-item>
+          </div>
+        </div>
+
+        <!-- Step 3: Year -->
+        <div class="step-column" [class.active]="currentStep >= 3"
+          [class.disabled]="currentStep <= 2 || !selectedModel">
+          <div class="step-header">
+            <span class="step-badge">3</span>
+            <label>Level 3: Year</label>
+          </div>
+          <div class="step-body">
+            <ion-item lines="none" class="custom-item">
+              <ion-select placeholder="Select Year" [(ngModel)]="selectedYear" [disabled]="!selectedModel"
+                interface="popover" toggleIcon="chevron-forward-outline">
+                <ion-select-option *ngFor="let year of selectedModel.years"
+                  [value]="year">{{year.year}}</ion-select-option>
+                <ion-select-option *ngIf="selectedModel && selectedModel.years && selectedModel.years.length == 0"
+                  disabled>No Years
+                  Available</ion-select-option>
+              </ion-select>
+            </ion-item>
+          </div>
+        </div>
+      </div>
+      <ion-button expand="block" class="find-products-btn mt-3" [disabled]="isSearchDisabled()" (click)="onSearch()">
+        FIND PRODUCTS
+      </ion-button>
+    </div>
+  </div>
+</div>

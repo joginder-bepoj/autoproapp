@@ -12,11 +12,6 @@
       search ({{products.length}} items)</p>
   </header>
 
-  <!-- Loading State -->
-  <div class="loading-state" *ngIf="loading">
-    <ion-spinner name="crescent"></ion-spinner>
-    <p>Searching for your products...</p>
-  </div>
 
   <!-- Error State -->
   <div class="error-state" *ngIf="error && !loading">

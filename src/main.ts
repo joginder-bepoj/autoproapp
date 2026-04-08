@@ -6,12 +6,22 @@ import { routes } from './app/app.routes';
 import { AppComponent } from './app/app.component';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { authInterceptor } from './app/interceptors/auth.interceptor';
+import { inject } from '@angular/core';
+import { finalize } from 'rxjs';
+import { UtilService } from './app/services/util.service';
 
 bootstrapApplication(AppComponent, {
   providers: [
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
     provideIonicAngular(),
     provideRouter(routes, withPreloading(PreloadAllModules)),
-    provideHttpClient(withInterceptors([authInterceptor])),
+    provideHttpClient(withInterceptors([
+      authInterceptor,
+      (req, next) => {
+        const utilService = inject(UtilService);
+        utilService.setLoading(true);
+        return next(req).pipe(finalize(() => utilService.setLoading(false)));
+      }
+    ])),
   ],
 });

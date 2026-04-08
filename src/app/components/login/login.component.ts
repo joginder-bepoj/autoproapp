@@ -51,7 +51,19 @@ export class LoginComponent implements OnInit {
         if (privateKey) {
           this.utilService.setPrivateKey(privateKey);
           this.utilService.setLoginEmail(this.loginData.email);
-          this.router.navigate(['/home']);
+          this.apiService.getCustomerProfile().subscribe(
+            (profile: any) => {
+              if (profile && profile?.data) {
+                this.utilService.setUserProfile(profile.data);
+                this.router.navigate(['/home']);
+              }
+            },
+            (err) => {
+              console.error('Initial login sync failed:', err);
+            }
+          );
+
+          // this.router.navigate(['/home']);
         } else {
           const errorMsg = this.utilService.parseErrorMessage(res);
           this.showAlert('Login Failed', errorMsg);

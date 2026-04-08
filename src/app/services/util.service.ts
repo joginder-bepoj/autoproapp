@@ -25,6 +25,25 @@ export class UtilService {
   private cartSubject = new BehaviorSubject<any>(null);
   public cart$: Observable<any> = this.cartSubject.asObservable();
 
+  private activeRequests = 0;
+  private isLoadingSubject = new BehaviorSubject<boolean>(false);
+  public isLoading$ = this.isLoadingSubject.asObservable();
+
+  setLoading(state: boolean) {
+    if (state) {
+      this.activeRequests++;
+    } else {
+      this.activeRequests--;
+    }
+
+    if (this.activeRequests <= 0) {
+      this.activeRequests = 0;
+      this.isLoadingSubject.next(false);
+    } else {
+      this.isLoadingSubject.next(true);
+    }
+  }
+
   constructor() { }
 
   setSession(key: string, value: any): void {
