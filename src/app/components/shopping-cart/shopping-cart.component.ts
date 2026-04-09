@@ -6,11 +6,11 @@ import { Subscription } from 'rxjs';
 import { UtilService } from '../../services/util.service';
 import { ApiService } from '../../services/api-service';
 import { addIcons } from 'ionicons';
-import { 
-  addOutline, 
-  removeOutline, 
-  trashOutline, 
-  cartOutline, 
+import {
+  addOutline,
+  removeOutline,
+  trashOutline,
+  cartOutline,
   arrowBackOutline,
   chevronForwardOutline,
   pricetagOutline,
@@ -29,7 +29,7 @@ export class ShoppingCartComponent implements OnInit, OnDestroy {
   cart: any = null;
   items: any[] = [];
   loading: boolean = false;
-  
+
   // Totals
   subtotal: number = 0;
   tax: number = 0;
@@ -47,11 +47,11 @@ export class ShoppingCartComponent implements OnInit, OnDestroy {
   private cartSubscription: Subscription | undefined;
 
   constructor() {
-    addIcons({ 
-      addOutline, 
-      removeOutline, 
-      trashOutline, 
-      cartOutline, 
+    addIcons({
+      addOutline,
+      removeOutline,
+      trashOutline,
+      cartOutline,
       arrowBackOutline,
       chevronForwardOutline,
       pricetagOutline,
@@ -65,7 +65,7 @@ export class ShoppingCartComponent implements OnInit, OnDestroy {
       this.items = cart?.products || []; // Adjust based on actual API structure
       this.calculateTotals();
     });
-    
+
     // Initial fetch if needed
     if (!this.cart) {
       this.fetchCart();
@@ -77,9 +77,10 @@ export class ShoppingCartComponent implements OnInit, OnDestroy {
   }
 
   fetchCart() {
-    this.loading = true;
+    this.utilService.showLoader();
     this.apiService.getCartItems().subscribe({
       next: (res: any) => {
+        this.utilService.hideLoader();
         if (res && res.data) {
           this.utilService.setCart(res.data);
         }

@@ -30,6 +30,7 @@
             "inlineStyleLanguage": "scss",
             "assets": [
               "src/.htaccess",
+              "src/proxy.php",
               {
                 "glob": "**/*",
                 "input": "src/assets",
@@ -53,8 +54,8 @@
                 },
                 {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "10kb",
-                  "maximumError": "10kb"
+                  "maximumWarning": "15kb",
+                  "maximumError": "15kb"
                 }
               ],
               "fileReplacements": [

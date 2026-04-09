@@ -19,8 +19,8 @@ bootstrapApplication(AppComponent, {
       authInterceptor,
       (req, next) => {
         const utilService = inject(UtilService);
-        utilService.setLoading(true);
-        return next(req).pipe(finalize(() => utilService.setLoading(false)));
+        utilService.showLoader();
+        return next(req).pipe(finalize(() => utilService.hideLoader()));
       }
     ])),
   ],

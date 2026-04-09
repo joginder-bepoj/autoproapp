@@ -44,8 +44,10 @@ export class LoginComponent implements OnInit {
   }
 
   login() {
+    this.utilService.showLoader();
     this.apiService.login(this.loginData).subscribe(
       (res: any) => {
+        this.utilService.hideLoader();
         const privateKey = res?.data?.privateKey;
 
         if (privateKey) {
@@ -65,11 +67,13 @@ export class LoginComponent implements OnInit {
 
           // this.router.navigate(['/home']);
         } else {
+          this.utilService.hideLoader();
           const errorMsg = this.utilService.parseErrorMessage(res);
           this.showAlert('Login Failed', errorMsg);
         }
       },
       (err: any) => {
+        this.utilService.hideLoader();
         const errorMsg = this.utilService.parseErrorMessage(err);
         this.showAlert('Error', errorMsg);
         console.error('Login error', err);

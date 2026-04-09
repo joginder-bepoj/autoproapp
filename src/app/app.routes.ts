@@ -61,7 +61,7 @@ export const routes: Routes = [
     loadComponent: () => import('./components/category/category.component').then((m) => m.CategoryComponent),
   },
   {
-    path: 'vehicle-details/:id',
+    path: ':make/:model/vehicle-details/:id',
     canActivate: [authGuard],
     loadComponent: () => import('./components/vehicle-details/vehicle-details.component').then((m) => m.VehicleDetailsComponent),
   }

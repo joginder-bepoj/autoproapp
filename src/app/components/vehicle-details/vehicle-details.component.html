@@ -1,3 +1,309 @@
-<p>
-  vehicle-details works!
-</p>
+<div class="vd-container container">
+  <!-- Breadcrumb -->
+  <app-breadcrumbs [breadcrumb]="breadcrumb"></app-breadcrumbs>
+
+  <ng-container *ngIf="vehicle">
+
+    <!-- Vehicle Title Bar -->
+    <div class="vd-title-bar">
+      <div class="vd-title-info">
+        <h1 class="vd-name">{{selectedMake + ' ' + selectedModel + ' ' + activeYear?.year | titlecase}}</h1>
+        <div class="vd-year-badge" *ngIf="activeYear">{{ activeYear?.year }}</div>
+      </div>
+      <!-- Year selector -->
+      <div class="vd-year-selector" *ngIf="vehicle.years && vehicle.years.length > 1">
+        <select class="year-select" (change)="onYearChange($event)">
+          <option *ngFor="let y of vehicle.years" [value]="y.vehicleID"
+            [selected]="y.vehicleID === activeYear?.vehicleID">
+            {{ y.year }}
+          </option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Tab Nav -->
+    <div class="vd-tabs">
+      <button class="vd-tab" [class.active]="activeTab === 'overview'" (click)="setTab('overview')">Overview</button>
+      <button class="vd-tab" [class.active]="activeTab === 'keymaking'" (click)="setTab('keymaking')">Keymaking</button>
+      <button class="vd-tab" [class.active]="activeTab === 'tips'" (click)="setTab('tips')">Tips & Tricks</button>
+      <button class="vd-tab" [class.active]="activeTab === 'parts'" (click)="setTab('parts')">Parts</button>
+    </div>
+
+    <!-- ─── TAB: OVERVIEW ─── -->
+    <div class="vd-tab-panel" *ngIf="activeTab === 'overview'">
+      <!-- Vehicle Overview Section -->
+      <div class="overview-section">
+        <div class="vd-carousel-container" *ngIf="vehicle.vehicle_image && vehicle.vehicle_image.length">
+          <div class="vd-carousel-viewport">
+            <div class="vd-slide" *ngFor="let img of vehicle.vehicle_image; let i = index"
+              [class.active]="currentImageIndex === i">
+              <img [src]="img.image" alt="Vehicle Image {{i + 1}}" onerror="this.src='/assets/images/logo.png'">
+            </div>
+          </div>
+
+          <!-- Navigation Arrows (only if more than 1 image) -->
+          <ng-container *ngIf="vehicle.vehicle_image.length > 1">
+            <button class="carousel-nav-btn prev" (click)="prevImage()">
+              <ion-icon name="chevron-back-outline"></ion-icon>
+            </button>
+            <button class="carousel-nav-btn next" (click)="nextImage()">
+              <ion-icon name="chevron-forward-outline"></ion-icon>
+            </button>
+
+            <!-- Pagination Dots -->
+            <div class="carousel-dots">
+              <span *ngFor="let dot of vehicle.vehicle_image; let i = index" class="dot"
+                [class.active]="currentImageIndex === i" (click)="setCurrentImage(i)"></span>
+            </div>
+          </ng-container>
+        </div>
+
+        <div class="basic-info">
+          <h3 class="section-subtitle">The Basics</h3>
+          <div class="basic-info-grid">
+            @for (item of vehicle.vehicle_info?.the_basics; track $index) {
+            <div class="basic-info-group" [class.border-top]="$index > 0">
+              <div class="basic-info-item" *ngFor="let entries of item | keyvalue">
+                <span class="info-label">{{ entries.key }}</span>
+                <span class="info-value">{{ entries.value }}</span>
+              </div>
+            </div>
+            }
+          </div>
+        </div>
+      </div>
+
+
+
+      <!-- Tumbler Grid -->
+      <div class="d-flex">
+        <div class="vd-tumbler-section w-50" *ngIf="tumblerRows.length">
+          <h3 class="section-subtitle">TUMBLER LOCATIONS</h3>
+          <div class="tumbler-header-row">
+            <div class="tumbler-label-col"></div>
+            <div class="tumbler-grid-header">
+              <div class="tumbler-nums">
+                <span *ngFor="let n of [1,2,3,4,5]">{{ n }}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="tumbler-body">
+            <div class="tumbler-row" *ngFor="let row of tumblerRows; let i = index">
+              <div class="tumbler-label">{{ row.label }}</div>
+              <div class="tumbler-cells" [class.less-width]="i % 2 !== 0">
+                <div class="tumbler-cell" *ngFor="let item of row.values" [class.active]="item === 'true'">
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Decoder Info Section -->
+        <div class="decoder-info w-50" *ngIf="decoderItems.length">
+          <h3 class="section-subtitle">Decoder Tooling</h3>
+          <div class="basic-info-grid">
+            <div class="basic-info-group">
+              <div class="basic-info-item" *ngFor="let item of decoderItems">
+                <span class="info-label">{{ item.name }}</span>
+                <span class="info-value">{{ item.value || 'N/A' }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- OBD Location -->
+      <div class="vd-info-card" *ngIf="vehicle.vehicle_info?.OBD_Location?.OBD_Location_Text">
+        <h3 class="vd-section-title">OBD Location</h3>
+        <div class="obd-content">
+          <img *ngIf="vehicle.vehicle_info.OBD_Location.OBD_Location_Image"
+            [src]="vehicle.vehicle_info.OBD_Location.OBD_Location_Image" alt="OBD Location" class="obd-image"
+            onerror="this.style.display='none'">
+          <p class="obd-text">{{ vehicle.vehicle_info.OBD_Location.OBD_Location_Text }}</p>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ─── TAB: KEYMAKING ─── -->
+    <div class="vd-tab-panel" *ngIf="activeTab === 'keymaking'">
+
+      <!-- Mechanical Keys -->
+      <div class="vd-section-block" *ngIf="mechanicalKeys.length">
+        <div class="vd-section-header">
+          <h2 class="vd-section-heading">The Keys</h2>
+        </div>
+        <div class="vd-item-list">
+          <div class="vd-item-card" *ngFor="let key of mechanicalKeys">
+            <div class="vd-item-type">Mechanical Key</div>
+            <img *ngIf="key.image" [src]="imgBaseUrl + key.image" alt="{{ key.value }}"
+              onerror="this.src='/assets/images/logo.png'" class="vd-item-img">
+            <div class="vd-item-info">
+              <div class="vd-item-name">{{ key.value }}</div>
+              <a *ngIf="key.products?.products_id"
+                [routerLink]="['/product', getFirstProductId(key.products.products_id)]" class="vd-item-price">${{
+                key.products.least_price | number:'1.2-2' }}</a>
+            </div>
+            <button class="vd-tool-btn" *ngIf="key.products?.products_id"
+              [routerLink]="['/product', getFirstProductId(key.products.products_id)]">
+              <ion-icon name="build-outline"></ion-icon>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Transponder Keys -->
+      <div class="vd-section-block" *ngIf="transponderKeys.length">
+        <div class="vd-section-header">
+          <h2 class="vd-section-heading">Transponder Keys</h2>
+        </div>
+        <div class="vd-item-list">
+          <div class="vd-item-card" *ngFor="let key of transponderKeys">
+            <div class="vd-item-type">{{ key.value || key.chip_key_name }}</div>
+            <img *ngIf="key.products?.imagePath" [src]="imgBaseUrl + key.products.imagePath" alt="{{ key.value }}"
+              onerror="this.src='/assets/images/logo.png'" class="vd-item-img">
+            <div class="vd-item-info">
+              <div class="vd-item-name">{{ key.value || 'Transponder Key' }}</div>
+              <a *ngIf="key.products?.products_id"
+                [routerLink]="['/product', getFirstProductId(key.products.products_id)]" class="vd-item-price">${{
+                key.products.least_price | number:'1.2-2' }}</a>
+            </div>
+            <button class="vd-add-btn" *ngIf="key.products?.products_id"
+              [routerLink]="['/product', getFirstProductId(key.products.products_id)]">
+              <ion-icon name="add-outline"></ion-icon>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Remotes -->
+      <div class="vd-section-block" *ngIf="remotes.length">
+        <div class="vd-section-header">
+          <h2 class="vd-section-heading">The Remotes</h2>
+        </div>
+        <div class="vd-item-list">
+          <div class="vd-item-card" *ngFor="let item of remotes">
+            <div class="vd-item-type">{{ item.type }}</div>
+            <img *ngIf="item.products?.imagePath" [src]="imgBaseUrl + item.products.imagePath" alt="{{ item.name }}"
+              onerror="this.src='/assets/images/logo.png'" class="vd-item-img">
+            <div class="vd-item-info">
+              <div class="vd-item-name">{{ item.name }}</div>
+              <div class="vd-remote-meta" *ngIf="item.fcc_id">FCC: {{ item.fcc_id }}</div>
+              <div class="vd-remote-meta" *ngIf="item.frequency">{{ item.frequency }}</div>
+              <a *ngIf="item.products?.products_id"
+                [routerLink]="['/product', getFirstProductId(item.products.products_id)]" class="vd-item-price">${{
+                item.products.least_price | number:'1.2-2' }}</a>
+            </div>
+            <button class="vd-add-btn" *ngIf="item.products?.products_id"
+              [routerLink]="['/product', getFirstProductId(item.products.products_id)]">
+              <ion-icon name="add-outline"></ion-icon>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Decoders -->
+      <div class="vd-section-block" *ngIf="decoderItems.length">
+        <div class="vd-section-header">
+          <h2 class="vd-section-heading">Decoders</h2>
+        </div>
+        <div class="vd-decoder-list">
+          <div class="vd-decoder-row" *ngFor="let dec of decoderItems">
+            <div class="vd-decoder-name">{{ dec.name }}</div>
+            <div class="vd-decoder-value" *ngIf="dec.value">{{ dec.value }}</div>
+            <div class="vd-decoder-note" *ngIf="dec.note">{{ dec.note }}</div>
+            <a *ngIf="dec.products?.products_id"
+              [routerLink]="['/product', getFirstProductId(dec.products.products_id)]" class="vd-decoder-link">View
+              Product</a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ─── TAB: TIPS & TRICKS ─── -->
+    <div class="vd-tab-panel" *ngIf="activeTab === 'tips'">
+
+      <!-- Keymaking Methods -->
+      <div class="vd-section-block" *ngIf="keymakingMethods.length">
+        <div class="vd-section-header">
+          <h2 class="vd-section-heading">Key Making Methods</h2>
+        </div>
+        <div class="vd-method-list">
+          <div class="vd-method-card" *ngFor="let m of keymakingMethods">
+            <div class="vd-method-header">
+              <ion-icon name="key-outline"></ion-icon>
+              <h3>{{ m.title }}</h3>
+            </div>
+            <p class="vd-method-body">{{ m.content }}</p>
+            <div class="vd-method-meta" *ngIf="m.date">{{ m.date | date:'mediumDate' }}</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tips by Category -->
+      <ng-container *ngFor="let category of tipCategories">
+        <div class="vd-section-block" *ngIf="getTipsByCategory(category).length">
+          <div class="vd-section-header">
+            <h2 class="vd-section-heading">{{ category }}</h2>
+          </div>
+          <div class="vd-method-list">
+            <div class="vd-method-card" *ngFor="let tip of getTipsByCategory(category)">
+              <div class="vd-method-header">
+                <ion-icon [name]="getCategoryIcon(category)"></ion-icon>
+                <h3>{{ tip.title }}</h3>
+              </div>
+              <p class="vd-method-body" *ngIf="tip.methodDescription">{{ tip.methodDescription }}</p>
+              <!-- YouTube embed -->
+              <div class="vd-video-wrap" *ngIf="tip.video">
+                <iframe [src]="getSafeUrl(tip.video)" frameborder="0" allowfullscreen loading="lazy"></iframe>
+              </div>
+              <div class="vd-method-meta" *ngIf="tip.date">{{ tip.date | date:'mediumDate' }}</div>
+            </div>
+          </div>
+        </div>
+      </ng-container>
+
+    </div>
+
+    <!-- ─── TAB: PARTS ─── -->
+    <div class="vd-tab-panel" *ngIf="activeTab === 'parts'">
+      <div class="vd-section-block">
+        <div class="vd-section-header">
+          <h2 class="vd-section-heading">Vehicle Parts</h2>
+        </div>
+
+        <ng-container *ngIf="vehicleParts && vehicleParts.length && vehicleParts[0].name; else noParts">
+          <div class="vd-parts-grid">
+            <div class="vd-part-card" *ngFor="let part of vehicleParts"
+              [routerLink]="part.itemID ? ['/product', part.itemID] : null">
+              <img [src]="part.image || '/assets/images/logo.png'" [alt]="part.name"
+                onerror="this.src='/assets/images/logo.png'" class="vd-part-img">
+              <div class="vd-part-info">
+                <div class="vd-part-name">{{ part.name }}</div>
+                <div class="vd-part-price" *ngIf="part.price">${{ part.price | number:'1.2-2' }}</div>
+                <div class="vd-part-stock" [class.in-stock]="part.inStock">
+                  {{ part.inStock ? 'In Stock' : 'Check Availability' }}
+                </div>
+              </div>
+            </div>
+          </div>
+        </ng-container>
+        <ng-template #noParts>
+          <div class="vd-empty-state">
+            <ion-icon name="construct-outline"></ion-icon>
+            <p>No parts listed for this vehicle.</p>
+          </div>
+        </ng-template>
+      </div>
+    </div>
+
+  </ng-container>
+
+  <!-- Empty state -->
+  <div class="vd-empty-state" *ngIf="!vehicle">
+    <ion-icon name="car-outline"></ion-icon>
+    <p>No vehicle data available.</p>
+  </div>
+
+</div>

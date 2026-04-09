@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { BreadcrumbsComponent } from 'src/app/shared/components/breadcrumbs/breadcrumbs.component';
 import { Router } from '@angular/router';
+import { UtilService } from 'src/app/services/util.service';
 
 @Component({
   selector: 'app-category',
@@ -38,20 +39,23 @@ export class CategoryComponent implements OnInit {
 
   currentStep: number = 1;
 
-  constructor(private apiService: ApiService, private router: Router) { }
+  constructor(private apiService: ApiService, private router: Router, private utilService: UtilService) { }
 
   ngOnInit() {
     this.fetchCategories();
   }
 
   fetchCategories() {
+    this.utilService.showLoader();
     this.apiService.getCategoryList().subscribe({
       next: (res: any) => {
+        this.utilService.hideLoader();
         this.categoryData = res;
         this.makes = Object.values(res)
         console.log(this.makes)
       },
       error: (error) => {
+        this.utilService.hideLoader();
         console.error('Error fetching categories:', error);
       }
     });
@@ -95,7 +99,7 @@ export class CategoryComponent implements OnInit {
 
   onSearch() {
     if (this.selectedMake && this.selectedModel && this.selectedYear) {
-      this.router.navigateByUrl(`/vehicle-details/${this.selectedYear.vehicleID}`);
+      this.router.navigateByUrl(`/${this.selectedMake.make}/${this.selectedModel.modelName}/vehicle-details/${this.selectedYear.vehicleID}`);
     }
   }
 

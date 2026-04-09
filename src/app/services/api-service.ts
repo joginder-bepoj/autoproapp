@@ -91,7 +91,7 @@ export class ApiService {
     return this.http.get(environment.api_firebase_url + 'vehicle_category_list/categoryList.json');
   }
 
-  getVehicleInfo(vehicleId: string) {
+  getVehicleDetail(vehicleId: string) {
     return this.http.get(environment.api_firebase_url + 'vehicle1/' + vehicleId + '.json');
   }
 }

@@ -29,12 +29,13 @@ export class UtilService {
   private isLoadingSubject = new BehaviorSubject<boolean>(false);
   public isLoading$ = this.isLoadingSubject.asObservable();
 
-  setLoading(state: boolean) {
-    if (state) {
-      this.activeRequests++;
-    } else {
-      this.activeRequests--;
-    }
+  showLoader() {
+    this.activeRequests++;
+    this.isLoadingSubject.next(true);
+  }
+
+  hideLoader() {
+    this.activeRequests--;
 
     if (this.activeRequests <= 0) {
       this.activeRequests = 0;
