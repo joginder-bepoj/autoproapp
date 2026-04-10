@@ -47,7 +47,6 @@ export class LoginComponent implements OnInit {
     this.utilService.showLoader();
     this.apiService.login(this.loginData).subscribe(
       (res: any) => {
-        alert(JSON.stringify(res));
         this.utilService.hideLoader();
         const privateKey = res?.data?.privateKey;
 
@@ -63,6 +62,7 @@ export class LoginComponent implements OnInit {
               }
             },
             (err) => {
+              alert(JSON.stringify(err));
               console.error('Initial login sync failed:', err);
             }
           );
