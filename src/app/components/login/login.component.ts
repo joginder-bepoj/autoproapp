@@ -47,6 +47,7 @@ export class LoginComponent implements OnInit {
     this.utilService.showLoader();
     this.apiService.login(this.loginData).subscribe(
       (res: any) => {
+        alert(JSON.stringify(res));
         this.utilService.hideLoader();
         const privateKey = res?.data?.privateKey;
 
@@ -55,6 +56,7 @@ export class LoginComponent implements OnInit {
           this.utilService.setLoginEmail(this.loginData.email);
           this.apiService.getCustomerProfile().subscribe(
             (profile: any) => {
+              alert(JSON.stringify(profile));
               if (profile && profile?.data) {
                 this.utilService.setUserProfile(profile.data);
                 this.router.navigate(['/home']);
