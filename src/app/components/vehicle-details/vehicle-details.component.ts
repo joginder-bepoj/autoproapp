@@ -54,15 +54,14 @@ export class VehicleDetailsComponent implements OnInit {
   mechanicalKeys: any[] = [];
   transponderKeys: any[] = [];
   remotes: any[] = [];
-  decoderItems: any[] = [];
   keymakingMethods: any[] = [];
   tipCategories: string[] = [];
   vehicleParts: any[] = [];
 
   breadcrumb: any[] = [
-    { label: 'Home', url: '/home' },
+    // { label: 'Home', url: '/home' },
     { label: 'Vehicle Search', url: '/category' },
-    { label: 'Details', url: '' }
+    // { label: 'Details', url: '' }
   ];
 
   constructor(
@@ -141,27 +140,13 @@ export class VehicleDetailsComponent implements OnInit {
     // 3. Remotes
     this.remotes = [];
     const remotesInput = this.vehicle.vehicle_info?.the_remotes;
-    if (remotesInput) {
-      Object.keys(remotesInput).forEach(type => {
-        remotesInput[type].forEach((item: any) => {
-          this.remotes.push({ ...item, type: type });
-        });
-      });
-    }
-
-    // 4. Decoders
-    this.decoderItems = [];
-    const dec = this.vehicle.vehicle_info?.decode_with;
-    if (dec) {
-      Object.keys(dec).forEach(name => {
-        if (name !== 'try_out_keys' && dec[name]?.value) {
-          this.decoderItems.push({
-            name: name === 'lishi' ? 'LISHI' : name.toUpperCase(),
-            ...dec[name]
-          });
-        }
-      });
-    }
+    // if (remotesInput) {
+    //   Object.keys(remotesInput).forEach(type => {
+    //     ?.forEach((item: any) => {
+    //       this.remotes.push({ ...item, type: type });
+    //     });
+    //   });
+    // }
 
     // 5. Methods
     this.keymakingMethods = this.vehicle.key_making_methods?.methods || [];
@@ -176,12 +161,14 @@ export class VehicleDetailsComponent implements OnInit {
     // 8. Year Management
     if (this.vehicle.years && this.vehicle.years.length) {
       const currentId = this.route.snapshot.paramMap.get('id');
-      this.activeYear = this.vehicle.years.find((y: any) => y.vehicleID === currentId) || this.vehicle.years[0];
+      console.log(this.vehicle.years);
+      this.activeYear = this.vehicle.years.find((y: any) => y.vehicleID == currentId) || this.vehicle.years[0];
+      console.log(this.activeYear);
     }
 
     // 9. Breadcrumb update
     const name = `${this.selectedMake} ${this.selectedModel} ${this.activeYear?.year || ''}`;
-    this.breadcrumb[2].label = name;
+    // this.breadcrumb[2].label = name;
   }
 
   getVehicleName(): string {
@@ -244,6 +231,13 @@ export class VehicleDetailsComponent implements OnInit {
     return key
       .split('_')
       .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
+  }
+  normalizeKey(key: any): string {
+    if (!key) return '';
+    return key
+      .split('_')
+      .map((word: any) => word.charAt(0).toUpperCase() + word.slice(1))
       .join(' ');
   }
 }

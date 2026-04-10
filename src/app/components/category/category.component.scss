@@ -217,7 +217,7 @@
   font-size: 0.95rem;
   letter-spacing: 0.5px;
   --box-shadow: 0 8px 20px rgba(var(--main-bg-color-rgb), 0.3);
-  
+
   &[disabled] {
     opacity: 0.6;
     --box-shadow: none;
@@ -225,6 +225,19 @@
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(5px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 768px) {
+  .category-page {
+    --card-overlap: 25px;
+  }
 }

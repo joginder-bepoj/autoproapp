@@ -42,9 +42,9 @@
 
   </div>
 
-  <!-- Mobile Menu Overlay -->
-  <div class="mobile-menu container" [class.open]="isMenuOpen">
-    <a *ngFor="let item of navItems" [routerLink]="[item.route]" (click)="isMenuOpen = false">{{item.label}}</a>
-    <a *ngIf="(userProfile$ | async)" (click)="logout(); isMenuOpen = false" class="logout-link">Logout</a>
-  </div>
 </header>
+<!-- Mobile Menu Overlay -->
+<div class="mobile-menu" [class.open]="isMenuOpen">
+  <a *ngFor="let item of navItems" [routerLink]="[item.route]" (click)="isMenuOpen = false">{{item.label}}</a>
+  <a *ngIf="(userProfile$ | async)" (click)="logout(); isMenuOpen = false" class="logout-link">Logout</a>
+</div>

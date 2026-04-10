@@ -99,12 +99,23 @@ export class CategoryComponent implements OnInit {
 
   onSearch() {
     if (this.selectedMake && this.selectedModel && this.selectedYear) {
-      this.router.navigateByUrl(`/${this.selectedMake.make}/${this.selectedModel.modelName}/vehicle-details/${this.selectedYear.vehicleID}`);
+      console.log(this.selectedMake.make, this.selectedModel.modelName, 'vehicle-details', this.selectedYear.vehicleID)
+      console.log(`${this.normalizeString(this.selectedMake.make)}/${this.normalizeString(this.selectedModel.modelName)}/vehicle-details/${this.selectedYear.vehicleID}`)
+      this.router.navigateByUrl(`${this.normalizeString(this.selectedMake.make)}/${this.normalizeString(this.selectedModel.modelName)}/vehicle-details/${this.selectedYear.vehicleID}`);
     }
   }
 
   isSearchDisabled(): boolean {
     return !this.selectedMake || !this.selectedModel || !this.selectedYear;
+  }
+
+  normalizeString(str: string): string {
+    return str
+      .toLowerCase()
+      .replace(/\s+/g, '-')
+      .replace(/\(.*?\)/g, '')
+      .replace(/-+/g, '-')
+      .replace(/^-|-$/g, '');
   }
 
 }

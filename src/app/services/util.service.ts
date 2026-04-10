@@ -4,6 +4,7 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { ToastController } from '@ionic/angular';
 import * as CryptoJS from 'crypto-js';
 import { ApiService } from './api-service';
+import { Storage } from '@ionic/storage-angular';
 
 @Injectable({
   providedIn: 'root'
@@ -12,6 +13,9 @@ export class UtilService {
   private router = inject(Router);
   private toastController = inject(ToastController);
   private apiService = inject(ApiService);
+  private storage = inject(Storage);
+
+  private _storageReady: Promise<Storage>;
 
   private readonly STORAGE_KEYS = {
     PRIVATE_KEY: 'privateKey',
@@ -45,31 +49,53 @@ export class UtilService {
     }
   }
 
-  constructor() { }
-
-  setSession(key: string, value: any): void {
-    if (typeof value === 'object') {
-      sessionStorage.setItem(key, JSON.stringify(value));
-    } else {
-      sessionStorage.setItem(key, value);
-    }
+  constructor() {
+    // Initialise Ionic Storage once; reuse the same promise everywhere
+    this._storageReady = this.storage.create();
   }
 
-  getSession(key: string): any {
-    const value = sessionStorage.getItem(key);
+  /** Ensures storage is initialised before use */
+  private async ready(): Promise<Storage> {
+    return this._storageReady;
+  }
+
+  // ─── Core storage helpers ──────────────────────────────────────────────────
+
+  async setSession(key: string, value: any): Promise<void> {
+    const store = await this.ready();
+    const serialised = typeof value === 'object' ? JSON.stringify(value) : value;
+    await store.set(key, serialised);
+  }
+
+  async getSession(key: string): Promise<any> {
+    const store = await this.ready();
+    const value = await store.get(key);
+    if (value === null || value === undefined) return null;
     try {
-      return value ? JSON.parse(value) : null;
+      return JSON.parse(value);
     } catch {
       return value;
     }
   }
 
-  setPrivateKey(key: string): void {
-    this.setSession(this.STORAGE_KEYS.PRIVATE_KEY, key);
+  // ─── Auth helpers ──────────────────────────────────────────────────────────
+
+  private _privateKey: string | null = null;
+  private _userEmail: string | null = null;
+
+  async initStorage(): Promise<void> {
+    await this.ready();
+    this._privateKey = await this.getSession(this.STORAGE_KEYS.PRIVATE_KEY);
+    this._userEmail = await this.getSession(this.STORAGE_KEYS.USER_EMAIL);
+  }
+
+  async setPrivateKey(key: string): Promise<void> {
+    this._privateKey = key;
+    await this.setSession(this.STORAGE_KEYS.PRIVATE_KEY, key);
   }
 
   getPrivateKey(): string | null {
-    return this.getSession(this.STORAGE_KEYS.PRIVATE_KEY);
+    return this._privateKey;
   }
 
   setUserProfile(profile: any): void {
@@ -83,25 +109,28 @@ export class UtilService {
     return this.currentUserSubject.value; // Return in-memory state
   }
 
-  setLoginEmail(email: string): void {
-    this.setSession(this.STORAGE_KEYS.USER_EMAIL, email);
+  async setLoginEmail(email: string): Promise<void> {
+    this._userEmail = email;
+    await this.setSession(this.STORAGE_KEYS.USER_EMAIL, email);
   }
 
   getLoginEmail(): string | null {
-    return this.getSession(this.STORAGE_KEYS.USER_EMAIL);
+    return this._userEmail;
   }
 
   isLoggedIn(): boolean {
-    const hasKey = !!this.getPrivateKey();
-    // const hasProfile = !!this.getSession(this.STORAGE_KEYS.USER_PROFILE_LOADED);
-    return hasKey;
+    return !!this._privateKey;
   }
 
-  logout(): void {
-    sessionStorage.clear();
+  async logout(): Promise<void> {
+    const store = await this.ready();
+    await store.clear();
     this.currentUserSubject.next(null);
+    this.cartSubject.next(null);
     this.router.navigate(['/login']);
   }
+
+  // ─── Error / utility helpers ───────────────────────────────────────────────
 
   parseErrorMessage(err: any): string {
     const errorBody = err.error;
@@ -124,7 +153,8 @@ export class UtilService {
   }
 
   async getFromAsyncStorage(key: string): Promise<string | null> {
-    return sessionStorage.getItem(key);
+    const store = await this.ready();
+    return store.get(key);
   }
 
   async getParsedAsyncStorageData(key: string): Promise<any> {
@@ -138,15 +168,15 @@ export class UtilService {
     }
   }
 
-  async constructAPIHeaders(methodSend: string, targetPath: string): Promise<any> {
+  // ─── API header builders ───────────────────────────────────────────────────
+
+  constructAPIHeaders(methodSend: string, targetPath: string): any {
     const time = Math.floor(Date.now() / 1000).toString();
 
-    // Normalize targetPath: ensure it doesn't have a leading slash first, then prepend one.
-    // This matches the React logic: "Request:/" + targetPath
     const normalizedPath = targetPath.startsWith('/') ? targetPath.substring(1) : targetPath;
     const message = "Method:" + methodSend + "\n" + "Request:/" + normalizedPath + "\n" + "Time:" + time;
 
-    const privateKey = (await this.getFromAsyncStorage(this.STORAGE_KEYS.PRIVATE_KEY)) || "";
+    const privateKey = this.getPrivateKey() || "";
     const authorization = this.nodeCompatibleHmacBase64(privateKey, message);
 
     const profile = this.getUserProfile();
@@ -157,20 +187,17 @@ export class UtilService {
       "Authorization": authorization,
       "Time": time,
       "Key": email,
-      // "apiKeyPublic": "zg7gy0p7gliy0dioipz0",
-      // "apiKeySecret": "n3j5b28ecfb5953f237303075",
+      "apiKeyPublic": "zg7gy0p7gliy0dioipz0",
+      "apiKeySecret": "n3j5b28ecfb5953f237303075",
     };
   }
 
-  async constructCatalogueHeaders(methodSend: string, targetPath: string): Promise<any> {
+  constructCatalogueHeaders(methodSend: string, targetPath: string): any {
     const time = Math.floor(Date.now() / 1000).toString();
 
-    // Consistent with constructAPIHeaders and React logic
     const normalizedPath = targetPath.startsWith('/') ? targetPath.substring(1) : targetPath;
     const message = "Method:" + methodSend + "\n" + "Request:/" + normalizedPath + "\n" + "Time:" + time;
 
-    // Different credentials for Catalogue - using apiKeySecret as the private key for signing
-    // As per user requirement: "The API's in blue will have a different credentials to the admin"
     const privateKey = "n3j5b28ecfb5953f237303075";
     const authorization = this.nodeCompatibleHmacBase64(privateKey, message);
 
@@ -182,12 +209,16 @@ export class UtilService {
       "Authorization": authorization,
       "Time": time,
       "Key": email,
+      "apiKeyPublic": "zg7gy0p7gliy0dioipz0",
+      "apiKeySecret": "n3j5b28ecfb5953f237303075",
     };
   }
 
   getImgBaseUrl() {
     return "https://www.americankeysupply.com/images/";
   }
+
+  // ─── Toast ─────────────────────────────────────────────────────────────────
 
   async showToast(message: string, color: 'success' | 'danger' | 'warning' | 'primary' = 'primary', duration: number = 3000000) {
     const toast = await this.toastController.create({
@@ -196,7 +227,6 @@ export class UtilService {
       position: 'top',
       positionAnchor: 'app-header',
       cssClass: `premium-top-right-toast toast-${color}`,
-
       buttons: [
         {
           text: 'Ok',
@@ -207,27 +237,16 @@ export class UtilService {
     await toast.present();
   }
 
-
+  // ─── Cart ──────────────────────────────────────────────────────────────────
 
   addToCart(product: any) {
     if (!product) return;
-
-    // const optionsPayload = Object.keys(product.options).map(optionId => {
-    //   const option = product?.options?.find((o: any) => o.id == optionId);
-    //   const isText = option?.type === 'text';
-    //   return {
-    //     id: parseInt(optionId),
-    //     valueID: isText ? 0 : parseInt(selectedOptions[optionId]),
-    //     valueText: isText ? selectedOptions[optionId] : ''
-    //   };
-    // });
 
     const payload = {
       "products": [
         {
           "itemID": product.itemID,
           "qty": product.qtyOrder,
-          // "options": optionsPayload
         }
       ]
     }
@@ -237,7 +256,6 @@ export class UtilService {
         this.showToast('Product added to cart successfully', 'success');
         this.refreshCart();
       },
-
       error: (err) => {
         const message = this.parseErrorMessage(err);
         this.showToast(message, 'danger');

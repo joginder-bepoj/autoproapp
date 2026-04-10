@@ -63,11 +63,7 @@
     // Tabs (Premium Pill Design)
     .vd-tabs {
         display: flex;
-        gap: 12px;
         margin-bottom: 40px;
-        padding: 6px;
-        background: #f1f5f9;
-        border-radius: 12px;
         width: max-content;
         max-width: 100%;
         overflow-x: auto;
@@ -82,13 +78,13 @@
         }
 
         .vd-tab {
-            padding: 10px 24px;
+            padding: 10px 0;
+
             font-weight: 700;
             font-size: 0.9rem;
             color: #64748b;
             background: transparent;
             border: none;
-            border-radius: 8px;
             white-space: nowrap;
             transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
             cursor: pointer;
@@ -98,11 +94,6 @@
                 // background: rgba(255, 255, 255, 0.5);
             }
 
-            &.active {
-                color: var(--main-bg-color);
-                // background: #ffffff;
-                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-            }
         }
     }
 
@@ -120,11 +111,11 @@
         border-radius: 20px;
         margin-bottom: 40px;
 
-        @media (max-width: 1024px) {
-            flex-direction: column;
-            padding: 24px 16px;
-            gap: 24px;
-        }
+        // @media (max-width: 1024px) {
+        //     flex-direction: column;
+        //     padding: 24px 16px;
+        //     gap: 24px;
+        // }
 
         .vd-carousel-container {
             flex: 1.2;
@@ -150,7 +141,6 @@
                 position: absolute;
                 top: 0;
                 left: 0;
-                width: 100%;
                 height: 100%;
                 display: flex;
                 align-items: start;
@@ -169,7 +159,7 @@
 
                 img {
                     max-width: 100%;
-                    max-height: 100%;
+                    // max-height: 100%;
                     object-fit: contain;
                     border-radius: 12px;
                     transition: transform 0.4s ease;
@@ -242,66 +232,11 @@
                 }
             }
         }
-
-        .basic-info {
-            flex: 1;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-
-
-
-            .basic-info-grid {
-                display: flex;
-                flex-direction: column;
-                gap: 8px;
-            }
-
-            .basic-info-group {
-                padding: 12px 0;
-                display: flex;
-                flex-direction: column;
-                gap: 8px;
-
-                &.border-top {
-                    border-top: 1px dashed #e2e8f0;
-                    margin-top: 8px;
-                }
-            }
-
-            .basic-info-item {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                gap: 16px;
-                padding: 6px 0;
-                border-bottom: 1px solid #f8fafc;
-
-                &:last-child {
-                    border-bottom: none;
-                }
-
-                .info-label {
-                    font-size: 0.85rem;
-                    font-weight: 600;
-                    color: #64748b;
-                    flex-shrink: 0;
-                    text-transform: uppercase;
-                    letter-spacing: 0.5px;
-                }
-
-                .info-value {
-                    font-size: 0.95rem;
-                    font-weight: 700;
-                    color: #1e293b;
-                    text-align: right;
-                }
-            }
-        }
     }
 
     // Tumbler Grid (Dashboard Look)
     .vd-tumbler-section {
+        width: 60%;
         border-radius: 24px;
         padding: 40px;
         margin-bottom: 40px;
@@ -314,10 +249,10 @@
 
         .tumbler-header-row {
             display: flex;
-            margin-bottom: 28px;
+            // margin-bottom: 28px;
 
             .tumbler-label-col {
-                width: 160px;
+                width: auto;
                 flex-shrink: 0;
             }
 
@@ -417,8 +352,8 @@
         position: absolute;
         top: 0;
         left: 0;
-        width: 100%;
-        height: 95%;
+        width: 94%;
+        height: 100%;
         background: url('../../../assets/images/key.png');
         background-size: contain;
         background-position: bottom;
@@ -817,6 +752,60 @@
     padding: 40px;
 }
 
+.basic-info {
+    flex: 1;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.basic-info-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.basic-info-group {
+    padding: 12px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    &.border-top {
+        border-top: 1px dashed #e2e8f0;
+        margin-top: 8px;
+    }
+}
+
+.basic-info-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    padding: 6px 0;
+    border-bottom: 1px solid #f8fafc;
+
+    &:last-child {
+        border-bottom: none;
+    }
+
+    .info-label {
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: #64748b;
+        flex-shrink: 0;
+        text-transform: capitalize;
+        letter-spacing: 0.5px;
+    }
+
+    .info-value {
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: #1e293b;
+        text-align: right;
+    }
+}
+
 .decoder-info {
     padding: 40px;
 }
@@ -830,5 +819,50 @@
     to {
         opacity: 1;
         transform: translateY(0);
+    }
+}
+
+
+@media (max-width: 992.98px) {
+    .overview-section {
+        display: block !important;
+    }
+
+    .vd-container .overview-section .vd-carousel-container .vd-slide {
+        width: 100%;
+    }
+}
+
+@media (max-width: 768px) {
+    .decoder-info {
+        width: 100%;
+        padding-left: 0px;
+        padding-right: 0%;
+    }
+
+    .vd-container .overview-section .vd-carousel-container {
+        height: 400px;
+        margin-bottom: 16px;
+    }
+
+    .vd-container .vd-title-bar .vd-title-info {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+    }
+
+    .vd-container .vd-tumbler-section {
+        width: 100%;
+        padding-top: 0px;
+    }
+
+    .vd-container .vd-tumbler-section::before {
+        background-position: center;
+    }
+}
+
+@media (max-width: 540px) {
+    .vd-container .overview-section .vd-carousel-container {
+        height: 250px;
     }
 }

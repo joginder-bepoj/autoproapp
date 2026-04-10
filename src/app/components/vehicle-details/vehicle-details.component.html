@@ -23,10 +23,12 @@
 
     <!-- Tab Nav -->
     <div class="vd-tabs">
-      <button class="vd-tab" [class.active]="activeTab === 'overview'" (click)="setTab('overview')">Overview</button>
-      <button class="vd-tab" [class.active]="activeTab === 'keymaking'" (click)="setTab('keymaking')">Keymaking</button>
-      <button class="vd-tab" [class.active]="activeTab === 'tips'" (click)="setTab('tips')">Tips & Tricks</button>
-      <button class="vd-tab" [class.active]="activeTab === 'parts'" (click)="setTab('parts')">Parts</button>
+      <button class="vd-tab me-3" [class.active]="activeTab === 'overview'"
+        (click)="setTab('overview')">Overview</button>
+      <button class="vd-tab me-3" [class.active]="activeTab === 'keymaking'"
+        (click)="setTab('keymaking')">Keymaking</button>
+      <button class="vd-tab me-3" [class.active]="activeTab === 'tips'" (click)="setTab('tips')">Tips & Tricks</button>
+      <button class="vd-tab me-3" [class.active]="activeTab === 'parts'" (click)="setTab('parts')">Parts</button>
     </div>
 
     <!-- ─── TAB: OVERVIEW ─── -->
@@ -76,9 +78,11 @@
 
 
       <!-- Tumbler Grid -->
-      <div class="d-flex">
-        <div class="vd-tumbler-section w-50" *ngIf="tumblerRows.length">
-          <h3 class="section-subtitle">TUMBLER LOCATIONS</h3>
+      <div class="d-lg-flex">
+        <h3 class="section-subtitle d-lg-none">TUMBLER LOCATIONS</h3>
+        <div class="vd-tumbler-section" *ngIf="tumblerRows.length">
+          <h3 class="section-subtitle d-none d-lg-block">TUMBLER LOCATIONS</h3>
+
           <div class="tumbler-header-row">
             <div class="tumbler-label-col"></div>
             <div class="tumbler-grid-header">
@@ -99,13 +103,13 @@
           </div>
         </div>
         <!-- Decoder Info Section -->
-        <div class="decoder-info w-50" *ngIf="decoderItems.length">
-          <h3 class="section-subtitle">Decoder Tooling</h3>
+        <div class="decoder-info" *ngIf="this.vehicle.vehicle_info?.decode_with">
+          <h3 class="section-subtitle basic-info">Decoder Tooling</h3>
           <div class="basic-info-grid">
-            <div class="basic-info-group">
-              <div class="basic-info-item" *ngFor="let item of decoderItems">
-                <span class="info-label">{{ item.name }}</span>
-                <span class="info-value">{{ item.value || 'N/A' }}</span>
+            <div class="basic-info-group mt-3">
+              <div class="basic-info-item" *ngFor="let item of vehicle.vehicle_info?.decode_with | keyvalue">
+                <span class="info-label">{{ normalizeKey(item.key)}}</span>
+
               </div>
             </div>
           </div>
@@ -198,23 +202,6 @@
               [routerLink]="['/product', getFirstProductId(item.products.products_id)]">
               <ion-icon name="add-outline"></ion-icon>
             </button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Decoders -->
-      <div class="vd-section-block" *ngIf="decoderItems.length">
-        <div class="vd-section-header">
-          <h2 class="vd-section-heading">Decoders</h2>
-        </div>
-        <div class="vd-decoder-list">
-          <div class="vd-decoder-row" *ngFor="let dec of decoderItems">
-            <div class="vd-decoder-name">{{ dec.name }}</div>
-            <div class="vd-decoder-value" *ngIf="dec.value">{{ dec.value }}</div>
-            <div class="vd-decoder-note" *ngIf="dec.note">{{ dec.note }}</div>
-            <a *ngIf="dec.products?.products_id"
-              [routerLink]="['/product', getFirstProductId(dec.products.products_id)]" class="vd-decoder-link">View
-              Product</a>
           </div>
         </div>
       </div>

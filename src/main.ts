@@ -6,15 +6,29 @@ import { routes } from './app/app.routes';
 import { AppComponent } from './app/app.component';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { authInterceptor } from './app/interceptors/auth.interceptor';
-import { inject } from '@angular/core';
+import { inject, importProvidersFrom, APP_INITIALIZER } from '@angular/core';
 import { finalize } from 'rxjs';
 import { UtilService } from './app/services/util.service';
+import { IonicStorageModule } from '@ionic/storage-angular';
+
+export function initializeApp(utilService: UtilService) {
+  return () => utilService.initStorage();
+}
 
 bootstrapApplication(AppComponent, {
   providers: [
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
     provideIonicAngular(),
     provideRouter(routes, withPreloading(PreloadAllModules)),
+    importProvidersFrom(IonicStorageModule.forRoot({
+      name: '__mydb'
+    })),
+    {
+      provide: APP_INITIALIZER,
+      useFactory: initializeApp,
+      deps: [UtilService],
+      multi: true
+    },
     provideHttpClient(withInterceptors([
       authInterceptor,
       (req, next) => {
@@ -24,4 +38,4 @@ bootstrapApplication(AppComponent, {
       }
     ])),
   ],
-});
+});
