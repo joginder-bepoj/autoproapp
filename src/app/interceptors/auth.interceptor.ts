@@ -22,11 +22,14 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   modifiedReq = req.clone({
     setHeaders: {
       'Content-Type': 'application/json',
-      Authorization: headers.Authorization,
-      Time: headers.Time,
-      Key: headers.Key,
-      apiKeyPublic: headers.apiKeyPublic,
-      apiKeySecret: headers.apiKeySecret
+      'Accept': 'application/json',
+      'Authorization': headers.Authorization,
+      'Time': headers.Time,
+      'Key': headers.Key,
+      'apiKeyPublic': headers.apiKeyPublic,
+      'apiKeySecret': headers.apiKeySecret,
+      'User-Agent': 'Mozilla/5.0',
+      'Accept-Language': 'en-US,en;q=0.9',
     }
   });
 
