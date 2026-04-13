@@ -5,9 +5,7 @@ const config: CapacitorConfig = {
   appName: 'autoproapp',
   webDir: 'www',
   server: {
-    allowNavigation: ['https://api.americankeysupply.com', 'https://api.americankeysupply.com/V1/'],
-    url: 'https://api.americankeysupply.com',
-    cleartext: true
+    allowNavigation: ['https://api.americankeysupply.com', 'https://api.americankeysupply.com/V1/']
   },
   plugins: {
     CapacitorHttp: {
