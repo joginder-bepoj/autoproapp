@@ -9,7 +9,8 @@
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "lint": "ng lint"
+    "lint": "ng lint",
+    "postinstall": "patch-package"
   },
   "private": true,
   "dependencies": {
@@ -35,6 +36,8 @@
     "bootstrap": "^5.3.8",
     "crypto-js": "^4.2.0",
     "ionicons": "^7.0.0",
+    "patch-package": "^8.0.1",
+    "postinstall-postinstall": "^2.1.0",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.15.0"
