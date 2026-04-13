@@ -1,10 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Capacitor } from '@capacitor/core';
-import { Http } from '@capacitor/http';
-import { from, Observable } from 'rxjs';
+import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
-
 @Injectable({
   providedIn: 'root',
 })
@@ -14,33 +11,15 @@ export class ApiService {
 
   private api_base_url = environment.api_base_url;
 
-  private isNative(): boolean {
-    return Capacitor.isNativePlatform();
-  }
   private request(
     method: 'GET' | 'POST',
     url: string,
     data: any = null
   ): Observable<any> {
-
-    if (this.isNative()) {
-      return from(
-        Http.request({
-          method,
-          url,
-          headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json'
-          },
-          data: data
-        }).then(res => res.data)
-      );
+    if (method === 'GET') {
+      return this.http.get(url);
     } else {
-      if (method === 'GET') {
-        return this.http.get(url);
-      } else {
-        return this.http.post(url, data);
-      }
+      return this.http.post(url, data);
     }
   }
 
