@@ -1,20 +1,30 @@
 <IfModule mod_rewrite.c>
-  RewriteEngine On
-  
-  # Change RewriteBase to match the actual folder structure on your sandbox server
-  RewriteBase /autoproapp/www/
-
-  # Force Apache to pass the Authorization and Custom Headers to PHP
-  SetEnvIf Authorization "(.*)" HTTP_AUTHORIZATION=$1
-  SetEnvIf Key "(.*)" HTTP_KEY=$1
-  SetEnvIf Time "(.*)" HTTP_TIME=$1
-
-  # API Proxy Rule - Forward any request starting with V1/ to proxy.php
-  # Using a simpler rule to ensure it always catches V1/ requests relative to the base
-  RewriteRule ^V1/(.*)$ proxy.php?path=$1 [QSA,L]
-
-  # Angular fallback
-  RewriteCond %{REQUEST_FILENAME} !-f
-  RewriteCond %{REQUEST_FILENAME} !-d
-  RewriteRule ^ index.html [L]
+    RewriteEngine On
+    RewriteBase /autoproapp/www/
+ 
+    # 🔥 FORCE IMPORTANT HEADERS INTO PHP
+    RewriteCond %{HTTP:Authorization} ^(.*)
+    RewriteRule .* - [E=HTTP_AUTHORIZATION:%1]
+ 
+    RewriteCond %{HTTP:Key} ^(.*)
+    RewriteRule .* - [E=HTTP_KEY:%1]
+ 
+    RewriteCond %{HTTP:Time} ^(.*)
+    RewriteRule .* - [E=HTTP_TIME:%1]
+ 
+    # 🚀 FIXED API PROXY (handles /V1 and V1)
+    RewriteRule ^/?V1/(.*)$ proxy.php?path=$1 [QSA,L]
+ 
+    # ❌ DO NOT TOUCH API CALLS
+    RewriteCond %{REQUEST_URI} !^/autoproapp/www/V1/
+ 
+    # 🌐 ANGULAR SPA ROUTING
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule . /autoproapp/www/index.html [L]
+</IfModule>
+ 
+<IfModule mod_headers.c>
+    Header always set Access-Control-Allow-Origin "*"
+    Header always set Access-Control-Allow-Headers "Authorization, Key, Time, Content-Type"
 </IfModule>
