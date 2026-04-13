@@ -2,7 +2,6 @@ import { Injectable, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { ToastController } from '@ionic/angular';
-import * as CryptoJS from 'crypto-js';
 import { ApiService } from './api-service';
 import { Storage } from '@ionic/storage-angular';
 
@@ -52,6 +51,11 @@ export class UtilService {
   constructor() {
     // Initialise Ionic Storage once; reuse the same promise everywhere
     this._storageReady = this.storage.create();
+
+    // Subscribe to ApiService unauthorized events
+    this.apiService.onUnauthorized.subscribe(() => {
+      this.logout();
+    });
   }
 
   /** Ensures storage is initialised before use */
@@ -86,11 +90,18 @@ export class UtilService {
   async initStorage(): Promise<void> {
     await this.ready();
     this._privateKey = await this.getSession(this.STORAGE_KEYS.PRIVATE_KEY);
+    this.apiService.privateKey = this._privateKey;
+
     this._userEmail = await this.getSession(this.STORAGE_KEYS.USER_EMAIL);
+    const profile = await this.getSession(this.STORAGE_KEYS.USER_PROFILE);
+
+    // Fallback email to profile if email empty
+    this.apiService.loginEmail = profile?.email || this._userEmail || '';
   }
 
   async setPrivateKey(key: string): Promise<void> {
     this._privateKey = key;
+    this.apiService.privateKey = key;
     await this.setSession(this.STORAGE_KEYS.PRIVATE_KEY, key);
   }
 
@@ -103,6 +114,7 @@ export class UtilService {
       this.setSession(this.STORAGE_KEYS.USER_PROFILE_LOADED, 'true');
     }
     this.currentUserSubject.next(profile);
+    this.apiService.loginEmail = profile?.email || this._userEmail || '';
   }
 
   getUserProfile(): any {
@@ -111,6 +123,7 @@ export class UtilService {
 
   async setLoginEmail(email: string): Promise<void> {
     this._userEmail = email;
+    this.apiService.loginEmail = this.currentUserSubject.value?.email || email;
     await this.setSession(this.STORAGE_KEYS.USER_EMAIL, email);
   }
 
@@ -146,12 +159,6 @@ export class UtilService {
     return message;
   }
 
-  nodeCompatibleHmacBase64(key: string, data: string): string {
-    const mac = CryptoJS.HmacSHA512(data, key);
-    const hex = CryptoJS.enc.Hex.stringify(mac);
-    return CryptoJS.enc.Base64.stringify(CryptoJS.enc.Utf8.parse(hex));
-  }
-
   async getFromAsyncStorage(key: string): Promise<string | null> {
     const store = await this.ready();
     return store.get(key);
@@ -171,49 +178,30 @@ export class UtilService {
   // ─── API header builders ───────────────────────────────────────────────────
 
   constructAPIHeaders(methodSend: string, targetPath: string): any {
-    const time = Math.floor(Date.now() / 1000).toString();
-
-    const normalizedPath = targetPath.startsWith('/') ? targetPath.substring(1) : targetPath;
-    const message = "Method:" + methodSend + "\n" + "Request:/" + normalizedPath + "\n" + "Time:" + time;
-
-    const privateKey = this.getPrivateKey() || "";
-    const authorization = this.nodeCompatibleHmacBase64(privateKey, message);
-
-    const profile = this.getUserProfile();
-    const email = profile?.email || this.getLoginEmail() || '';
-
-    return {
-      "Content-Type": "application/json",
-      "Authorization": authorization,
-      "Time": time,
-      "Key": email,
-      "apiKeyPublic": "zg7gy0p7gliy0dioipz0",
-      "apiKeySecret": "n3j5b28ecfb5953f237303075",
-    };
+    return this.apiService.constructAPIHeaders(methodSend, targetPath);
   }
 
-  constructCatalogueHeaders(methodSend: string, targetPath: string): any {
-    const time = Math.floor(Date.now() / 1000).toString();
+  // constructCatalogueHeaders(methodSend: string, targetPath: string): any {
+  //   const time = Math.floor(Date.now() / 1000).toString();
 
-    const normalizedPath = targetPath.startsWith('/') ? targetPath.substring(1) : targetPath;
-    const message = "Method:" + methodSend + "\n" + "Request:/" + normalizedPath + "\n" + "Time:" + time;
+  //   const normalizedPath = targetPath.startsWith('/') ? targetPath.substring(1) : targetPath;
+  //   const message = "Method:" + methodSend + "\n" + "Request:/" + normalizedPath + "\n" + "Time:" + time;
 
-    const privateKey = "n3j5b28ecfb5953f237303075";
-    const authorization = this.nodeCompatibleHmacBase64(privateKey, message);
+  //   const privateKey = "n3j5b28ecfb5953f237303075";
+  //   const authorization = this.nodeCompatibleHmacBase64(privateKey, message);
 
-    const profile = this.getUserProfile();
-    const email = profile?.email || this.getLoginEmail() || '';
+  //   const profile = this.getUserProfile();
+  //   const email = profile?.email || this.getLoginEmail() || '';
 
-    return {
-      "Content-Type": "application/json",
-      "Authorization": authorization,
-      "Time": time,
-      "Key": email,
-      "apiKeyPublic": "zg7gy0p7gliy0dioipz0",
-      "apiKeySecret": "n3j5b28ecfb5953f237303075",
-    };
-  }
-
+  //   return {
+  //     "Content-Type": "application/json",
+  //     "Authorization": authorization,
+  //     "Time": time,
+  //     "Key": email,
+  //     "apiKeyPublic": "zg7gy0p7gliy0dioipz0",
+  //     "apiKeySecret": "n3j5b28ecfb5953f237303075",
+  //   };
+  // }
   getImgBaseUrl() {
     return "https://www.americankeysupply.com/images/";
   }

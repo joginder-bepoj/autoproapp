@@ -15,36 +15,36 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
 
   let modifiedReq = req;
 
-  if (token) {
-    // ✅ Admin Authentication
-    const headers = utilService.constructAPIHeaders(methodSend, targetPath);
+  // if (token) {
+  // ✅ Admin Authentication
+  const headers = utilService.constructAPIHeaders(methodSend, targetPath);
 
-    modifiedReq = req.clone({
-      setHeaders: {
-        'Content-Type': 'application/json',
-        Authorization: headers.Authorization,
-        Time: headers.Time,
-        Key: headers.Key,
-        apiKeyPublic: headers.apiKeyPublic,
-        apiKeySecret: headers.apiKeySecret
-      }
-    });
+  modifiedReq = req.clone({
+    setHeaders: {
+      'Content-Type': 'application/json',
+      Authorization: headers.Authorization,
+      Time: headers.Time,
+      Key: headers.Key,
+      apiKeyPublic: headers.apiKeyPublic,
+      apiKeySecret: headers.apiKeySecret
+    }
+  });
 
-  } else if (isChangeRequest) {
-    // ✅ Catalogue Authentication
-    const headers = utilService.constructCatalogueHeaders(methodSend, targetPath);
+  // } else if (isChangeRequest) {
+  //   // ✅ Catalogue Authentication
+  //   const headers = utilService.constructCatalogueHeaders(methodSend, targetPath);
 
-    modifiedReq = req.clone({
-      setHeaders: {
-        'Content-Type': 'application/json',
-        Authorization: headers.Authorization,
-        Time: headers.Time,
-        Key: headers.Key,
-        apiKeyPublic: headers.apiKeyPublic,
-        apiKeySecret: headers.apiKeySecret
-      }
-    });
-  }
+  //   modifiedReq = req.clone({
+  //     setHeaders: {
+  //       'Content-Type': 'application/json',
+  //       Authorization: headers.Authorization,
+  //       Time: headers.Time,
+  //       Key: headers.Key,
+  //       apiKeyPublic: headers.apiKeyPublic,
+  //       apiKeySecret: headers.apiKeySecret
+  //     }
+  //   });
+  // }
 
   return next(modifiedReq).pipe(handleResponses(utilService));
 };

@@ -3,7 +3,7 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { ApiService } from 'src/app/services/api-service';
 import { UtilService } from 'src/app/services/util.service';
 import { BreadcrumbsComponent } from 'src/app/shared/components/breadcrumbs/breadcrumbs.component';
-import { IonIcon, IonButton, IonBadge } from "@ionic/angular/standalone";
+import { IonIcon, IonButton } from "@ionic/angular/standalone";
 import { CommonModule, TitleCasePipe, DecimalPipe, DatePipe, NgIf } from '@angular/common';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { addIcons } from 'ionicons';
@@ -30,7 +30,6 @@ import {
   imports: [
     IonButton,
     IonIcon,
-    IonBadge,
     BreadcrumbsComponent,
     CommonModule,
     RouterModule,

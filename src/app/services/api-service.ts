@@ -1,15 +1,50 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 import { environment } from 'src/environments/environment';
+import * as CryptoJS from 'crypto-js';
+
 @Injectable({
   providedIn: 'root',
 })
 export class ApiService {
 
-  constructor(private http: HttpClient) {}
+  public onUnauthorized = new Subject<void>();
+  public privateKey: string | null = null;
+  public loginEmail: string | null = null;
+
+  constructor(private http: HttpClient) { }
 
   private api_base_url = environment.api_base_url;
+
+
+
+  nodeCompatibleHmacBase64(key: string, data: string): string {
+    const mac = CryptoJS.HmacSHA512(data, key);
+    const hex = CryptoJS.enc.Hex.stringify(mac);
+    return CryptoJS.enc.Base64.stringify(CryptoJS.enc.Utf8.parse(hex));
+  }
+
+  constructAPIHeaders(methodSend: string, targetPath: string): any {
+    const time = Math.floor(Date.now() / 1000).toString();
+
+    const normalizedPath = targetPath.startsWith('/') ? targetPath.substring(1) : targetPath;
+    const message = "Method:" + methodSend + "\n" + "Request:/" + normalizedPath + "\n" + "Time:" + time;
+
+    const key = this.privateKey || "";
+    const authorization = this.nodeCompatibleHmacBase64(key, message);
+
+    const email = this.loginEmail || '';
+
+    return {
+      "Content-Type": "application/json",
+      "Authorization": authorization,
+      "Time": time,
+      "Key": email,
+      "apiKeyPublic": "zg7gy0p7gliy0dioipz0",
+      "apiKeySecret": "n3j5b28ecfb5953f237303075",
+    };
+  }
 
   private request(
     method: 'GET' | 'POST',
