@@ -31,6 +31,8 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
     }
   });
 
+  alert(JSON.stringify(window.location.origin));
+  alert(JSON.stringify(window.location.host));
   // } else if (isChangeRequest) {
   //   // ✅ Catalogue Authentication
   //   const headers = utilService.constructCatalogueHeaders(methodSend, targetPath);
