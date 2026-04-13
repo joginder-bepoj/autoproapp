@@ -55,15 +55,15 @@ export class LoginComponent implements OnInit {
           this.utilService.setLoginEmail(this.loginData.email);
           this.apiService.getCustomerProfile().subscribe(
             (profile: any) => {
-              alert(JSON.stringify(profile));
               if (profile && profile?.data) {
                 this.utilService.setUserProfile(profile.data);
                 this.router.navigate(['/home']);
               }
             },
             (err) => {
-              alert(JSON.stringify(err));
               console.error('Initial login sync failed:', err);
+              const errorMsg = this.utilService.parseErrorMessage(res);
+              this.showAlert('Failed to fetch profile', errorMsg);
             }
           );
 
@@ -85,14 +85,6 @@ export class LoginComponent implements OnInit {
 
   resetPassword() {
     this.router.navigate(['/home']);
-    // this.apiService.resetPassword({ email: this.loginData.email }).subscribe(
-    //   (res: any) => {
-    //     alert(JSON.stringify(res));
-    //     this.forgotPass = false;
-    //   },
-    //   (err: any) => {
-    //     console.log(err);
-    //   }
-    // );
+
   }
 }

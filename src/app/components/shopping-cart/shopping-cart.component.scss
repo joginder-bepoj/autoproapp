@@ -90,7 +90,7 @@
     .cart-item-card {
       display: flex;
       gap: 20px;
-      padding: 20px;
+      padding: 12px;
       background: #ffffff;
       border: 1px solid #f1f5f9;
       border-radius: 16px;
@@ -107,7 +107,7 @@
         height: 140px;
         background: #f8fbfd;
         border-radius: 12px;
-        padding: 12px;
+        // padding: 12px;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -155,12 +155,13 @@
           display: flex;
           align-items: center;
           gap: 40px;
-          margin: 16px 0;
+          margin: 12px 0;
 
           @media (max-width: 576px) {
-            flex-direction: row;
-            flex-wrap: wrap;
-            gap: 20px;
+            flex-direction: column;
+            // flex-wrap: wrap;
+            align-items: start;
+            gap: 12px;
           }
 
           .price-info,
@@ -469,5 +470,11 @@
   .order-summary-section {
     position: static;
     margin-top: 40px;
+  }
+}
+
+@media (max-width: 768.98px) {
+  .cart-page-container .cart-items-section .cart-item-card .item-details .item-main-info .item-name {
+    font-size: 14px;
   }
 }
