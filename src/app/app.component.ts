@@ -9,6 +9,8 @@ import { ApiService } from './services/api-service';
 import { AsyncPipe } from '@angular/common';
 import { ChangeDetectorRef } from '@angular/core';
 
+import { SplashScreen } from '@capacitor/splash-screen';
+
 @Component({
   selector: 'app-root',
   templateUrl: 'app.component.html',
@@ -56,32 +58,73 @@ export class AppComponent {
   }
 
   ngOnInit() {
+    this.initializeApp();
+  }
+
+  private async initializeApp() {
+    const startTime = Date.now();
+    const minDisplayTime = 2000; // Minimum splash display time in ms
     const privateKey = this.utilService.getPrivateKey();
 
-    if (privateKey) {
+    const finishInitialization = async () => {
+      const elapsedTime = Date.now() - startTime;
+      const remainingTime = Math.max(0, minDisplayTime - elapsedTime);
 
-      this.apiService.getCustomerProfile().subscribe(
-        (profile: any) => {
+      // Wait for the remaining minimum time + a small buffer for rendering
+      setTimeout(() => {
+        this.hideSplashScreen();
+      }, remainingTime + 300);
+    };
+
+    if (privateKey) {
+      // Sync profile and cart
+      let syncsCompleted = 0;
+      const totalSyncs = 2;
+
+      const onSyncComplete = () => {
+        syncsCompleted++;
+        if (syncsCompleted >= totalSyncs) {
+          finishInitialization();
+        }
+      };
+
+      this.apiService.getCustomerProfile().subscribe({
+        next: (profile: any) => {
           if (profile?.data) {
             this.utilService.setUserProfile(profile.data);
           }
+          onSyncComplete();
         },
-        (err) => {
-          console.error('Initial login sync failed:', err);
+        error: (err) => {
+          console.error('Initial profile sync failed:', err);
+          onSyncComplete();
         }
-      );
+      });
 
-      this.apiService.getCartItems().subscribe(
-        (cart: any) => {
+      this.apiService.getCartItems().subscribe({
+        next: (cart: any) => {
           if (cart?.data) {
             this.utilService.setCart(cart.data);
           }
+          onSyncComplete();
         },
-        (err) => {
-          console.error('Initial login sync failed:', err);
+        error: (err) => {
+          console.error('Initial cart sync failed:', err);
+          onSyncComplete();
         }
-      );
+      });
+
+      // Safety fallback: hide after 6 seconds even if sync fails
+      setTimeout(() => finishInitialization(), 6000);
+    } else {
+      finishInitialization();
     }
+  }
+
+  private hideSplashScreen() {
+    SplashScreen.hide().catch(err => {
+      console.warn('SplashScreen hide failed (likely running in browser):', err);
+    });
   }
 
   private scrollToTop() {

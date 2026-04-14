@@ -47,7 +47,6 @@ export class LoginComponent implements OnInit {
     this.utilService.showLoader();
     this.apiService.login(this.loginData).subscribe(
       (res: any) => {
-        this.utilService.hideLoader();
         const privateKey = res?.data?.privateKey;
 
         if (privateKey) {
@@ -57,10 +56,12 @@ export class LoginComponent implements OnInit {
             (profile: any) => {
               if (profile && profile?.data) {
                 this.utilService.setUserProfile(profile.data);
+                this.utilService.hideLoader();
                 this.router.navigate(['/home']);
               }
             },
             (err) => {
+              this.utilService.hideLoader();
               console.error('Initial login sync failed:', err);
               const errorMsg = this.utilService.parseErrorMessage(res);
               this.showAlert('Failed to fetch profile', errorMsg);
