@@ -181,13 +181,13 @@
         <div class="vd-section-header">
           <h2 class="vd-section-heading">Key Cutting Info</h2>
         </div>
-        <div class="key-cutting-list">
-          <div class="key-machine-group" *ngFor="let machine of getEntries(keyCuttingData); let last = last">
-            <div class="key-machine-block">
-              <div class="machine-header">
-                <span class="machine-name">{{ normalizeKey(machine.key) | uppercase }}</span>
+        <div class="vd-info-list">
+          <div class="info-group" *ngFor="let machine of getEntries(keyCuttingData); let last = last">
+            <div class="info-block">
+              <div class="block-header">
+                <span class="block-name">{{ normalizeKey(machine.key) | uppercase }}</span>
               </div>
-              <div class="machine-details">
+              <div class="block-details">
                 <div class="basic-info-item" *ngFor="let detail of getEntries(machine.value)">
                   <span class="info-label">{{ normalizeKey(detail.key) }}</span>
                   <span class="info-value">{{ getDisplayValue(detail.value) }}</span>
@@ -204,15 +204,15 @@
         <div class="vd-section-header">
           <h2 class="vd-section-heading">Key Programming Info</h2>
         </div>
-        <div class="key-programming-list">
-          <div class="key-machine-group" *ngFor="let prog of getEntries(keyProgrammingData); let last = last">
-            <div class="key-machine-block programming-block">
+        <div class="vd-info-list">
+          <div class="info-group" *ngFor="let prog of getEntries(keyProgrammingData); let last = last">
+            <div class="info-block side-by-side">
               <div class="block-top-row">
-                <div class="machine-name-col">
-                  <span class="machine-name">{{ normalizeKey(prog.key) | uppercase }}</span>
+                <div class="name-col">
+                  <span class="block-name">{{ normalizeKey(prog.key) | uppercase }}</span>
                 </div>
-                <div class="machine-details-col">
-                  <div class="basic-info-item" *ngFor="let detail of getFilteredEntries(prog.value)">
+                <div class="details-col">
+                  <div class="basic-info-item small-detail" *ngFor="let detail of getFilteredEntries(prog.value)">
                     <span class="info-label">{{ normalizeKey(detail.key) | uppercase }}</span>
                     <span class="info-value">{{ getDisplayValue(detail.value) }}</span>
                   </div>
