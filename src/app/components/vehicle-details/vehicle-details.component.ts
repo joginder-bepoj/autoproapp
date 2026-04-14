@@ -56,11 +56,12 @@ export class VehicleDetailsComponent implements OnInit {
   keymakingMethods: any[] = [];
   tipCategories: string[] = [];
   vehicleParts: any[] = [];
+  available_cuts: number[] = [];
+  keyCuttingData: Record<string, any> | null = null;
+  keyProgrammingData: Record<string, any> | null = null;
 
   breadcrumb: any[] = [
-    // { label: 'Home', url: '/home' },
     { label: 'Vehicle Search', url: '/category' },
-    // { label: 'Details', url: '' }
   ];
 
   constructor(
@@ -115,6 +116,10 @@ export class VehicleDetailsComponent implements OnInit {
     });
   }
 
+  cutsArray(length: number): number[] {
+    return Array.from({ length: length }, (_, i) => i);
+  }
+
   parseVehicleData() {
     if (!this.vehicle) return;
 
@@ -122,13 +127,20 @@ export class VehicleDetailsComponent implements OnInit {
     this.tumblerRows = [];
     const td = this.vehicle.tubmler_data;
     if (td) {
-      Object.keys(td).forEach(key => {
+      let maxCuts = 0;
+      Object.keys(td).forEach((key: any) => {
+        const rowData = td[key] || [];
+        if (rowData.length > maxCuts) {
+          maxCuts = rowData.length;
+        }
+
         const label = key.replace(/^[A-Z]_/, '').replace(/_/g, ' ');
         this.tumblerRows.push({
           label: label,
-          values: td[key]
+          values: rowData
         });
       });
+      this.available_cuts = this.cutsArray(maxCuts);
     }
 
     // 2. Keys
@@ -139,13 +151,6 @@ export class VehicleDetailsComponent implements OnInit {
     // 3. Remotes
     this.remotes = [];
     const remotesInput = this.vehicle.vehicle_info?.the_remotes;
-    // if (remotesInput) {
-    //   Object.keys(remotesInput).forEach(type => {
-    //     ?.forEach((item: any) => {
-    //       this.remotes.push({ ...item, type: type });
-    //     });
-    //   });
-    // }
 
     // 5. Methods
     this.keymakingMethods = this.vehicle.key_making_methods?.methods || [];
@@ -165,7 +170,13 @@ export class VehicleDetailsComponent implements OnInit {
       console.log(this.activeYear);
     }
 
-    // 9. Breadcrumb update
+    // 9. Key Cutting
+    this.keyCuttingData = this.vehicle.vehicle_info.key_cutting;
+
+    // 10. Key Programming
+    this.keyProgrammingData = this.vehicle.vehicle_info?.key_programming;
+
+    // 11. Breadcrumb update
     const name = `${this.selectedMake} ${this.selectedModel} ${this.activeYear?.year || ''}`;
     // this.breadcrumb[2].label = name;
   }
@@ -225,11 +236,11 @@ export class VehicleDetailsComponent implements OnInit {
     this.currentImageIndex = index;
   }
 
-  formatLabel(key: string): string {
+  formatLabel(key: any): string {
     if (!key) return '';
     return key
       .split('_')
-      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .map((word: any) => word.charAt(0).toUpperCase() + word.slice(1))
       .join(' ');
   }
   normalizeKey(key: any): string {
@@ -238,5 +249,40 @@ export class VehicleDetailsComponent implements OnInit {
       .split('_')
       .map((word: any) => word.charAt(0).toUpperCase() + word.slice(1))
       .join(' ');
+  }
+
+  getDisplayValue(val: any): string {
+    console.log(val);
+    if (val === null || val === undefined) return 'N/A';
+    if (typeof val === 'object') {
+      return val.value || 'N/A';
+    }
+    return val;
+  }
+
+  getEntries(obj: any): any[] {
+    if (!obj) return [];
+    return Object.entries(obj).map(([key, value]) => ({ key, value }));
+  }
+
+  getFilteredEntries(obj: any): any[] {
+    if (!obj) return [];
+    return Object.entries(obj)
+      .filter(([_, value]: [string, any]) => {
+        if (value === null || value === undefined || value === '' || value === '-' || value === 'N/A') return false;
+        if (typeof value === 'object' && (!value.value || value.value === '-' || value.value === '')) return false;
+        return true;
+      })
+      .map(([key, value]) => ({ key, value }));
+  }
+
+  reportProgrammingResult(tool: string, worked: boolean) {
+    console.log(`Reporting ${worked ? 'Success' : 'Failure'} for ${tool}`);
+    this.utilService.showToast(`Thank you for your report on ${tool}!`, worked ? 'success' : 'danger');
+  }
+
+  viewToolComments(tool: string) {
+    console.log(`Viewing comments for ${tool}`);
+    // Navigation to a comments page could go here
   }
 }

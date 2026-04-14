@@ -87,7 +87,7 @@
             <div class="tumbler-label-col"></div>
             <div class="tumbler-grid-header">
               <div class="tumbler-nums">
-                <span *ngFor="let n of [1,2,3,4,5]">{{ n }}</span>
+                <span *ngFor="let n of available_cuts ">{{ n }}</span>
               </div>
             </div>
           </div>
@@ -116,23 +116,6 @@
         </div>
       </div>
 
-      <!-- OBD Location -->
-      <div class="vd-info-card" *ngIf="vehicle.vehicle_info?.OBD_Location?.OBD_Location_Text">
-        <h3 class="vd-section-title">OBD Location</h3>
-        <div class="obd-content">
-          <img *ngIf="vehicle.vehicle_info.OBD_Location.OBD_Location_Image"
-            [src]="vehicle.vehicle_info.OBD_Location.OBD_Location_Image" alt="OBD Location" class="obd-image"
-            onerror="this.style.display='none'">
-          <p class="obd-text">{{ vehicle.vehicle_info.OBD_Location.OBD_Location_Text }}</p>
-        </div>
-      </div>
-
-    </div>
-
-    <!-- ─── TAB: KEYMAKING ─── -->
-    <div class="vd-tab-panel" *ngIf="activeTab === 'keymaking'">
-
-      <!-- Mechanical Keys -->
       <div class="vd-section-block" *ngIf="mechanicalKeys.length">
         <div class="vd-section-header">
           <h2 class="vd-section-heading">The Keys</h2>
@@ -156,8 +139,120 @@
         </div>
       </div>
 
+      <div class="vd-section-block">
+        <div class="vd-section-header">
+          <h2 class="vd-section-heading">The Remotes</h2>
+        </div>
+        <div class="vd-item-list" *ngIf="remotes.length">
+          <div class="vd-item-card" *ngFor="let item of remotes">
+            <div class="vd-item-type">{{ item.type }}</div>
+            <img *ngIf="item.products?.imagePath" [src]="imgBaseUrl + item.products.imagePath" alt="{{ item.name }}"
+              onerror="this.src='/assets/images/logo.png'" class="vd-item-img">
+            <div class="vd-item-info">
+              <div class="vd-item-name">{{ item.name }}</div>
+              <div class="vd-remote-meta" *ngIf="item.fcc_id">FCC: {{ item.fcc_id }}</div>
+              <div class="vd-remote-meta" *ngIf="item.frequency">{{ item.frequency }}</div>
+              <a *ngIf="item.products?.products_id"
+                [routerLink]="['/product', getFirstProductId(item.products.products_id)]" class="vd-item-price">${{
+                item.products.least_price | number:'1.2-2' }}</a>
+            </div>
+            <button class="vd-add-btn" *ngIf="item.products?.products_id"
+              [routerLink]="['/product', getFirstProductId(item.products.products_id)]">
+              <ion-icon name="add-outline"></ion-icon>
+            </button>
+          </div>
+        </div>
+        <span class="info-label" *ngIf="!remotes.length">No Remotes Found</span>
+      </div>
+
+      <!-- OBD Location -->
+      <div class="vd-info-card" *ngIf="vehicle.vehicle_info?.OBD_Location?.OBD_Location_Text">
+        <h3 class="vd-section-title">OBD Location</h3>
+        <div class="obd-content">
+          <img *ngIf="vehicle.vehicle_info.OBD_Location.OBD_Location_Image"
+            [src]="vehicle.vehicle_info.OBD_Location.OBD_Location_Image" alt="OBD Location" class="obd-image"
+            onerror="this.style.display='none'">
+          <p class="obd-text">{{ vehicle.vehicle_info.OBD_Location.OBD_Location_Text }}</p>
+        </div>
+      </div>
+
+      <!-- Key Cuttings -->
+      <div class="vd-section-block" *ngIf="keyCuttingData">
+        <div class="vd-section-header">
+          <h2 class="vd-section-heading">Key Cutting Info</h2>
+        </div>
+        <div class="key-cutting-list">
+          <div class="key-machine-group" *ngFor="let machine of getEntries(keyCuttingData); let last = last">
+            <div class="key-machine-block">
+              <div class="machine-header">
+                <span class="machine-name">{{ normalizeKey(machine.key) | uppercase }}</span>
+              </div>
+              <div class="machine-details">
+                <div class="basic-info-item" *ngFor="let detail of getEntries(machine.value)">
+                  <span class="info-label">{{ normalizeKey(detail.key) }}</span>
+                  <span class="info-value">{{ getDisplayValue(detail.value) }}</span>
+                </div>
+              </div>
+            </div>
+            <hr class="vd-separator" *ngIf="!last">
+          </div>
+        </div>
+      </div>
+
+      <!-- Key Programming -->
+      <div class="vd-section-block" *ngIf="keyProgrammingData">
+        <div class="vd-section-header">
+          <h2 class="vd-section-heading">Key Programming Info</h2>
+        </div>
+        <div class="key-programming-list">
+          <div class="key-machine-group" *ngFor="let prog of getEntries(keyProgrammingData); let last = last">
+            <div class="key-machine-block programming-block">
+              <div class="block-top-row">
+                <div class="machine-name-col">
+                  <span class="machine-name">{{ normalizeKey(prog.key) | uppercase }}</span>
+                </div>
+                <div class="machine-details-col">
+                  <div class="basic-info-item" *ngFor="let detail of getFilteredEntries(prog.value)">
+                    <span class="info-label">{{ normalizeKey(detail.key) | uppercase }}</span>
+                    <span class="info-value">{{ getDisplayValue(detail.value) }}</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Community Report Box -->
+              <div class="vd-report-box">
+                <p class="report-desc">
+                  Over the last 90 days, the following reports have been received by other
+                  <strong>{{ normalizeKey(prog.key) }}</strong> users on the
+                  <strong>{{ getVehicleName() }}</strong>:
+                </p>
+                <div class="report-stats">
+                  Working: <span class="stat-num">0</span> |
+                  Not Working: <span class="stat-num">0</span> |
+                  Success Rate: <span class="stat-num">N/A</span>
+                </div>
+                <div class="report-actions">
+                  <button class="report-btn" (click)="reportProgrammingResult(prog.key, true)">IT WORKED FOR ME</button>
+                  <button class="report-btn" (click)="reportProgrammingResult(prog.key, false)">IT DIDN'T WORK FOR ME</button>
+                </div>
+                <a class="view-comments" (click)="viewToolComments(prog.key)">View Comments (0)</a>
+              </div>
+            </div>
+            <hr class="vd-separator" *ngIf="!last">
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ─── TAB: KEYMAKING ─── -->
+    <div class="vd-tab-panel" *ngIf="activeTab === 'keymaking'">
+
+      <!-- Mechanical Keys -->
+
+
       <!-- Transponder Keys -->
-      <div class="vd-section-block" *ngIf="transponderKeys.length">
+      <!-- <div class="vd-section-block" *ngIf="transponderKeys.length">
         <div class="vd-section-header">
           <h2 class="vd-section-heading">Transponder Keys</h2>
         </div>
@@ -178,33 +273,10 @@
             </button>
           </div>
         </div>
-      </div>
+      </div> -->
 
       <!-- Remotes -->
-      <div class="vd-section-block" *ngIf="remotes.length">
-        <div class="vd-section-header">
-          <h2 class="vd-section-heading">The Remotes</h2>
-        </div>
-        <div class="vd-item-list">
-          <div class="vd-item-card" *ngFor="let item of remotes">
-            <div class="vd-item-type">{{ item.type }}</div>
-            <img *ngIf="item.products?.imagePath" [src]="imgBaseUrl + item.products.imagePath" alt="{{ item.name }}"
-              onerror="this.src='/assets/images/logo.png'" class="vd-item-img">
-            <div class="vd-item-info">
-              <div class="vd-item-name">{{ item.name }}</div>
-              <div class="vd-remote-meta" *ngIf="item.fcc_id">FCC: {{ item.fcc_id }}</div>
-              <div class="vd-remote-meta" *ngIf="item.frequency">{{ item.frequency }}</div>
-              <a *ngIf="item.products?.products_id"
-                [routerLink]="['/product', getFirstProductId(item.products.products_id)]" class="vd-item-price">${{
-                item.products.least_price | number:'1.2-2' }}</a>
-            </div>
-            <button class="vd-add-btn" *ngIf="item.products?.products_id"
-              [routerLink]="['/product', getFirstProductId(item.products.products_id)]">
-              <ion-icon name="add-outline"></ion-icon>
-            </button>
-          </div>
-        </div>
-      </div>
+
 
     </div>
 
