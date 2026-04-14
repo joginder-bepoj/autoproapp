@@ -10,6 +10,8 @@ import { AsyncPipe } from '@angular/common';
 import { ChangeDetectorRef } from '@angular/core';
 
 import { SplashScreen } from '@capacitor/splash-screen';
+import { App } from '@capacitor/app';
+import { Location } from '@angular/common';
 
 @Component({
   selector: 'app-root',
@@ -37,7 +39,8 @@ export class AppComponent {
     private router: Router,
     private utilService: UtilService,
     private apiService: ApiService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private location: Location
   ) {
 
     this.router.events
@@ -65,6 +68,14 @@ export class AppComponent {
     const startTime = Date.now();
     const minDisplayTime = 2000; // Minimum splash display time in ms
     const privateKey = this.utilService.getPrivateKey();
+
+    App.addListener('backButton', ({ canGoBack }) => {
+      if (this.isHomePage || !this.showAppComponents) {
+        App.exitApp();
+      } else {
+        this.location.back();
+      }
+    });
 
     const finishInitialization = async () => {
       const elapsedTime = Date.now() - startTime;
