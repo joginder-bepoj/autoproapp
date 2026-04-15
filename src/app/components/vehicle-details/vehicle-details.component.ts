@@ -28,7 +28,6 @@ import {
   styleUrls: ['./vehicle-details.component.scss'],
   standalone: true,
   imports: [
-    IonButton,
     IonIcon,
     BreadcrumbsComponent,
     CommonModule,

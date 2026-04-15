@@ -6,7 +6,7 @@ import { addIcons } from 'ionicons';
 import { BreadcrumbsComponent } from '../../shared/breadcrumbs/breadcrumbs.component';
 import { addOutline, removeOutline, cartOutline, heartOutline, optionsOutline, chevronForwardOutline, alertCircleOutline, searchOutline } from 'ionicons/icons';
 import { ApiService } from '../../services/api-service';
-import { finalize } from 'rxjs';
+import { combineLatest, finalize } from 'rxjs';
 import { UtilService } from 'src/app/services/util.service';
 
 interface Product {
@@ -37,6 +37,8 @@ export class ProductListComponent implements OnInit {
   isLoggedIn: boolean = false;
   baseUrl: string;
   breadcrumb: any[] = [];
+  isCategoryPage: boolean = false;
+  categoryId: string = '';
 
 
   private apiService = inject(ApiService);
@@ -49,13 +51,37 @@ export class ProductListComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.isLoggedIn = this.utilService.isLoggedIn()
-    this.route.queryParams.subscribe(params => {
-      this.searchQuery = params['q'] || '';
-      if (this.searchQuery) {
-        this.fetchProducts();
-      }
+    this.isLoggedIn = this.utilService.isLoggedIn();
+
+    // Use combineLatest to handle both route params and query params in one go
+    combineLatest([
+      this.route.params,
+      this.route.queryParams
+    ]).subscribe(([params, queryParams]) => {
+      this.categoryId = params['id'] || null;
+      this.searchQuery = queryParams['q'] || '';
+
+      this.handleRouting();
     });
+  }
+
+  handleRouting() {
+    if (this.categoryId) {
+      // CATEGORY PAGE
+      this.isCategoryPage = true;
+      this.breadcrumb = [
+        { label: 'Product Category', url: '/product-category' },
+      ];
+      this.fetchCategoryProducts(); // use categoryId
+    } else if (this.searchQuery) {
+      // SEARCH PAGE
+      this.isCategoryPage = false;
+
+      this.fetchProducts(); // use searchQuery
+    } else {
+      // DEFAULT CASE (optional)
+      this.isCategoryPage = false;
+    }
   }
 
   fetchProducts() {
@@ -102,5 +128,25 @@ export class ProductListComponent implements OnInit {
   navigateToDetails(id: string) {
     this.router.navigate([this.searchQuery, 'product-details', id]);
   }
+
+  fetchCategoryProducts() {
+    this.loading = true;
+    this.error = null;
+
+    this.apiService.getProductsByCategory(this.categoryId)
+      .pipe(finalize(() => this.loading = false))
+      .subscribe(
+        (res: any) => {
+          this.products = res?.data?.products;
+          this.totalResults = res?.data?.totalResults;
+          console.log(this.products, 'i am the products');
+        },
+        (err: any) => {
+          this.error = 'Failed to load products. Please try again.';
+          console.error('Search error:', err);
+        }
+      );
+  }
+
 }
 

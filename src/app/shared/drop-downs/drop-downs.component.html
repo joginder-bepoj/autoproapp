@@ -1,0 +1,15 @@
+<div class="step-column" [class.active]="active" [class.disabled]="disabled">
+  <div class="step-header">
+    <span class="step-badge">{{ stepNumber }}</span>
+    <label>Level {{ stepNumber }}: {{ label }}</label>
+  </div>
+  <div class="step-body">
+    <ion-item lines="none" class="custom-item">
+      <ion-select [placeholder]="placeholder" [(ngModel)]="selectedValue" (ionChange)="onIonChange($event)"
+        [disabled]="disabled" interface="popover" toggleIcon="chevron-forward-outline">
+        <ion-select-option *ngFor="let option of options" [value]="option">{{ option.name }}</ion-select-option>
+        <ion-select-option *ngIf="!options || options.length == 0" disabled>No Items Available</ion-select-option>
+      </ion-select>
+    </ion-item>
+  </div>
+</div>

@@ -45,8 +45,8 @@ export class CategoryComponent implements OnInit {
 
   ngOnInit() {
     this.fetchCategories();
-    this.route.params.subscribe((params: any) => {
-      this.vehicleSearchQuery = params['id'] || '';
+    this.route.queryParams.subscribe((params: any) => {
+      this.vehicleSearchQuery = params['search'] || '';
     });
   }
 

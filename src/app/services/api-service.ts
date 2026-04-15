@@ -132,6 +132,10 @@ export class ApiService {
     return this.request('GET', 'categories');
   }
 
+  getProductsByCategory(id: string) {
+    return this.request('GET', 'categories/' + id);
+  }
+
   // =========================
   // 🛒 CART APIs
   // =========================

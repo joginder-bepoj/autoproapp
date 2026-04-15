@@ -76,7 +76,7 @@ export class HomePage {
 
   onVehicleSearch() {
     if (this.vehicleSearchQuery.trim()) {
-      this.router.navigate(['/category', this.vehicleSearchQuery.toLocaleLowerCase()]);
+      this.router.navigate(['/category'], { queryParams: { search: this.vehicleSearchQuery.toLocaleLowerCase() } });
     }
   }
 
@@ -88,6 +88,11 @@ export class HomePage {
 
   openCategoryPage() {
     this.router.navigate(['/category']);
+  }
+
+  openProductCategoryPage() {
+    console.log('openProductCategoryPage');
+    this.router.navigate(['/product-category']);
   }
 }
 

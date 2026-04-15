@@ -62,19 +62,11 @@ export class AppComponent {
 
   ngOnInit() {
     this.initializeApp();
-    this.apiService.getProductCategories().subscribe({
-      next: (res: any) => {
-        console.log(res);
-      },
-      error: (err) => {
-        console.error(err);
-      }
-    });
   }
 
   private async initializeApp() {
     const startTime = Date.now();
-    const minDisplayTime = 2000; // Minimum splash display time in ms
+    const minDisplayTime = 2000;
     const privateKey = this.utilService.getPrivateKey();
 
     App.addListener('backButton', ({ canGoBack }) => {

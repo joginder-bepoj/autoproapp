@@ -1,0 +1,35 @@
+<div class="category-page">
+  <div class="container">
+    <app-breadcrumbs [breadcrumb]="breadcrumb"></app-breadcrumbs>
+  </div>
+
+  <div class="category-hero">
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+      <div class="progress-indicator">
+        <div class="progress-bar-container">
+          <div class="progress-bar" [style.width.%]="(activeSteps.length / 4) * 100"></div>
+        </div>
+        <p class="step-text">Depth: {{activeSteps.length}} Levels</p>
+      </div>
+      <h1>Product Categories</h1>
+      <p>Drill down into our catalog to find exactly what you're looking for.</p>
+    </div>
+  </div>
+
+  <div class="selection-container">
+    <div class="steps-card glass">
+      <div class="steps-wrapper">
+        <app-drop-downs *ngFor="let step of activeSteps; let i = index" [label]="step.label"
+          [placeholder]="step.placeholder" [options]="step.options" [selectedValue]="step.selectedValue"
+          [stepNumber]="i + 1" [active]="isStepActive(i)" (selectionChange)="onStepChange($event, i)">
+        </app-drop-downs>
+      </div>
+
+      <ion-button expand="block" class="find-products-btn mt-3" [disabled]="!isSelectionComplete()"
+        (click)="onFindProducts()">
+        FIND PRODUCTS
+      </ion-button>
+    </div>
+  </div>
+</div>

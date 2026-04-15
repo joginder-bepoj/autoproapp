@@ -36,6 +36,11 @@ export const routes: Routes = [
     loadComponent: () => import('./shared/feedback/feedback.component').then((m) => m.FeedbackComponent),
   },
   {
+    path: 'product-list/:id',
+    canActivate: [authGuard],
+    loadComponent: () => import('./components/product-list/product-list.component').then((m) => m.ProductListComponent),
+  },
+  {
     path: 'product-list',
     canActivate: [authGuard],
     loadComponent: () => import('./components/product-list/product-list.component').then((m) => m.ProductListComponent),
@@ -69,5 +74,10 @@ export const routes: Routes = [
     path: ':make/:model/vehicle-details/:id',
     canActivate: [authGuard],
     loadComponent: () => import('./components/vehicle-details/vehicle-details.component').then((m) => m.VehicleDetailsComponent),
+  },
+  {
+    path: 'product-category',
+    canActivate: [authGuard],
+    loadComponent: () => import('./components/product-category/product-category.component').then((m) => m.ProductCategoryComponent),
   }
 ];
