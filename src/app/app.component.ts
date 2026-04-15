@@ -2,8 +2,8 @@ import { Component, ViewChild } from '@angular/core';
 import { IonApp, IonContent } from '@ionic/angular/standalone';
 import { Router, NavigationEnd, RouterOutlet } from '@angular/router';
 import { filter } from 'rxjs/operators';
-import { HeaderComponent } from './components/header/header.component';
-import { FooterComponent } from './components/footer/footer.component';
+import { HeaderComponent } from './shared/header/header.component';
+import { FooterComponent } from './shared/footer/footer.component';
 import { UtilService } from './services/util.service';
 import { ApiService } from './services/api-service';
 import { AsyncPipe } from '@angular/common';
@@ -62,6 +62,14 @@ export class AppComponent {
 
   ngOnInit() {
     this.initializeApp();
+    this.apiService.getProductCategories().subscribe({
+      next: (res: any) => {
+        console.log(res);
+      },
+      error: (err) => {
+        console.error(err);
+      }
+    });
   }
 
   private async initializeApp() {

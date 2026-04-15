@@ -45,7 +45,7 @@ import {
   ],
 })
 export class HomePage {
-  mainSearchQuery: string = '';
+  modelSearchQuery: string = '';
   vehicleSearchQuery: string = '';
   vinSearchQuery: string = '';
 
@@ -68,15 +68,15 @@ export class HomePage {
     addIcons({ searchOutline, carSportOutline, chevronForwardOutline, carOutline, keyOutline, barcodeOutline, cameraOutline, speedometerOutline, bookOutline, constructOutline, documentTextOutline, peopleOutline, notificationsOutline, personCircleOutline, arrowForwardOutline, chevronDownOutline });
   }
 
-  onMainSearch() {
-    if (this.mainSearchQuery.trim()) {
-      this.router.navigate(['/product-list'], { queryParams: { q: this.mainSearchQuery } });
+  onModelSearch() {
+    if (this.modelSearchQuery.trim()) {
+      this.router.navigate(['/product-list'], { queryParams: { q: this.modelSearchQuery } });
     }
   }
 
   onVehicleSearch() {
     if (this.vehicleSearchQuery.trim()) {
-      this.router.navigate(['/product-list'], { queryParams: { q: this.vehicleSearchQuery } });
+      this.router.navigate(['/category', this.vehicleSearchQuery.toLocaleLowerCase()]);
     }
   }
 

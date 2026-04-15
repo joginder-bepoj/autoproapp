@@ -35,16 +35,23 @@
     <div class="vd-tab-panel" *ngIf="activeTab === 'overview'">
       <!-- Vehicle Overview Section -->
       <div class="overview-section">
-        <div class="vd-carousel-container" *ngIf="vehicle.vehicle_image && vehicle.vehicle_image.length">
+        <div class="vd-carousel-container">
           <div class="vd-carousel-viewport">
-            <div class="vd-slide" *ngFor="let img of vehicle.vehicle_image; let i = index"
-              [class.active]="currentImageIndex === i">
-              <img [src]="img.image" alt="Vehicle Image {{i + 1}}" onerror="this.src='/assets/images/logo.png'">
-            </div>
+            <ng-container *ngIf="vehicle.vehicle_image && vehicle.vehicle_image.length; else noImages">
+              <div class="vd-slide" *ngFor="let img of vehicle.vehicle_image; let i = index"
+                [class.active]="currentImageIndex === i">
+                <img [src]="img.image" alt="Vehicle Image {{i + 1}}" onerror="this.src='/assets/images/no-image-available.png'">
+              </div>
+            </ng-container>
+            <ng-template #noImages>
+              <div class="vd-slide active">
+                <img src="/assets/images/no-image-available.png" alt="No Vehicle Image Available">
+              </div>
+            </ng-template>
           </div>
 
           <!-- Navigation Arrows (only if more than 1 image) -->
-          <ng-container *ngIf="vehicle.vehicle_image.length > 1">
+          <ng-container *ngIf="vehicle.vehicle_image?.length > 1">
             <button class="carousel-nav-btn prev" (click)="prevImage()">
               <ion-icon name="chevron-back-outline"></ion-icon>
             </button>
@@ -78,7 +85,7 @@
 
 
       <!-- Tumbler Grid -->
-      <div class="d-lg-flex">
+      <div class="vd-flex-row">
         <h3 class="section-subtitle d-lg-none">TUMBLER LOCATIONS</h3>
         <div class="vd-tumbler-section" *ngIf="tumblerRows.length">
           <h3 class="section-subtitle d-none d-lg-block">TUMBLER LOCATIONS</h3>
@@ -124,7 +131,7 @@
           <div class="vd-item-card" *ngFor="let key of mechanicalKeys">
             <div class="vd-item-type">Mechanical Key</div>
             <img *ngIf="key.image" [src]="imgBaseUrl + key.image" alt="{{ key.value }}"
-              onerror="this.src='/assets/images/logo.png'" class="vd-item-img">
+              onerror="this.src='/assets/images/no-image-available.png'" class="vd-item-img">
             <div class="vd-item-info">
               <div class="vd-item-name">{{ key.value }}</div>
               <a *ngIf="key.products?.products_id"
@@ -147,7 +154,7 @@
           <div class="vd-item-card" *ngFor="let item of remotes">
             <div class="vd-item-type">{{ item.type }}</div>
             <img *ngIf="item.products?.imagePath" [src]="imgBaseUrl + item.products.imagePath" alt="{{ item.name }}"
-              onerror="this.src='/assets/images/logo.png'" class="vd-item-img">
+              onerror="this.src='/assets/images/no-image-available.png'" class="vd-item-img">
             <div class="vd-item-info">
               <div class="vd-item-name">{{ item.name }}</div>
               <div class="vd-remote-meta" *ngIf="item.fcc_id">FCC: {{ item.fcc_id }}</div>
@@ -181,20 +188,17 @@
         <div class="vd-section-header">
           <h2 class="vd-section-heading">Key Cutting Info</h2>
         </div>
-        <div class="vd-info-list">
-          <div class="info-group" *ngFor="let machine of getEntries(keyCuttingData); let last = last">
-            <div class="info-block">
-              <div class="block-header">
-                <span class="block-name">{{ normalizeKey(machine.key) | uppercase }}</span>
-              </div>
-              <div class="block-details">
-                <div class="basic-info-item" *ngFor="let detail of getEntries(machine.value)">
-                  <span class="info-label">{{ normalizeKey(detail.key) }}</span>
-                  <span class="info-value">{{ getDisplayValue(detail.value) }}</span>
-                </div>
+        <div class="key-cutting-grid">
+          <div class="key-cutting-card" *ngFor="let machine of getEntries(keyCuttingData)">
+            <div class="block-header">
+              <span class="block-name">{{ normalizeKey(machine.key) | uppercase }}</span>
+            </div>
+            <div class="block-details">
+              <div class="basic-info-item" *ngFor="let detail of getEntries(machine.value)">
+                <span class="info-label">{{ normalizeKey(detail.key) }}</span>
+                <span class="info-value">{{ getDisplayValue(detail.value) }}</span>
               </div>
             </div>
-            <hr class="vd-separator" *ngIf="!last">
           </div>
         </div>
       </div>
@@ -260,7 +264,7 @@
           <div class="vd-item-card" *ngFor="let key of transponderKeys">
             <div class="vd-item-type">{{ key.value || key.chip_key_name }}</div>
             <img *ngIf="key.products?.imagePath" [src]="imgBaseUrl + key.products.imagePath" alt="{{ key.value }}"
-              onerror="this.src='/assets/images/logo.png'" class="vd-item-img">
+              onerror="this.src='/assets/images/no-image-available.png'" class="vd-item-img">
             <div class="vd-item-info">
               <div class="vd-item-name">{{ key.value || 'Transponder Key' }}</div>
               <a *ngIf="key.products?.products_id"
@@ -336,8 +340,8 @@
           <div class="vd-parts-grid">
             <div class="vd-part-card" *ngFor="let part of vehicleParts"
               [routerLink]="part.itemID ? ['/product', part.itemID] : null">
-              <img [src]="part.image || '/assets/images/logo.png'" [alt]="part.name"
-                onerror="this.src='/assets/images/logo.png'" class="vd-part-img">
+              <img [src]="part.image || '/assets/images/no-image-available.png'" [alt]="part.name"
+                onerror="this.src='/assets/images/no-image-available.png'" class="vd-part-img">
               <div class="vd-part-info">
                 <div class="vd-part-name">{{ part.name }}</div>
                 <div class="vd-part-price" *ngIf="part.price">${{ part.price | number:'1.2-2' }}</div>

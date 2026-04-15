@@ -19,6 +19,8 @@
 
   <div class="selection-container">
     <div class="steps-card glass">
+      <h6 *ngIf="vehicleSearchQuery && makes.length == 0" class="my-2 ms-1 text-danger">No Vehicle Found for
+        "{{vehicleSearchQuery}}"</h6>
       <div class="steps-wrapper">
         <!-- Step 1: Make -->
         <div class="step-column" [class.active]="currentStep >= 1">

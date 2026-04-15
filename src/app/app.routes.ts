@@ -33,7 +33,7 @@ export const routes: Routes = [
   {
     path: 'feedback',
     canActivate: [authGuard],
-    loadComponent: () => import('./components/feedback/feedback.component').then((m) => m.FeedbackComponent),
+    loadComponent: () => import('./shared/feedback/feedback.component').then((m) => m.FeedbackComponent),
   },
   {
     path: 'product-list',
@@ -54,6 +54,11 @@ export const routes: Routes = [
     path: 'cart',
     canActivate: [authGuard],
     loadComponent: () => import('./components/shopping-cart/shopping-cart.component').then((m) => m.ShoppingCartComponent),
+  },
+  {
+    path: 'category/:id',
+    canActivate: [authGuard],
+    loadComponent: () => import('./components/category/category.component').then((m) => m.CategoryComponent),
   },
   {
     path: 'category',

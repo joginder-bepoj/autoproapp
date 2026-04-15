@@ -108,6 +108,7 @@ export class ApiService {
   }
 
   getCustomerProfile() {
+    // return this.http.get(this.api_base_url + 'customer/info',)
     return this.request('GET', 'customer/info');
   }
 
@@ -125,6 +126,10 @@ export class ApiService {
 
   getProductDetail(itemID: number) {
     return this.request('GET', 'product-info/' + itemID);
+  }
+
+  getProductCategories() {
+    return this.request('GET', 'categories');
   }
 
   // =========================

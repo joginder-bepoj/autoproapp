@@ -4,7 +4,7 @@ import { IonIcon, IonButton, IonInput } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { calendarOutline, syncOutline, phonePortraitOutline, trashOutline, addOutline, shieldCheckmarkOutline, starOutline, ribbonOutline, pieChartOutline, carOutline, pencilOutline, keyOutline, bulbOutline, chatboxEllipsesOutline, bagHandleOutline, cartOutline, clipboardOutline, medalOutline, carSportOutline, mailOutline } from 'ionicons/icons';
 import { Router } from '@angular/router';
-import { BreadcrumbsComponent } from '../../shared/components/breadcrumbs/breadcrumbs.component';
+import { BreadcrumbsComponent } from '../../shared/breadcrumbs/breadcrumbs.component';
 import { UtilService } from '../../services/util.service';
 import { Observable } from 'rxjs';
 

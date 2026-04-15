@@ -3,7 +3,7 @@ import { CommonModule, DecimalPipe } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { addIcons } from 'ionicons';
-import { BreadcrumbsComponent } from '../../shared/components/breadcrumbs/breadcrumbs.component';
+import { BreadcrumbsComponent } from '../../shared/breadcrumbs/breadcrumbs.component';
 import { addOutline, removeOutline, cartOutline, heartOutline, shareOutline, chevronForwardOutline, chevronDownOutline, checkmarkCircleOutline, carOutline, buildOutline, alertCircleOutline, checkmarkOutline, closeOutline } from 'ionicons/icons';
 import { ApiService } from '../../services/api-service';
 import { finalize } from 'rxjs';

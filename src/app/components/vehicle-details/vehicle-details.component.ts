@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { ApiService } from 'src/app/services/api-service';
 import { UtilService } from 'src/app/services/util.service';
-import { BreadcrumbsComponent } from 'src/app/shared/components/breadcrumbs/breadcrumbs.component';
+import { BreadcrumbsComponent } from 'src/app/shared/breadcrumbs/breadcrumbs.component';
 import { IonIcon, IonButton } from "@ionic/angular/standalone";
 import { CommonModule, TitleCasePipe, DecimalPipe, DatePipe, NgIf } from '@angular/common';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
@@ -145,12 +145,22 @@ export class VehicleDetailsComponent implements OnInit {
 
     // 2. Keys
     const keys = this.vehicle.vehicle_info?.the_keys?.key_type;
-    this.mechanicalKeys = keys?.Mechanical_Key || [];
-    this.transponderKeys = keys?.Transponder_Key || [];
+    const filterEmpty = (list: any[]) => (list || []).filter(item => {
+      if (!item) return false;
+      const hasValue = item.value && item.value.trim() !== '';
+      const hasProducts = item.products && (typeof item.products === 'object' ? Object.keys(item.products).length > 0 : item.products.trim() !== '');
+      return hasValue || hasProducts;
+    });
+
+    this.mechanicalKeys = filterEmpty(keys?.Mechanical_Key);
+    this.transponderKeys = filterEmpty(keys?.Transponder_Key);
 
     // 3. Remotes
-    this.remotes = [];
-    const remotesInput = this.vehicle.vehicle_info?.the_remotes;
+    const remotesInput = this.vehicle.vehicle_info?.the_remotes || [];
+    this.remotes = (Array.isArray(remotesInput) ? remotesInput : [remotesInput]).filter(item => {
+      if (!item) return false;
+      return item.name && item.name.trim() !== '';
+    });
 
     // 5. Methods
     this.keymakingMethods = this.vehicle.key_making_methods?.methods || [];
@@ -252,7 +262,6 @@ export class VehicleDetailsComponent implements OnInit {
   }
 
   getDisplayValue(val: any): string {
-    console.log(val);
     if (val === null || val === undefined) return 'N/A';
     if (typeof val === 'object') {
       return val.value || 'N/A';

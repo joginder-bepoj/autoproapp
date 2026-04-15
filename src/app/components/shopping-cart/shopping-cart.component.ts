@@ -16,7 +16,7 @@ import {
   pricetagOutline,
   lockClosedOutline
 } from 'ionicons/icons';
-import { BreadcrumbsComponent } from '../../shared/components/breadcrumbs/breadcrumbs.component';
+import { BreadcrumbsComponent } from '../../shared/breadcrumbs/breadcrumbs.component';
 
 @Component({
   selector: 'app-shopping-cart',
