@@ -85,11 +85,11 @@ export class ProductListComponent implements OnInit {
   }
 
   fetchProducts() {
-    this.loading = true;
+    this.utilService.showLoader();
     this.error = null;
 
     this.apiService.searchProducts(this.searchQuery)
-      .pipe(finalize(() => this.loading = false))
+      .pipe(finalize(() => this.utilService.hideLoader()))
       .subscribe(
         (res: any) => {
           this.products = res?.data?.products;
@@ -130,11 +130,11 @@ export class ProductListComponent implements OnInit {
   }
 
   fetchCategoryProducts() {
-    this.loading = true;
+    this.utilService.showLoader();
     this.error = null;
 
     this.apiService.getProductsByCategory(this.categoryId)
-      .pipe(finalize(() => this.loading = false))
+      .pipe(finalize(() => this.utilService.hideLoader()))
       .subscribe(
         (res: any) => {
           this.products = res?.data?.products;

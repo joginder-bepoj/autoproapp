@@ -116,3 +116,9 @@ app-drop-downs {
     }
   }
 }
+
+@media (max-width: 768px) {
+  .step-column {
+    width: 100%;
+  }
+}
