@@ -50,7 +50,7 @@ export class HomePage {
   vinSearchQuery: string = '';
 
   tools = [
-    { title: 'KEY CODES\nPIN CODES', icon: 'speedometer-outline' },
+    { title: 'KEY CODES\nPIN CODES', icon: 'speedometer-outline', url: '/pin-codes' },
     { title: 'KEY BLANK\nCROSS-REF', icon: 'key-outline' },
     { title: 'LOCKSMITH\nREFERENCES', icon: 'book-outline' },
     { title: 'SOFTWARE &\nUPDATES', icon: 'construct-outline' },
@@ -93,6 +93,12 @@ export class HomePage {
   openProductCategoryPage() {
     console.log('openProductCategoryPage');
     this.router.navigate(['/product-category']);
+  }
+
+  navigateTo(url: string | undefined) {
+    if (url) {
+      this.router.navigate(['/pages' + url]);
+    }
   }
 }
 

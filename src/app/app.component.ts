@@ -54,7 +54,6 @@ export class AppComponent {
         this.showAppComponents =
           !url.includes('/login') &&
           !url.includes('/register');
-        console.log('i am here');
         this.scrollToTop();
         this.cdr.detectChanges();
       });
@@ -102,6 +101,7 @@ export class AppComponent {
       this.apiService.getCustomerProfile().subscribe({
         next: (profile: any) => {
           if (profile?.data) {
+            console.log(profile.data);
             this.utilService.setUserProfile(profile.data);
           }
           onSyncComplete();

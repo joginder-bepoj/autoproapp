@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output, ViewEncapsulation } from '@angular/core';
-import { IonIcon, IonItem, IonSelect, IonSelectOption } from "@ionic/angular/standalone";
+import { IonItem, IonSelect, IonSelectOption } from "@ionic/angular/standalone";
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
@@ -8,7 +8,7 @@ import { FormsModule } from '@angular/forms';
   templateUrl: './drop-downs.component.html',
   styleUrls: ['./drop-downs.component.scss'],
   standalone: true,
-  imports: [IonIcon, IonItem, IonSelect, IonSelectOption, CommonModule, FormsModule],
+  imports: [IonItem, IonSelect, IonSelectOption, CommonModule, FormsModule],
   encapsulation: ViewEncapsulation.None
 })
 export class DropDownsComponent implements OnInit {

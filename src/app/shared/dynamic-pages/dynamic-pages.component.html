@@ -1,0 +1,42 @@
+<div class="dynamic-pages-page">
+  <!-- Hero Section -->
+  <div class="hero-section">
+    <div class="hero-bg-wrapper">
+      <div class="hero-overlay"></div>
+      <img src="/assets/images/aks-hero-bg.png" alt="Hero background" class="hero-bg-img">
+    </div>
+
+    <div class="container hero-container">
+      <div class="hero-content">
+        <h1 class="page-title">{{ pageQuery }}</h1>
+        <p class="page-subtitle">Access professional tools and technical references for automotive locksmiths.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Links Grid -->
+  <div class="container main-content">
+    <ion-grid fixed>
+      <ion-row>
+        <ion-col size="12" size-md="6" size-lg="4" *ngFor="let page of pageData">
+          <div class="premium-card" (click)="handlePageClick(page)">
+            <div class="card-info">
+              <h3 class="card-name">{{ page['Page Name'] }}</h3>
+              <span class="card-action text-primary">View Details <ion-icon
+                  name="chevron-forward-outline"></ion-icon></span>
+            </div>
+            <div class="card-hover-effect"></div>
+          </div>
+        </ion-col>
+      </ion-row>
+
+      <!-- Empty State -->
+      <ion-row *ngIf="pageData.length == 0">
+        <ion-col size="12" class="ion-text-center no-data">
+          <ion-icon name="list-outline" class="empty-icon"></ion-icon>
+          <p>No extra pages found for "{{ pageQuery }}"</p>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </div>
+</div>

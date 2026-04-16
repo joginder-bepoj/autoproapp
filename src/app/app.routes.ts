@@ -79,5 +79,15 @@ export const routes: Routes = [
     path: 'product-category',
     canActivate: [authGuard],
     loadComponent: () => import('./components/product-category/product-category.component').then((m) => m.ProductCategoryComponent),
+  },
+  {
+    path: 'pages/:page',
+    canActivate: [authGuard],
+    loadComponent: () => import('./shared/dynamic-pages/dynamic-pages.component').then((m) => m.DynamicPagesComponent),
+  },
+  {
+    path: 'nissan-bcm-to-pin',
+    canActivate: [authGuard],
+    loadComponent: () => import('./fragments/nissan-bcm-to-pin/nissan-bcm-to-pin.component').then((m) => m.NissanBcmToPinComponent),
   }
 ];

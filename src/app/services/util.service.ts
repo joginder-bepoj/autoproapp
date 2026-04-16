@@ -23,7 +23,7 @@ export class UtilService {
     USER_PROFILE_LOADED: 'userProfileLoaded'
   };
 
-  private currentUserSubject = new BehaviorSubject<any>(null);
+  public currentUserSubject = new BehaviorSubject<any>(null);
   public currentUser$: Observable<any> = this.currentUserSubject.asObservable();
   private cartSubject = new BehaviorSubject<any>(null);
   public cart$: Observable<any> = this.cartSubject.asObservable();
@@ -118,7 +118,7 @@ export class UtilService {
   }
 
   getUserProfile(): any {
-    return this.currentUserSubject.value; // Return in-memory state
+    return this.currentUserSubject.value;
   }
 
   async setLoginEmail(email: string): Promise<void> {
@@ -208,7 +208,7 @@ export class UtilService {
 
   // ─── Toast ─────────────────────────────────────────────────────────────────
 
-  async showToast(message: string, color: 'success' | 'danger' | 'warning' | 'primary' = 'primary', duration: number = 3000000) {
+  async showToast(message: string, color: 'success' | 'danger' | 'warning' | 'primary' = 'primary', duration: number = 3000) {
     const toast = await this.toastController.create({
       message,
       duration,
@@ -267,5 +267,17 @@ export class UtilService {
 
   getCart(): any {
     return this.cartSubject.value;
+  }
+
+  strToHex(str: string): string {
+    const encoder = new TextEncoder();
+    const bytes = encoder.encode(str);
+
+    let hex = '';
+    bytes.forEach((b) => {
+      hex += b.toString(16).padStart(2, '0').toUpperCase();
+    });
+
+    return hex;
   }
 }

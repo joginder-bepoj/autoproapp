@@ -1,4 +1,4 @@
-import { NgFor, NgIf, CommonModule } from '@angular/common';
+import { NgFor, CommonModule } from '@angular/common';
 import { Component, OnInit, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { ApiService } from 'src/app/services/api-service';
 import { DropDownsComponent } from '../../shared/drop-downs/drop-downs.component';
@@ -18,7 +18,7 @@ interface CategoryStep {
   templateUrl: './product-category.component.html',
   styleUrls: ['./product-category.component.scss'],
   standalone: true,
-  imports: [NgFor, NgIf, CommonModule, DropDownsComponent, BreadcrumbsComponent, IonButton, IonIcon],
+  imports: [NgFor, CommonModule, DropDownsComponent, BreadcrumbsComponent, IonButton],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class ProductCategoryComponent implements OnInit {

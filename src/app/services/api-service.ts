@@ -165,4 +165,23 @@ export class ApiService {
       'vehicle1/' + vehicleId + '.json'
     );
   }
+
+  getKeyBlanks() {
+    return this.http.get(
+      environment.api_firebase_url +
+      'app_keys.json'
+    );
+  }
+
+  getEzPages() {
+    return this.http.get(
+      environment.api_firebase_url +
+      'ez_pages.json'
+    );
+  }
+
+  checkNissan5BcmLimit(userId: string) {
+    return this.request('GET', 'users/' + userId + '/nissan5_conversion_logs');
+  }
+
 }

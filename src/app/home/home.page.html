@@ -91,7 +91,7 @@
       <ion-grid class="tools-grid">
         <ion-row>
           <ion-col size="12" size-md="4" *ngFor="let tool of tools">
-            <div class="tool-card">
+            <div class="tool-card" (click)="navigateTo(tool.url)">
               <div class="tool-icon-wrapper">
                 <ion-icon [name]="tool.icon" class="tool-icon"></ion-icon>
               </div>
