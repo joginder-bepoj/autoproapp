@@ -23,9 +23,17 @@ export class LoginComponent implements OnInit {
   ) { }
   ngOnInit(): void {
     let privateKey = this.utilService.getPrivateKey();
-    console.log(privateKey)
     if (privateKey) {
-      this.router.navigate(['/home']);
+      this.apiService.getCustomerProfile().subscribe({
+        next: (res: any) => {
+          if (res?.data) {
+            this.utilService.setUserProfile(res.data);
+            this.router.navigate(['/home']);
+          }
+        },
+        error: (err) => console.error('Profile error:', err)
+      });
+
     }
   }
   loginData = {

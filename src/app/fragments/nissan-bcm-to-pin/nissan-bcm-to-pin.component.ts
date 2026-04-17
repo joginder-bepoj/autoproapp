@@ -124,10 +124,10 @@ export class NissanBcmToPinComponent implements OnInit, OnDestroy {
 
         if (triesInDay >= 20) {
           this.utilService.hideLoader();
-          this.utilService.showToast('Sorry, you reached daily limit (20)', 'danger');
+          this.utilService.showAlert('Limit Reached', 'Sorry, you reached daily limit (20)');
         } else if (triesInHour >= 5) {
           this.utilService.hideLoader();
-          this.utilService.showToast('Sorry, you reached hourly limit (5)', 'danger');
+          this.utilService.showAlert('Limit Reached', 'Sorry, you reached hourly limit (5)');
         } else {
           this.performConversion(bcmCode, userIdHex);
         }

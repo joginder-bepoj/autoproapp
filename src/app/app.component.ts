@@ -1,4 +1,4 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, ViewChild, OnInit } from '@angular/core';
 import { IonApp, IonContent } from '@ionic/angular/standalone';
 import { Router, NavigationEnd, RouterOutlet } from '@angular/router';
 import { filter } from 'rxjs/operators';
@@ -8,7 +8,6 @@ import { UtilService } from './services/util.service';
 import { ApiService } from './services/api-service';
 import { AsyncPipe } from '@angular/common';
 import { ChangeDetectorRef } from '@angular/core';
-
 import { SplashScreen } from '@capacitor/splash-screen';
 import { App } from '@capacitor/app';
 import { Location } from '@angular/common';
@@ -26,7 +25,7 @@ import { Location } from '@angular/common';
     AsyncPipe
   ],
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
 
   showAppComponents: boolean = true;
   isHomePage: boolean = false;
@@ -39,15 +38,15 @@ export class AppComponent {
     private router: Router,
     private utilService: UtilService,
     private apiService: ApiService,
-    private cdr: ChangeDetectorRef,
     private location: Location
   ) {
-
+    this.loadSplashScreen();
     this.router.events
       .pipe(filter(event => event instanceof NavigationEnd))
       .subscribe((event: NavigationEnd) => {
 
         const url = event.urlAfterRedirects || event.url;
+
         this.isHomePage =
           url === '/home' || url.startsWith('/home?');
 
@@ -55,18 +54,22 @@ export class AppComponent {
           !url.includes('/login') &&
           !url.includes('/register');
         this.scrollToTop();
-        this.cdr.detectChanges();
       });
   }
 
   ngOnInit() {
-    this.initializeApp();
+    this.loadInitialData();
   }
 
-  private async initializeApp() {
-    const startTime = Date.now();
-    const minDisplayTime = 2000;
-    const privateKey = this.utilService.getPrivateKey();
+
+  async loadSplashScreen() {
+    await SplashScreen.show({
+      showDuration: 3000,
+      autoHide: true,
+    });
+  }
+
+  loadInitialData() {
 
     App.addListener('backButton', ({ canGoBack }) => {
       if (this.isHomePage || !this.showAppComponents) {
@@ -76,66 +79,33 @@ export class AppComponent {
       }
     });
 
-    const finishInitialization = async () => {
-      const elapsedTime = Date.now() - startTime;
-      const remainingTime = Math.max(0, minDisplayTime - elapsedTime);
+    const privateKey = this.utilService.getPrivateKey();
+    if (!privateKey) return;
 
-      // Wait for the remaining minimum time + a small buffer for rendering
-      setTimeout(() => {
-        this.hideSplashScreen();
-      }, remainingTime + 300);
-    };
-
-    if (privateKey) {
-      // Sync profile and cart
-      let syncsCompleted = 0;
-      const totalSyncs = 2;
-
-      const onSyncComplete = () => {
-        syncsCompleted++;
-        if (syncsCompleted >= totalSyncs) {
-          finishInitialization();
-        }
-      };
-
-      this.apiService.getCustomerProfile().subscribe({
-        next: (profile: any) => {
-          if (profile?.data) {
-            console.log(profile.data);
-            this.utilService.setUserProfile(profile.data);
-          }
-          onSyncComplete();
-        },
-        error: (err) => {
-          console.error('Initial profile sync failed:', err);
-          onSyncComplete();
-        }
-      });
-
-      this.apiService.getCartItems().subscribe({
-        next: (cart: any) => {
-          if (cart?.data) {
-            this.utilService.setCart(cart.data);
-          }
-          onSyncComplete();
-        },
-        error: (err) => {
-          console.error('Initial cart sync failed:', err);
-          onSyncComplete();
-        }
-      });
-
-      // Safety fallback: hide after 6 seconds even if sync fails
-      setTimeout(() => finishInitialization(), 6000);
+    // Get Profile
+    let user = this.utilService.getUserProfile();
+    if (user) {
+      this.utilService.setUserProfile(user);
     } else {
-      finishInitialization();
-    }
-  }
+      this.apiService.getCustomerProfile().subscribe({
+        next: (res: any) => {
+          if (res?.data) {
+            this.utilService.setUserProfile(res.data);
+          }
+        },
+        error: (err) => console.error('Profile error:', err)
+      });
 
-  private hideSplashScreen() {
-    SplashScreen.hide().catch(err => {
-      console.warn('SplashScreen hide failed (likely running in browser):', err);
-    });
+      // Get Cart
+      this.apiService.getCartItems().subscribe({
+        next: (res: any) => {
+          if (res?.data) {
+            this.utilService.setCart(res.data);
+          }
+        },
+        error: (err) => console.error('Cart error:', err)
+      });
+    }
   }
 
   private scrollToTop() {

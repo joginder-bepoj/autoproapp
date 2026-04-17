@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { ToastController } from '@ionic/angular';
+import { ToastController, AlertController } from '@ionic/angular';
 import { ApiService } from './api-service';
 import { Storage } from '@ionic/storage-angular';
 
@@ -11,6 +11,7 @@ import { Storage } from '@ionic/storage-angular';
 export class UtilService {
   private router = inject(Router);
   private toastController = inject(ToastController);
+  private alertController = inject(AlertController);
   private apiService = inject(ApiService);
   private storage = inject(Storage);
 
@@ -223,6 +224,17 @@ export class UtilService {
       ]
     });
     await toast.present();
+  }
+
+  // ─── Alert ─────────────────────────────────────────────────────────────────
+
+  async showAlert(header: string, message: string) {
+    const alert = await this.alertController.create({
+      header,
+      message,
+      buttons: ['OK']
+    });
+    await alert.present();
   }
 
   // ─── Cart ──────────────────────────────────────────────────────────────────
