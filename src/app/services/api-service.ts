@@ -181,7 +181,25 @@ export class ApiService {
   }
 
   checkNissan5BcmLimit(userId: string) {
-    return this.request('GET', 'users/' + userId + '/nissan5_conversion_logs');
+    return this.http.get(
+      environment.api_firebase_url +
+      'users/' + userId + '/nissan5_conversion_logs.json'
+    );
+  }
+
+  getNissan5BcmPin(bcm: string): Observable<any> {
+    return this.http.get(
+      environment.api_firebase_url +
+      'NissanBCM5/' + bcm + '.json'
+    );
+  }
+
+  logNissan5BcmConversion(userId: string, timestamp: number): Observable<any> {
+    return this.http.post(
+      environment.api_firebase_url +
+      'users/' + userId + '/nissan5_conversion_logs.json',
+      timestamp
+    );
   }
 
 }

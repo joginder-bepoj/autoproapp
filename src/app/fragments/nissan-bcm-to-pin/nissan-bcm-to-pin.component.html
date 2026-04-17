@@ -1,4 +1,89 @@
-<p>
-  nissan-bcm-to-pin works!
-</p>
-<button (click)="checkNissan5BcmLimit()">check limit</button>
+<div class="nissan-bcm-container premium-white">
+  <!-- Dynamic Hero Background -->
+  <div class="hero-bg">
+    <div class="tech-overlay">
+      <!-- Decorative technical elements -->
+      <div class="grid-line horizontal" style="top: 20%"></div>
+      <div class="grid-line horizontal" style="top: 80%"></div>
+      <div class="grid-line vertical" style="left: 15%"></div>
+      <div class="grid-line vertical" style="left: 85%"></div>
+      <div class="data-point t-left">SYS_REF: 44.02</div>
+      <div class="data-point b-right">BCM_SYNC: ACTIVE</div>
+    </div>
+    <div class="overlay"></div>
+    <img src="assets/images/nissan-bcm-bg-dynamic.png" alt="Nissan BCM Dynamic Background">
+  </div>
+
+  <div class="content-wrapper">
+    <!-- Header -->
+    <div class="page-header">
+      <h1 class="title">NISSAN <span class="gradient-text">5-DIGIT</span> BCM TO PIN</h1>
+      <p class="subtitle">Secure BCM to PIN Code Conversion Professional Tool</p>
+    </div>
+
+    <!-- Premium Card -->
+    <div class="premium-glass-card">
+      <div class="card-accents">
+        <div class="corner t-l"></div>
+        <div class="corner b-r"></div>
+      </div>
+
+      <div class="card-body">
+        <div class="header-section">
+          <p class="instruction">Enter the 5-digit BCM code</p>
+        </div>
+
+        <!-- Input Section -->
+        <div class="bcm-input-group" *ngIf="!showResult">
+          <div class="input-container" *ngFor="let digit of inputs; let i = index">
+            <input [id]="'bcmInput-' + i" type="text" maxlength="1" class="bcm-digit-input" (input)="onInput($event, i)"
+              placeholder="0" autocomplete="off" (keydown)="onKeyDown($event, i)">
+          </div>
+        </div>
+
+        <!-- Action Button -->
+        <div class="action-section" *ngIf="!showResult">
+          <button class="search-btn-premium" (click)="searchPin()" [disabled]="!isInputValid()">
+            <span class="btn-content">
+              Search
+              <ion-icon name="search-outline"></ion-icon>
+            </span>
+            <div class="btn-glow"></div>
+          </button>
+        </div>
+
+        <!-- Result Section -->
+        <div class="result-container" *ngIf="showResult">
+          <div class="result-header">
+            <ion-icon name="cube-outline"></ion-icon>
+            <h3>Conversion Results</h3>
+          </div>
+
+          <div class="result-grid">
+            <div class="result-item">
+              <span class="label">Old PIN</span>
+              <div class="value-box">{{ pinResult?.PIN_Old || pinResult?.Old_PIN || '---' }}</div>
+            </div>
+            <div class="result-item highlight">
+              <span class="label">New PIN (20-Digit)</span>
+              <div class="value-box">{{ pinResult?.PIN_New || '---' }}</div>
+            </div>
+          </div>
+
+          <button class="reset-btn" (click)="showResult = false; bcmDigits = ['', '', '', '', '']">
+            <span>NEW SEARCH</span>
+            <ion-icon name="sync-outline"></ion-icon>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer Links -->
+    <div class="page-footer">
+      <button class="alt-link" (click)="goTo20Digit()">
+        <span>Need 20-digit Conversion?</span>
+        <ion-icon name="arrow-forward-outline"></ion-icon>
+      </button>
+    </div>
+  </div>
+</div>

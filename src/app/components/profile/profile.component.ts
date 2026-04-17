@@ -7,6 +7,7 @@ import { Router } from '@angular/router';
 import { BreadcrumbsComponent } from '../../shared/breadcrumbs/breadcrumbs.component';
 import { UtilService } from '../../services/util.service';
 import { Observable } from 'rxjs';
+import { ApiService } from 'src/app/services/api-service';
 
 @Component({
   selector: 'app-profile',
@@ -21,7 +22,8 @@ export class ProfileComponent implements OnInit {
 
   constructor(
     private router: Router,
-    private utilService: UtilService
+    private utilService: UtilService,
+    private apiService: ApiService
   ) {
     addIcons({ calendarOutline, syncOutline, phonePortraitOutline, trashOutline, addOutline, shieldCheckmarkOutline, starOutline, ribbonOutline, pieChartOutline, carOutline, pencilOutline, keyOutline, bulbOutline, chatboxEllipsesOutline, bagHandleOutline, cartOutline, clipboardOutline, medalOutline, carSportOutline, mailOutline });
     this.userProfile$ = this.utilService.currentUser$;
@@ -111,6 +113,20 @@ export class ProfileComponent implements OnInit {
   ]
 
   ngOnInit() { }
+
+  loadProfile() {
+    this.utilService.currentUser$.subscribe((user: any) => {
+      if (user) {
+        this.userProfile$ = user;
+      } else {
+        this.apiService.getCustomerProfile().subscribe((data: any) => {
+          this.userProfile$ = data;
+          this.utilService.setUserProfile(data);
+        });
+      }
+    });
+
+  }
 
   changePassword() {
     this.router.navigate(['/change-password']);

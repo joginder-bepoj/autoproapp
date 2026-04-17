@@ -275,9 +275,10 @@ export class UtilService {
 
     let hex = '';
     bytes.forEach((b) => {
-      hex += b.toString(16).padStart(2, '0').toUpperCase();
+      hex += (b & 0xff).toString(16).toUpperCase().padStart(2, '0');
     });
 
     return hex;
   }
+
 }
