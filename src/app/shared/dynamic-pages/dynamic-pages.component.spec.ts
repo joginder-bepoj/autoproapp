@@ -1,19 +1,18 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { IonicModule } from '@ionic/angular';
+import { DynamicPagesComponent } from './dynamic-pages.component';
 
-import { KeyCodesComponent } from './key-codes.component';
-
-describe('KeyCodesComponent', () => {
-  let component: KeyCodesComponent;
-  let fixture: ComponentFixture<KeyCodesComponent>;
+describe('DynamicPagesComponent', () => {
+  let component: DynamicPagesComponent;
+  let fixture: ComponentFixture<DynamicPagesComponent>;
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ KeyCodesComponent ],
+      declarations: [DynamicPagesComponent],
       imports: [IonicModule.forRoot()]
     }).compileComponents();
 
-    fixture = TestBed.createComponent(KeyCodesComponent);
+    fixture = TestBed.createComponent(DynamicPagesComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   }));
