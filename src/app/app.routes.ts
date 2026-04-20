@@ -83,6 +83,11 @@ export const routes: Routes = [
     loadComponent: () => import('./components/product-category/product-category.component').then((m) => m.ProductCategoryComponent),
   },
   {
+    path: 'pages/:page/:type',
+    canActivate: [authGuard],
+    loadComponent: () => import('./shared/dynamic-pages/dynamic-pages.component').then((m) => m.DynamicPagesComponent),
+  },
+  {
     path: 'pages/:page',
     canActivate: [authGuard],
     loadComponent: () => import('./shared/dynamic-pages/dynamic-pages.component').then((m) => m.DynamicPagesComponent),

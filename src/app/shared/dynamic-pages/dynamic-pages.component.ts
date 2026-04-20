@@ -36,12 +36,19 @@ export class DynamicPagesComponent implements OnInit {
 
   ngOnInit() {
     this.route.params.subscribe((params: any) => {
-      this.pageQuery = params?.page.replaceAll('-', ' ');
-      this.loadEzPages(this.pageQuery);
+      const newPageQuery = params?.page?.replace(/-/g, ' ');
+      const typeQueryRaw = params?.type;
+
+      if (this.pageQuery !== newPageQuery) {
+        this.pageQuery = newPageQuery;
+        this.loadEzPages(this.pageQuery, typeQueryRaw);
+      } else {
+        this.handleTypeQuery(typeQueryRaw);
+      }
     });
   }
 
-  loadEzPages(pageQuery: string) {
+  loadEzPages(pageQuery: string, typeQuery?: string) {
     this.utilService.showLoader();
     this.apiService.getEzPages().subscribe({
       next: (res: any) => {
@@ -51,12 +58,25 @@ export class DynamicPagesComponent implements OnInit {
         }).sort((a: any, b: any) => a?.['Sort Order'] - b?.['Sort Order']);
         console.log(this.pageData);
         this.utilService.hideLoader();
+        
+        this.handleTypeQuery(typeQuery);
       },
       error: (err) => {
         this.utilService.hideLoader();
         console.error(err);
       }
     });
+  }
+
+  handleTypeQuery(typeQueryRaw?: string) {
+    if (typeQueryRaw) {
+      const selectedPage = this.pageData.find(p => p['Page Name']?.replace(/ /g, '-').toLowerCase() === typeQueryRaw.toLowerCase());
+      if (selectedPage) {
+        this.openPageContent(selectedPage);
+      }
+    } else {
+      this.clearPageContent();
+    }
   }
 
   handlePageClick(page: any) {
@@ -66,11 +86,18 @@ export class DynamicPagesComponent implements OnInit {
     } else if (page['Page Content'] === "Nissan20DigitBCMPINConversionFragment") {
       this.router.navigate(['/nissan-bcm-to-pin-20-digit']);
 
-    } else if (page['Page_Type'] === "HTML") {
+    } else {
+      const pName = page['Page Name'].replace(/ /g, '-');
+      const paramPage = this.pageQuery.replace(/ /g, '-');
+      this.router.navigate(['/pages', paramPage, pName]);
+    }
+  }
+
+  openPageContent(page: any) {
+    if (page['Page_Type'] === "HTML") {
       this.dynamicHtml = page['Page Content'];
 
     } else if (page['Page_Type'] === "PDF") {
-
       const pdfUrl = page['Page Content'];
       this.rawPdfUrl = pdfUrl;
       const viewerUrl = `https://docs.google.com/gview?url=${encodeURIComponent(pdfUrl)}&embedded=true`;
@@ -79,7 +106,6 @@ export class DynamicPagesComponent implements OnInit {
       this.currentView = 'pdf';
 
     } else if (page['Page_Type'] === "Video") {
-
       const videoCode = page['Page Content'];
       this.videoUrl = this.sanitizer.bypassSecurityTrustResourceUrl(
         `https://www.youtube.com/embed/${videoCode}`
@@ -92,10 +118,15 @@ export class DynamicPagesComponent implements OnInit {
   }
 
   showDynamicPage(page: any) {
-    this.router.navigate(['/dynamic-pages', page['Page Name'].replaceAll(' ', '-')]);
+    this.router.navigate(['/dynamic-pages', page['Page Name'].replace(/ /g, '-')]);
   }
 
   goBack() {
+    const paramPage = this.pageQuery.replace(/ /g, '-');
+    this.router.navigate(['/pages', paramPage]);
+  }
+
+  clearPageContent() {
     this.dynamicHtml = "";
     this.pdfUrl = "";
     this.videoUrl = "";
