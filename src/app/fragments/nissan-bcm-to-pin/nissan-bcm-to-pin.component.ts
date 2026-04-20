@@ -5,8 +5,9 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 import { addIcons } from 'ionicons';
-import { searchOutline, keyOutline, flashOutline, arrowForwardOutline, cubeOutline, syncOutline } from 'ionicons/icons';
+import { keyOutline, flashOutline, arrowForwardOutline, cubeOutline, syncOutline } from 'ionicons/icons';
 import { Subscription } from 'rxjs';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-nissan-bcm-to-pin',
@@ -22,19 +23,23 @@ export class NissanBcmToPinComponent implements OnInit, OnDestroy {
   inputs = [1, 2, 3, 4, 5]
   bcmDigits: string[] = ['', '', '', '', ''];
   user: any;
+  bcm20Digit = false;
+  bcm20DigitInput: string = '';
   private userSub?: Subscription;
 
   showResult: boolean = false;
   pinResult: any = null;
 
-  constructor(private apiService: ApiService, private utilService: UtilService) {
-    addIcons({ searchOutline, keyOutline, flashOutline, arrowForwardOutline, cubeOutline, syncOutline });
+  constructor(private apiService: ApiService, private utilService: UtilService, private router: Router) {
+    addIcons({ keyOutline, flashOutline, arrowForwardOutline, cubeOutline, syncOutline });
+    this.bcm20Digit = this.router.url.includes('20-digit');
   }
 
   ngOnInit() {
     this.userSub = this.utilService.currentUser$.subscribe((user: any) => {
       this.user = user;
     });
+    if (this.bcm20Digit) this.getCustomerPoints()
   }
 
   ngOnDestroy() {
@@ -60,19 +65,14 @@ export class NissanBcmToPinComponent implements OnInit, OnDestroy {
     return document.getElementById('bcmInput-' + index) as HTMLInputElement;
   }
 
-  // onKeyUp(event: any, index: number) {
-  //   if (event.key === 'Backspace') {
-  //     const target = event.target as HTMLInputElement;
-  //     if (!target.value && index > 0) {
-  //       this.getFocusedElement(index - 1)?.focus();
-  //     }
-  //   }
-  // }
-
-
   isInputValid(): boolean {
     const bcm = this.bcmDigits.join('');
     return bcm.length === 5 && /^[a-zA-Z0-9]{5}$/.test(bcm);
+  }
+
+  is20DigitInputValid(): boolean {
+    const bcm = this.bcm20DigitInput;
+    return bcm.length === 20 && /^[a-zA-Z0-9]{20}$/.test(bcm);
   }
 
   onKeyDown(event: any, index: number) {
@@ -90,7 +90,15 @@ export class NissanBcmToPinComponent implements OnInit, OnDestroy {
     }
   }
 
-  async searchPin() {
+  searchPin() {
+    if (this.bcm20Digit) {
+      this.search20DigitPin();
+    } else {
+      this.searchBcm5Pin();
+    }
+  }
+
+  async searchBcm5Pin() {
     if (!this.isInputValid()) {
       this.utilService.showToast('Please enter a valid 5-digit BCM code', 'warning');
       return;
@@ -162,7 +170,105 @@ export class NissanBcmToPinComponent implements OnInit, OnDestroy {
   }
 
   goTo20Digit() {
-    this.utilService.showToast('20-digit conversion coming soon!', 'primary');
+    this.bcm20Digit = !this.bcm20Digit;
+    this.showResult = false;
+    this.bcmDigits = ['', '', '', '', ''];
+    this.pinResult = null;
+    if (this.bcm20Digit) {
+      this.router.navigate(['/nissan-bcm-to-pin-20-digit']);
+    } else {
+      this.router.navigate(['/nissan-bcm-to-pin']);
+    }
+
   }
+
+  getCustomerPoints() {
+    this.apiService.getCustomerPoints().subscribe({
+      next: (res: any) => {
+        if (res) {
+          console.log(res);
+          this.user.points = res.data.balance;
+        }
+      },
+      error: (err) => {
+        console.error(err);
+      }
+    });
+  }
+
+  search20DigitPin() {
+    if (!this.is20DigitInputValid()) {
+      this.utilService.showToast('Please enter a valid 20-digit BCM code', 'warning');
+      return;
+    }
+
+    if (!this.user) {
+      this.utilService.showToast('Please login to continue', 'danger');
+      return;
+    }
+
+    const bcmCode = this.bcm20DigitInput.toUpperCase();
+    this.utilService.showLoader();
+    this.showResult = false;
+
+    // 1. Check Limits First
+    if (this.user.points < 2) {
+      this.utilService.hideLoader();
+      this.utilService.showAlert('Nissan BCM 20-digit Conversion', 'Sorry, you dont have enough points to convert Do you want to purchase points?');
+    } else {
+      this.perform20DigitConversion(bcmCode);
+      console.log(bcmCode, 'bcm code')
+
+    }
+  }
+
+  perform20DigitConversion(bcm: string) {
+    if (!bcm) {
+      this.utilService.hideLoader();
+      alert("Please enter the BCM");
+      return;
+    }
+
+    if (bcm.length !== 20) {
+      this.utilService.hideLoader();
+      alert("Please correct BCM of length 20");
+      return;
+    }
+
+    const pin = this.utilService.convert(bcm);
+
+    let formattedPin = '';
+
+    for (let i = 0; i < pin.length; i++) {
+      formattedPin += pin[i];
+      if (i % 4 === 3) {
+        formattedPin += ' ';
+      }
+    }
+
+    formattedPin = formattedPin.trim();
+    this.pinResult = formattedPin;
+    console.log(formattedPin, 'formatted pin');
+    this.showResult = true;
+    this.utilService.hideLoader();
+
+    this.apiService.updateCustomerPoints(-2.0, "Converted Nissan 20 digit to BCM")
+      .subscribe({
+        next: () => this.updatePoints(),
+        error: () => { }
+      });
+  }
+
+  updatePoints() {
+    this.apiService.getCustomerPoints().subscribe({
+      next: (res) => {
+        this.user.points = parseInt(res.data.balance);
+      },
+      error: () => {
+        alert("Can not get your AutoProAPP Points");
+      },
+    });
+  }
+
 
 }

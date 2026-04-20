@@ -17,8 +17,13 @@
   <div class="content-wrapper">
     <!-- Header -->
     <div class="page-header">
-      <h1 class="title">NISSAN <span class="gradient-text">5-DIGIT</span> BCM TO PIN</h1>
-      <p class="subtitle">Secure BCM to PIN Code Conversion Professional Tool</p>
+      <h1 class="title">NISSAN <span class="gradient-text">{{bcm20Digit ? '20-DIGIT' : '5-DIGIT'}}</span> BCM TO PIN
+      </h1>
+      <p class="subtitle" *ngIf="!bcm20Digit">Secure BCM to PIN Code Conversion Professional Tool</p>
+      <p class="subtitle" *ngIf="bcm20Digit">The 20-digit BCM to PIN conversion will deduct 2 credits from your Points
+        Balance. These
+        points are
+        non-refundable, so please make sure you enter your BCM carefully below.</p>
     </div>
 
     <!-- Premium Card -->
@@ -30,23 +35,33 @@
 
       <div class="card-body">
         <div class="header-section">
-          <p class="instruction">Enter the 5-digit BCM code</p>
+          <p class="instruction" *ngIf="!bcm20Digit">Enter the 5-digit BCM code</p>
+          <p class="instruction" *ngIf="bcm20Digit">Enter the 20-digit BCM code</p>
+          <p class="instruction" *ngIf="bcm20Digit">Available Points: {{user?.points || 0}}</p>
         </div>
 
         <!-- Input Section -->
-        <div class="bcm-input-group" *ngIf="!showResult">
+        <div class="bcm-input-group" *ngIf="!showResult && !bcm20Digit">
           <div class="input-container" *ngFor="let digit of inputs; let i = index">
             <input [id]="'bcmInput-' + i" type="text" maxlength="1" class="bcm-digit-input" (input)="onInput($event, i)"
               placeholder="0" autocomplete="off" (keydown)="onKeyDown($event, i)">
           </div>
         </div>
 
+        <div class="bcm-input-group" *ngIf="!showResult && bcm20Digit">
+          <div class="input-container">
+            <input type="text" maxlength="20" class="bcm-digit-input" [(ngModel)]="bcm20DigitInput"
+              placeholder="Enter 20-digit code">
+          </div>
+        </div>
+
         <!-- Action Button -->
         <div class="action-section" *ngIf="!showResult">
-          <button class="search-btn-premium" (click)="searchPin()" [disabled]="!isInputValid()">
+          <button class="search-btn-premium" (click)="searchPin()"
+            [disabled]="bcm20Digit ? !is20DigitInputValid() : !isInputValid()">
             <span class="btn-content">
               Search
-              <ion-icon name="search-outline"></ion-icon>
+              <!-- <ion-icon name="search-outline"></ion-icon> -->
             </span>
             <div class="btn-glow"></div>
           </button>
@@ -59,18 +74,29 @@
             <h3>Conversion Results</h3>
           </div>
 
-          <div class="result-grid">
+          <div class="result-grid" *ngIf="!bcm20Digit">
             <div class="result-item">
               <span class="label">Old PIN</span>
               <div class="value-box">{{ pinResult?.PIN_Old || pinResult?.Old_PIN || '---' }}</div>
             </div>
             <div class="result-item highlight">
-              <span class="label">New PIN (20-Digit)</span>
+              <span class="label">New PIN</span>
               <div class="value-box">{{ pinResult?.PIN_New || '---' }}</div>
             </div>
           </div>
 
-          <button class="reset-btn" (click)="showResult = false; bcmDigits = ['', '', '', '', '']">
+          <div class="result-grid col-layout" *ngIf="bcm20Digit">
+            <div class="result-item">
+              <span class="label">Searched BCM</span>
+              <div class="value-box" style="font-size: 1.25rem; letter-spacing: 2px;">{{ bcm20DigitInput || '---' }}</div>
+            </div>
+            <div class="result-item highlight">
+              <span class="label">Converted PIN</span>
+              <div class="value-box" style="font-size: 1.4rem; letter-spacing: 2px;">{{ pinResult || '---' }}</div>
+            </div>
+          </div>
+
+          <button class="reset-btn" (click)="showResult = false; bcmDigits = ['', '', '', '', '']; bcm20DigitInput = ''">
             <span>NEW SEARCH</span>
             <ion-icon name="sync-outline"></ion-icon>
           </button>
@@ -81,7 +107,9 @@
     <!-- Footer Links -->
     <div class="page-footer">
       <button class="alt-link" (click)="goTo20Digit()">
-        <span>Need 20-digit Conversion?</span>
+        <span *ngIf="!bcm20Digit">Need 20-digit Conversion?</span>
+        <span *ngIf="bcm20Digit">Need 5-digit Conversion?</span>
+
         <ion-icon name="arrow-forward-outline"></ion-icon>
       </button>
     </div>

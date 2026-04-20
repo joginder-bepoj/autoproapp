@@ -88,6 +88,11 @@ export const routes: Routes = [
     loadComponent: () => import('./shared/dynamic-pages/dynamic-pages.component').then((m) => m.DynamicPagesComponent),
   },
   {
+    path: 'nissan-bcm-to-pin-20-digit',
+    canActivate: [authGuard],
+    loadComponent: () => import('./fragments/nissan-bcm-to-pin/nissan-bcm-to-pin.component').then((m) => m.NissanBcmToPinComponent),
+  },
+  {
     path: 'nissan-bcm-to-pin',
     canActivate: [authGuard],
     loadComponent: () => import('./fragments/nissan-bcm-to-pin/nissan-bcm-to-pin.component').then((m) => m.NissanBcmToPinComponent),

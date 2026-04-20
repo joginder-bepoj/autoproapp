@@ -52,8 +52,8 @@ export class HomePage {
   tools = [
     { title: 'KEY CODES\nPIN CODES', icon: 'speedometer-outline', url: '/pin-codes' },
     { title: 'KEY BLANK\nCROSS-REF', icon: 'key-outline' },
-    { title: 'LOCKSMITH\nREFERENCES', icon: 'book-outline' },
-    { title: 'SOFTWARE &\nUPDATES', icon: 'construct-outline' },
+    { title: 'LOCKSMITH\nREFERENCES', icon: 'book-outline', url: '/locksmith-references' },
+    { title: 'TOOLS &\nREFERENCES', icon: 'construct-outline', url: '/tool-references' },
     { title: 'TECHNICAL\nARTICLES', icon: 'document-text-outline' },
     { title: 'PROFESSIONAL\nTALK', icon: 'people-outline' },
   ];

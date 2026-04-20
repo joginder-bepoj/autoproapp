@@ -131,7 +131,7 @@
             margin: 15px auto 0;
             font-weight: 500;
             letter-spacing: 0.3px;
-            max-width: 320px;
+            // max-width: 320px;
             line-height: 1.4;
         }
     }
@@ -224,11 +224,13 @@
                 }
 
                 .bcm-digit-input {
-                    width: 52px;
+                    width: 100%;
+                    // width: 52px;
+                    padding: 8px;
                     height: 70px;
                     background: #ffffff;
                     border: 1.5px solid #f1f5f9;
-                    border-radius: 20px;
+                    border-radius: 12px;
                     color: #1e293b;
                     font-size: 2.2rem;
                     font-weight: 700;
@@ -238,8 +240,8 @@
                     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
 
                     @media (min-width: 768px) {
-                        width: 65px;
                         height: 85px;
+                        border-radius: 20px;
                         font-size: 2.8rem;
                     }
 
@@ -367,6 +369,10 @@
                     display: grid;
                     grid-template-columns: 1fr 1fr;
                     gap: 15px;
+
+                    &.col-layout {
+                        grid-template-columns: 1fr;
+                    }
 
                     @media (max-width: 480px) {
                         grid-template-columns: 1fr;

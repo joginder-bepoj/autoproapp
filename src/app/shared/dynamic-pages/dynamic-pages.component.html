@@ -1,13 +1,13 @@
-<div class="dynamic-pages-page">
+<div class="dynamic-pages-page" *ngIf="!dynamicHtml && !pdfUrl && !videoUrl">
   <!-- Hero Section -->
   <div class="hero-section">
     <div class="hero-bg-wrapper">
       <div class="hero-overlay"></div>
       <img src="/assets/images/aks-hero-bg.png" alt="Hero background" class="hero-bg-img">
     </div>
-
     <div class="container hero-container">
-      <div class="hero-content">
+      <app-breadcrumbs [breadcrumb]="breadcrumbs"></app-breadcrumbs>
+      <div class="hero-content mt-5">
         <h1 class="page-title">{{ pageQuery }}</h1>
         <p class="page-subtitle">Access professional tools and technical references for automotive locksmiths.</p>
       </div>
@@ -16,14 +16,13 @@
 
   <!-- Links Grid -->
   <div class="container main-content">
-    <ion-grid fixed>
+    <ion-grid style="padding: 0; padding-top: 10px;">
       <ion-row>
-        <ion-col size="12" size-md="6" size-lg="4" *ngFor="let page of pageData">
+        <ion-col size="12" size-md="6" size-lg="4" *ngFor="let page of pageData" style="padding-bottom: 20px;">
           <div class="premium-card" (click)="handlePageClick(page)">
             <div class="card-info">
               <h3 class="card-name">{{ page['Page Name'] }}</h3>
-              <span class="card-action text-primary">View Details <ion-icon
-                  name="chevron-forward-outline"></ion-icon></span>
+              <span class="card-action">View Details <ion-icon name="chevron-forward-outline"></ion-icon></span>
             </div>
             <div class="card-hover-effect"></div>
           </div>
@@ -38,5 +37,41 @@
         </ion-col>
       </ion-row>
     </ion-grid>
+  </div>
+</div>
+
+<div class="container py-4 dynamic-html" *ngIf="dynamicHtml">
+  <a href="javascript:void(0)" (click)="goBack()" class="back-btn"><ion-icon name="arrow-back-outline"></ion-icon>
+    {{pageQuery}}</a>
+  <div [innerHTML]="dynamicHtml"></div>
+</div>
+
+<!-- PDF -->
+<div class="container py-4 dynamic-html" *ngIf="pdfUrl">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+    <a href="javascript:void(0)" (click)="goBack()" class="back-btn" style="margin-bottom: 0;"><ion-icon
+        name="arrow-back-outline"></ion-icon>
+      {{pageQuery}}</a>
+    <a [href]="rawPdfUrl" target="_blank" download class="back-btn"
+      style="background: var(--main-bg-color); color: white; padding: 10px 16px; border-radius: 8px; font-weight: 500; display: inline-flex; align-items: center; text-decoration: none; margin-bottom: 0;">
+      <ion-icon name="download-outline" style="color: white; margin-right: 8px; font-size: 18px;"></ion-icon> Download
+      PDF
+    </a>
+  </div>
+  <div
+    style="height: calc(100vh - 170px); border-radius: 12px; overflow: hidden; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05); border: 1px solid #e2e8f0; background: #fff;">
+    <iframe [src]="pdfUrl" width="100%" height="100%" style="border: none;"></iframe>
+  </div>
+</div>
+
+<!-- Video -->
+<div class="container py-4 dynamic-html" *ngIf="videoUrl">
+  <a href="javascript:void(0)" (click)="goBack()" class="back-btn"><ion-icon name="arrow-back-outline"></ion-icon>
+    {{pageQuery}}</a>
+  <div
+    style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; border-radius: 12px; margin-top: 15px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);">
+    <iframe [src]="videoUrl" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0;"
+      allowfullscreen allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture">
+    </iframe>
   </div>
 </div>

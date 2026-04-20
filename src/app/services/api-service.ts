@@ -116,6 +116,18 @@ export class ApiService {
     return this.request('POST', 'customer/feedback', data);
   }
 
+  getCustomerPoints() {
+    return this.request('GET', 'customer/points');
+  }
+
+  updateCustomerPoints(points: number, reason: string) {
+    const data = {
+      points: points,
+      reason: reason
+    };
+    return this.request('POST', 'customer/points', data);
+  }
+
   // =========================
   // 📦 PRODUCT APIs
   // =========================

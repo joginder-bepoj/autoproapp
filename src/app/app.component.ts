@@ -7,7 +7,6 @@ import { FooterComponent } from './shared/footer/footer.component';
 import { UtilService } from './services/util.service';
 import { ApiService } from './services/api-service';
 import { AsyncPipe } from '@angular/common';
-import { ChangeDetectorRef } from '@angular/core';
 import { SplashScreen } from '@capacitor/splash-screen';
 import { App } from '@capacitor/app';
 import { Location } from '@angular/common';
