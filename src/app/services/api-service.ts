@@ -99,6 +99,26 @@ export class ApiService {
     }
   }
 
+  fetchExternalPdfs(url: string): Observable<any> {
+    if (Capacitor.isNativePlatform()) {
+      const options: any = {
+        url: url,
+        method: 'GET',
+        responseType: 'arraybuffer'
+      };
+
+      return from(
+        CapacitorHttp.request(options).then((response: any) => {
+          return response;
+        })
+      );
+    } else {
+      return this.http.get(url, {
+        responseType: 'blob',
+        observe: 'response'
+      });
+    }
+  }
   // =========================
   // 🔐 CUSTOMER APIs
   // =========================

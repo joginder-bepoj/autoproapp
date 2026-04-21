@@ -3,7 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { IonGrid, IonRow, IonCol, IonIcon, IonButton } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
-  chevronForwardOutline, listOutline, arrowBackOutline, downloadOutline
+  chevronForwardOutline, listOutline, arrowBackOutline, downloadOutline, openOutline, globeOutline
 } from 'ionicons/icons';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ApiService } from '../../services/api-service';
@@ -17,12 +17,12 @@ import { DomSanitizer } from '@angular/platform-browser';
   templateUrl: './dynamic-pages.component.html',
   styleUrls: ['./dynamic-pages.component.scss'],
   standalone: true,
-  imports: [IonButton, NgFor, IonGrid, IonRow, IonCol, IonIcon, CommonModule, BreadcrumbsComponent],
+  imports: [NgFor, IonGrid, IonRow, IonCol, IonIcon, CommonModule, BreadcrumbsComponent],
 })
 export class DynamicPagesComponent implements OnInit {
 
   constructor(private utilService: UtilService, private apiService: ApiService, private route: ActivatedRoute, private router: Router, private sanitizer: DomSanitizer) {
-    addIcons({ chevronForwardOutline, listOutline, arrowBackOutline, downloadOutline });
+    addIcons({ chevronForwardOutline, listOutline, arrowBackOutline, downloadOutline, openOutline, globeOutline });
   }
   ezPages: any[] = [];
   pageData: any[] = [];
@@ -30,9 +30,12 @@ export class DynamicPagesComponent implements OnInit {
   dynamicHtml: any = ""
   pdfUrl: any = ""
   videoUrl: any = ""
+  externalUrl: any = ""
   rawPdfUrl: string = ""
   currentView: string = ""
   breadcrumbs: any[] = [];
+  isLandingPage: boolean = false;
+  useViewer: boolean = true;
 
   ngOnInit() {
     this.route.params.subscribe((params: any) => {
@@ -58,7 +61,7 @@ export class DynamicPagesComponent implements OnInit {
         }).sort((a: any, b: any) => a?.['Sort Order'] - b?.['Sort Order']);
         console.log(this.pageData);
         this.utilService.hideLoader();
-        
+
         this.handleTypeQuery(typeQuery);
       },
       error: (err) => {
@@ -86,6 +89,9 @@ export class DynamicPagesComponent implements OnInit {
     } else if (page['Page Content'] === "Nissan20DigitBCMPINConversionFragment") {
       this.router.navigate(['/nissan-bcm-to-pin-20-digit']);
 
+    } else if (page['Page_Type'] !== "HTML" && page['Page_Type'] !== "PDF" && page['Page_Type'] !== "Video") {
+      this.utilService.showToast('This page is not yet implemented');
+      return;
     } else {
       const pName = page['Page Name'].replace(/ /g, '-');
       const paramPage = this.pageQuery.replace(/ /g, '-');

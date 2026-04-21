@@ -1,4 +1,4 @@
-<div class="dynamic-pages-page" *ngIf="!dynamicHtml && !pdfUrl && !videoUrl">
+<div class="dynamic-pages-page" *ngIf="!dynamicHtml && !pdfUrl && !videoUrl && !externalUrl">
   <!-- Hero Section -->
   <div class="hero-section">
     <div class="hero-bg-wrapper">
@@ -19,7 +19,7 @@
     <ion-grid style="padding: 0; padding-top: 10px;">
       <ion-row>
         <ion-col size="12" size-md="6" size-lg="4" *ngFor="let page of pageData" style="padding-bottom: 20px;">
-          <div class="premium-card" (click)="handlePageClick(page)">
+          <div class="premium-card" [class.disabled-card]="!page['Page Content']" (click)="handlePageClick(page)">
             <div class="card-info">
               <h3 class="card-name">{{ page['Page Name'] }}</h3>
               <span class="card-action">View Details <ion-icon name="chevron-forward-outline"></ion-icon></span>
