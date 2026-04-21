@@ -365,6 +365,21 @@
     }
 }
 
+.pdf-spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid rgba(var(--main-bg-color-rgb), 0.1);
+    border-radius: 50%;
+    border-top-color: var(--main-bg-color);
+    animation: pdf-spin 1s ease-in-out infinite;
+}
+
+@keyframes pdf-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
 /* ── Responsive Adjustments ──────────────────────────────── */
 @media (max-width: 768px) {
     .dynamic-pages-page {

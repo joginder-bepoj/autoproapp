@@ -1,5 +1,5 @@
 import { CommonModule, NgFor } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { IonGrid, IonRow, IonCol, IonIcon, IonButton } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
@@ -21,7 +21,14 @@ import { DomSanitizer } from '@angular/platform-browser';
 })
 export class DynamicPagesComponent implements OnInit {
 
-  constructor(private utilService: UtilService, private apiService: ApiService, private route: ActivatedRoute, private router: Router, private sanitizer: DomSanitizer) {
+  constructor(
+    private utilService: UtilService,
+    private apiService: ApiService,
+    private route: ActivatedRoute,
+    private router: Router,
+    private sanitizer: DomSanitizer,
+    private cdr: ChangeDetectorRef
+  ) {
     addIcons({ chevronForwardOutline, listOutline, arrowBackOutline, downloadOutline, openOutline, globeOutline });
   }
   ezPages: any[] = [];
@@ -36,6 +43,8 @@ export class DynamicPagesComponent implements OnInit {
   breadcrumbs: any[] = [];
   isLandingPage: boolean = false;
   useViewer: boolean = true;
+  isPdfLoading: boolean = false;
+  isChangingPage: boolean = false;
 
   ngOnInit() {
     this.route.params.subscribe((params: any) => {
@@ -59,7 +68,6 @@ export class DynamicPagesComponent implements OnInit {
         this.pageData = this.ezPages.filter((page: any) => {
           return page?.Location?.toLowerCase().includes(pageQuery.toLowerCase())
         }).sort((a: any, b: any) => a?.['Sort Order'] - b?.['Sort Order']);
-        console.log(this.pageData);
         this.utilService.hideLoader();
 
         this.handleTypeQuery(typeQuery);
@@ -95,7 +103,15 @@ export class DynamicPagesComponent implements OnInit {
     } else {
       const pName = page['Page Name'].replace(/ /g, '-');
       const paramPage = this.pageQuery.replace(/ /g, '-');
-      this.router.navigate(['/pages', paramPage, pName]);
+      const targetUrl = `/pages/${paramPage}/${pName}`;
+
+      // If we are already on this sub-page, manually trigger content update
+      // because Angular's router will ignore the navigation
+      if (this.router.url.toLowerCase() === targetUrl.toLowerCase()) {
+        this.openPageContent(page);
+      } else {
+        this.router.navigate(['/pages', paramPage, pName]);
+      }
     }
   }
 
@@ -104,12 +120,26 @@ export class DynamicPagesComponent implements OnInit {
       this.dynamicHtml = page['Page Content'];
 
     } else if (page['Page_Type'] === "PDF") {
+      this.isChangingPage = true; // Toggle to force DOM removal
+      this.isPdfLoading = true;
+      this.cdr.detectChanges(); // Sync state with view immediately
+
       const pdfUrl = page['Page Content'];
       this.rawPdfUrl = pdfUrl;
-      const viewerUrl = `https://docs.google.com/gview?url=${encodeURIComponent(pdfUrl)}&embedded=true`;
+
+      // Only cache-bust the viewer shell, not the PDF URL itself.
+      // Modifying the PDF URL can break signed technical links (Firebase/S3).
+      const timestamp = new Date().getTime();
+      const viewerUrl = `https://docs.google.com/viewer?url=${encodeURIComponent(pdfUrl)}&embedded=true&t=${timestamp}`;
 
       this.pdfUrl = this.sanitizer.bypassSecurityTrustResourceUrl(viewerUrl);
       this.currentView = 'pdf';
+
+      // Re-inject the iframe into the DOM after a short delay
+      setTimeout(() => {
+        this.isChangingPage = false;
+        this.cdr.detectChanges();
+      }, 50);
 
     } else if (page['Page_Type'] === "Video") {
       const videoCode = page['Page Content'];
@@ -121,6 +151,14 @@ export class DynamicPagesComponent implements OnInit {
     } else {
       this.utilService.showToast('Page Content not found');
     }
+  }
+
+  onIframeLoad() {
+    // Delay slightly to ensure UI stability and prevent NG0100
+    setTimeout(() => {
+      this.isPdfLoading = false;
+      this.cdr.detectChanges();
+    }, 150);
   }
 
   showDynamicPage(page: any) {
@@ -138,6 +176,8 @@ export class DynamicPagesComponent implements OnInit {
     this.videoUrl = "";
     this.rawPdfUrl = "";
     this.currentView = "";
+    this.isPdfLoading = false;
+    this.isChangingPage = false;
   }
 
 }
