@@ -9,7 +9,6 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ApiService } from '../../services/api-service';
 import { UtilService } from '../../services/util.service';
 import { BreadcrumbsComponent } from '../breadcrumbs/breadcrumbs.component';
-import { DomSanitizer } from '@angular/platform-browser';
 
 
 @Component({
@@ -26,51 +25,44 @@ export class DynamicPagesComponent implements OnInit {
     private apiService: ApiService,
     private route: ActivatedRoute,
     private router: Router,
-    private sanitizer: DomSanitizer,
-    private cdr: ChangeDetectorRef
   ) {
     addIcons({ chevronForwardOutline, listOutline, arrowBackOutline, downloadOutline, openOutline, globeOutline });
   }
   ezPages: any[] = [];
   pageData: any[] = [];
   pageQuery: string = '';
-  dynamicHtml: any = ""
-  pdfUrl: any = ""
-  videoUrl: any = ""
-  externalUrl: any = ""
-  rawPdfUrl: string = ""
-  currentView: string = ""
+  // dynamicHtml: any = ""
+  // pdfUrl: any = ""
+  // videoUrl: any =   ""
+  // externalUrl: any = ""
+  // rawPdfUrl: string = ""
+  // currentView: string = ""
   breadcrumbs: any[] = [];
-  isLandingPage: boolean = false;
-  useViewer: boolean = true;
-  isPdfLoading: boolean = false;
-  isChangingPage: boolean = false;
+  // isLandingPage: boolean = false;
+  // useViewer: boolean = true;
+  // isPdfLoading: boolean = false;
+  // isChangingPage: boolean = false;
 
   ngOnInit() {
     this.route.params.subscribe((params: any) => {
-      const newPageQuery = params?.page?.replace(/-/g, ' ');
-      const typeQueryRaw = params?.type;
-
-      if (this.pageQuery !== newPageQuery) {
-        this.pageQuery = newPageQuery;
-        this.loadEzPages(this.pageQuery, typeQueryRaw);
+      this.pageQuery = params?.page?.replace(/-/g, ' ');
+      if (this.utilService.getEzPages()?.length > 0) {
+        this.ezPages = this.utilService.getEzPages();
+        this.filterEzPages();
       } else {
-        this.handleTypeQuery(typeQueryRaw);
+        this.loadEzPages();
       }
     });
   }
 
-  loadEzPages(pageQuery: string, typeQuery?: string) {
+  loadEzPages() {
     this.utilService.showLoader();
     this.apiService.getEzPages().subscribe({
       next: (res: any) => {
         this.ezPages = res;
-        this.pageData = this.ezPages.filter((page: any) => {
-          return page?.Location?.toLowerCase().includes(pageQuery.toLowerCase())
-        }).sort((a: any, b: any) => a?.['Sort Order'] - b?.['Sort Order']);
         this.utilService.hideLoader();
-
-        this.handleTypeQuery(typeQuery);
+        this.utilService.setEzPages(res);
+        this.filterEzPages();
       },
       error: (err) => {
         this.utilService.hideLoader();
@@ -79,18 +71,17 @@ export class DynamicPagesComponent implements OnInit {
     });
   }
 
-  handleTypeQuery(typeQueryRaw?: string) {
-    if (typeQueryRaw) {
-      const selectedPage = this.pageData.find(p => p['Page Name']?.replace(/ /g, '-').toLowerCase() === typeQueryRaw.toLowerCase());
-      if (selectedPage) {
-        this.openPageContent(selectedPage);
-      }
-    } else {
-      this.clearPageContent();
-    }
+  filterEzPages() {
+    if (!this.pageQuery) return;
+    console.log("pageQuery", this.pageQuery);
+    this.pageData = this.ezPages.filter((page: any) => {
+      return page && page.Location && page.Location.toLowerCase().includes(this.pageQuery.toLowerCase());
+    }).sort((a: any, b: any) => (a?.['Sort Order'] || 0) - (b?.['Sort Order'] || 0));
+    console.log("pageData", this.pageData);
   }
 
   handlePageClick(page: any) {
+    if (!page) return;
     if (page['Page Content'] === "NissanBCMtoPinConverstionFragment") {
       this.router.navigate(['/nissan-bcm-to-pin']);
 
@@ -101,83 +92,76 @@ export class DynamicPagesComponent implements OnInit {
       this.utilService.showToast('This page is not yet implemented');
       return;
     } else {
-      const pName = page['Page Name'].replace(/ /g, '-');
-      const paramPage = this.pageQuery.replace(/ /g, '-');
-      const targetUrl = `/pages/${paramPage}/${pName}`;
+      const pName = (page['Page Name'] || '').replace(/ /g, '-');
+      const paramPage = (this.pageQuery || '').replace(/ /g, '-');
 
-      // If we are already on this sub-page, manually trigger content update
-      // because Angular's router will ignore the navigation
-      if (this.router.url.toLowerCase() === targetUrl.toLowerCase()) {
-        this.openPageContent(page);
-      } else {
-        this.router.navigate(['/pages', paramPage, pName]);
-      }
+      this.router.navigate(['/view', paramPage, pName]);
     }
   }
 
-  openPageContent(page: any) {
-    if (page['Page_Type'] === "HTML") {
-      this.dynamicHtml = page['Page Content'];
+  // openPageContent(page: any) {
+  //   if (page['Page_Type'] === "HTML") {
+  //     this.dynamicHtml = page['Page Content'];
 
-    } else if (page['Page_Type'] === "PDF") {
-      this.isChangingPage = true; // Toggle to force DOM removal
-      this.isPdfLoading = true;
-      this.cdr.detectChanges(); // Sync state with view immediately
+  //   } else if (page['Page_Type'] === "PDF") {
+  //     this.isChangingPage = true; // Toggle to force DOM removal
+  //     this.isPdfLoading = true;
+  //     this.cdr.detectChanges(); // Sync state with view immediately
 
-      const pdfUrl = page['Page Content'];
-      this.rawPdfUrl = pdfUrl;
+  //     const pdfUrl = page['Page Content'];
+  //     this.rawPdfUrl = pdfUrl;
 
-      // Only cache-bust the viewer shell, not the PDF URL itself.
-      // Modifying the PDF URL can break signed technical links (Firebase/S3).
-      const timestamp = new Date().getTime();
-      const viewerUrl = `https://docs.google.com/viewer?url=${encodeURIComponent(pdfUrl)}&embedded=true&t=${timestamp}`;
+  //     // Only cache-bust the viewer shell, not the PDF URL itself.
+  //     // Modifying the PDF URL can break signed technical links (Firebase/S3).
+  //     const timestamp = new Date().getTime();
+  //     const viewerUrl = `https://docs.google.com/viewer?url=${encodeURIComponent(pdfUrl)}&embedded=true&t=${timestamp}`;
 
-      this.pdfUrl = this.sanitizer.bypassSecurityTrustResourceUrl(viewerUrl);
-      this.currentView = 'pdf';
+  //     this.pdfUrl = this.sanitizer.bypassSecurityTrustResourceUrl(viewerUrl);
+  //     this.currentView = 'pdf';
 
-      // Re-inject the iframe into the DOM after a short delay
-      setTimeout(() => {
-        this.isChangingPage = false;
-        this.cdr.detectChanges();
-      }, 50);
+  //     // Re-inject the iframe into the DOM after a short delay
+  //     setTimeout(() => {
+  //       this.isChangingPage = false;
+  //       this.cdr.detectChanges();
+  //     }, 50);
 
-    } else if (page['Page_Type'] === "Video") {
-      const videoCode = page['Page Content'];
-      this.videoUrl = this.sanitizer.bypassSecurityTrustResourceUrl(
-        `https://www.youtube.com/embed/${videoCode}`
-      );
-      this.currentView = 'video';
+  //   } else if (page['Page_Type'] === "Video") {
+  //     const videoCode = page['Page Content'];
+  //     this.videoUrl = this.sanitizer.bypassSecurityTrustResourceUrl(
+  //       `https://www.youtube.com/embed/${videoCode}`
+  //     );
+  //     this.currentView = 'video';
 
-    } else {
-      this.utilService.showToast('Page Content not found');
-    }
-  }
+  //   } else {
+  //     this.utilService.showToast('Page Content not found');
+  //   }
+  // }
 
-  onIframeLoad() {
-    // Delay slightly to ensure UI stability and prevent NG0100
-    setTimeout(() => {
-      this.isPdfLoading = false;
-      this.cdr.detectChanges();
-    }, 150);
-  }
+  // onIframeLoad() {
+  //   // Delay slightly to ensure UI stability and prevent NG0100
+  //   setTimeout(() => {
+  //     this.isPdfLoading = false;
+  //     this.cdr.detectChanges();
+  //   }, 150);
+  // }
 
-  showDynamicPage(page: any) {
-    this.router.navigate(['/dynamic-pages', page['Page Name'].replace(/ /g, '-')]);
-  }
+  // showDynamicPage(page: any) {
+  //   this.router.navigate(['/dynamic-pages', page['Page Name'].replace(/ /g, '-')]);
+  // }
 
-  goBack() {
-    const paramPage = this.pageQuery.replace(/ /g, '-');
-    this.router.navigate(['/pages', paramPage]);
-  }
+  // goBack() {
+  //   const paramPage = this.pageQuery.replace(/ /g, '-');
+  //   this.router.navigate(['/pages', paramPage]);
+  // }
 
-  clearPageContent() {
-    this.dynamicHtml = "";
-    this.pdfUrl = "";
-    this.videoUrl = "";
-    this.rawPdfUrl = "";
-    this.currentView = "";
-    this.isPdfLoading = false;
-    this.isChangingPage = false;
-  }
+  // clearPageContent() {
+  //   this.dynamicHtml = "";
+  //   this.pdfUrl = "";
+  //   this.videoUrl = "";
+  //   this.rawPdfUrl = "";
+  //   this.currentView = "";
+  //   this.isPdfLoading = false;
+  //   this.isChangingPage = false;
+  // }
 
 }

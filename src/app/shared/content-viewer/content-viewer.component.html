@@ -1,0 +1,92 @@
+<!-- HTML Content -->
+<div class="container py-4 dynamic-html" *ngIf="dynamicHtml">
+  <div class="back-btn" (click)="goBack()">
+    <ion-icon name="arrow-back-outline"></ion-icon>
+    {{categoryLabel}}
+  </div>
+  <div [innerHTML]="dynamicHtml"></div>
+</div>
+
+<!-- PDF Content -->
+<div class="container py-4 dynamic-html" *ngIf="pdfUrl">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; gap: 10px;">
+    <!-- Back Button -->
+    <div class="back-btn" (click)="goBack()" style="margin-bottom: 0;">
+      <ion-icon name="arrow-back-outline"></ion-icon>
+      {{categoryLabel}}
+    </div>
+
+    <div style="display: flex; gap: 10px; align-items: center;">
+      <!-- Open in Browser (The Fallback) -->
+      <ion-button fill="outline" (click)="openExternal()"
+        style="--border-radius: 8px; --border-color: var(--main-bg-color); --color: white; height: 36px; margin: 0; font-weight: 500; text-transform: capitalize; letter-spacing: 0;">
+        <ion-icon name="globe-outline" slot="start" style="font-size: 18px;"></ion-icon>
+        Open Browser
+      </ion-button>
+
+      <!-- Download Button -->
+      <ion-button fill="solid" [href]="rawPdfUrl" target="_blank" download
+        style="--background: var(--main-bg-color); --color: white; --border-radius: 8px; height: 36px; margin: 0; font-weight: 500; text-transform: capitalize; letter-spacing: 0;">
+        <ion-icon name="download-outline" slot="start" style="font-size: 18px;"></ion-icon>
+        Download
+      </ion-button>
+    </div>
+  </div>
+
+  <div
+    style="position: relative; height: calc(100vh - 170px); border-radius: 12px; overflow: hidden; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05); border: 1px solid #e2e8f0; background: #fff;">
+
+    <!-- 204 No Content Permanent Background Fallback (Visible if iframe is transparent/empty) -->
+    <div
+      style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; text-align: center; background: #f8fafc; z-index: 1;">
+      <ion-icon name="document-text-outline" style="font-size: 48px; color: #94a3b8; margin-bottom: 12px;"></ion-icon>
+      <h3 style="margin: 0 0 8px 0; color: #334155; font-size: 1.2rem;">Unable to display directly</h3>
+      <p style="color: #64748b; font-size: 0.95rem; margin-bottom: 20px; max-width: 250px;">
+        This document format cannot be previewed automatically. Please download to view.
+      </p>
+    </div>
+
+    <!-- Loading Overlay (Visible while loading) -->
+    <div class="pdf-loading-overlay" *ngIf="isPdfLoading" style="z-index: 3;">
+      <div class="pdf-spinner"></div>
+      <p style="margin-top: 15px; color: #475569; font-weight: 500;">Loading document...</p>
+
+      <!-- Smart Fallback Hint (Shows if loading takes > 4s) -->
+      <div *ngIf="showFallbackHelp"
+        style="margin-top: 15px; text-align: center; max-width: 80%; animation: fadeIn 0.5s ease;">
+        <p style="font-size: 0.9rem; color: #64748b; margin-bottom: 10px;">
+          Taking longer than usual? The viewer might be blocked.
+        </p>
+        <ion-button fill="solid" (click)="openExternal()"
+          style="--background: var(--main-bg-color); --border-radius: 8px;">
+          <ion-icon name="globe-outline" slot="start"></ion-icon>
+          Open Directly
+        </ion-button>
+      </div>
+    </div>
+
+    <!-- Iframe (z-index 2: covers background fallback when content loads, but reveals it if empty/transparent) -->
+    <iframe [src]="pdfUrl" (load)="onIframeLoad()" allowtransparency="true" width="100%" height="100%"
+      style="border: none; position: relative; z-index: 2; background: transparent;"></iframe>
+  </div>
+</div>
+
+<!-- Video Content -->
+<div class="container py-4 dynamic-html" *ngIf="videoUrl">
+  <div class="back-btn" (click)="goBack()">
+    <ion-icon name="arrow-back-outline"></ion-icon>
+    {{categoryLabel}}
+  </div>
+  <div
+    style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; border-radius: 12px; margin-top: 15px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);">
+    <iframe [src]="videoUrl" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0;"
+      allowfullscreen allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture">
+    </iframe>
+  </div>
+</div>
+
+<div *ngIf="!dynamicHtml && !pdfUrl && !videoUrl">
+  <p style="text-align:center; margin-top:50px;">
+    Loading or no content available...
+  </p>
+</div>

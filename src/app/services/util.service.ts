@@ -28,7 +28,9 @@ export class UtilService {
   public currentUserSubject = new BehaviorSubject<any>(null);
   public currentUser$: Observable<any> = this.currentUserSubject.asObservable();
   private cartSubject = new BehaviorSubject<any>(null);
-  public cart$: Observable<any> = this.cartSubject.asObservable();
+  public cart$ = this.cartSubject.asObservable();
+  private ezPagesSubject = new BehaviorSubject<any[]>([]);
+  public ezPages$ = this.ezPagesSubject.asObservable();
 
   private activeRequests = 0;
   private isLoadingSubject = new BehaviorSubject<boolean>(false);
@@ -280,6 +282,14 @@ export class UtilService {
 
   getCart(): any {
     return this.cartSubject.value;
+  }
+
+  setEzPages(pages: any[]): void {
+    this.ezPagesSubject.next(pages);
+  }
+
+  getEzPages(): any[] {
+    return this.ezPagesSubject.value;
   }
 
   strToHex(str: string): string {
