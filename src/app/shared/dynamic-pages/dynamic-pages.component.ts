@@ -46,6 +46,10 @@ export class DynamicPagesComponent implements OnInit {
   ngOnInit() {
     this.route.params.subscribe((params: any) => {
       this.pageQuery = params?.page?.replace(/-/g, ' ');
+      console.log("pageQuery", this.pageQuery);
+      if (this.pageQuery === "Articles Tutorials") {
+        this.pageQuery = "Articles & Tutorials";
+      }
       if (this.utilService.getEzPages()?.length > 0) {
         this.ezPages = this.utilService.getEzPages();
         this.filterEzPages();
@@ -88,9 +92,11 @@ export class DynamicPagesComponent implements OnInit {
     } else if (page['Page Content'] === "Nissan20DigitBCMPINConversionFragment") {
       this.router.navigate(['/nissan-bcm-to-pin-20-digit']);
 
-    } else if (page['Page_Type'] !== "HTML" && page['Page_Type'] !== "PDF" && page['Page_Type'] !== "Video") {
-      this.utilService.showToast('This page is not yet implemented');
+    } else if (page['Page_Type'] === "Link") {
+      const url = page['Page Content'];
+      window.open(url, '_blank');
       return;
+
     } else {
       const pName = (page['Page Name'] || '').replace(/ /g, '-');
       const paramPage = (this.pageQuery || '').replace(/ /g, '-');

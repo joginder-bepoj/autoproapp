@@ -54,7 +54,7 @@ export class HomePage {
     { title: 'KEY BLANK\nCROSS-REF', icon: 'key-outline' },
     { title: 'LOCKSMITH\nREFERENCES', icon: 'book-outline', url: '/locksmith-references' },
     { title: 'TOOLS &\nREFERENCES', icon: 'construct-outline', url: '/tool-references' },
-    { title: 'TECHNICAL\nARTICLES', icon: 'document-text-outline' },
+    { title: 'ARTICLES\n& TUTORIALS', icon: 'document-text-outline', url: '/Articles-Tutorials' },
     { title: 'PROFESSIONAL\nTALK', icon: 'people-outline' },
   ];
 

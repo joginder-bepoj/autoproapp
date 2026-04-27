@@ -10,6 +10,10 @@ import { inject, importProvidersFrom, APP_INITIALIZER } from '@angular/core';
 import { finalize } from 'rxjs';
 import { UtilService } from './app/services/util.service';
 import { IonicStorageModule } from '@ionic/storage-angular';
+import { environment } from './environments/environment';
+import { provideFirebaseApp, initializeApp as initializeFirebaseApp } from '@angular/fire/app';
+import { provideDatabase, getDatabase } from '@angular/fire/database';
+import { provideAuth, getAuth } from '@angular/fire/auth';
 
 export function initializeApp(utilService: UtilService) {
   return () => utilService.initStorage();
@@ -37,5 +41,8 @@ bootstrapApplication(AppComponent, {
         return next(req).pipe(finalize(() => utilService.hideLoader()));
       }
     ])),
+    provideFirebaseApp(() => initializeFirebaseApp(environment.firebase)),
+    provideAuth(() => getAuth()),
+    provideDatabase(() => getDatabase()),
   ],
-});
+});

@@ -6,7 +6,7 @@ import { calendarOutline, syncOutline, phonePortraitOutline, trashOutline, addOu
 import { Router } from '@angular/router';
 import { BreadcrumbsComponent } from '../../shared/breadcrumbs/breadcrumbs.component';
 import { UtilService } from '../../services/util.service';
-import { Observable } from 'rxjs';
+import { Subscription } from 'rxjs';
 import { ApiService } from 'src/app/services/api-service';
 
 @Component({
@@ -18,7 +18,8 @@ import { ApiService } from 'src/app/services/api-service';
 })
 export class ProfileComponent implements OnInit {
 
-  public userProfile$: Observable<any>;
+  public userProfile: any;
+  userSubscription?: Subscription;
 
   constructor(
     private router: Router,
@@ -26,7 +27,7 @@ export class ProfileComponent implements OnInit {
     private apiService: ApiService
   ) {
     addIcons({ calendarOutline, syncOutline, phonePortraitOutline, trashOutline, addOutline, shieldCheckmarkOutline, starOutline, ribbonOutline, pieChartOutline, carOutline, pencilOutline, keyOutline, bulbOutline, chatboxEllipsesOutline, bagHandleOutline, cartOutline, clipboardOutline, medalOutline, carSportOutline, mailOutline });
-    this.userProfile$ = this.utilService.currentUser$;
+    this.userProfile = this.utilService.currentUser$;
   }
 
   userDetailsOptions = [
@@ -112,15 +113,30 @@ export class ProfileComponent implements OnInit {
     }
   ]
 
-  ngOnInit() { }
+  ngOnInit() {
+    this.userSubscription = this.utilService.currentUser$.subscribe((user: any) => {
+      this.userProfile = user;
+      console.log(user, 'user')
+      this.apiService.getCustomerContributions(this.userProfile?.customerID).subscribe((data: any) => {
+        console.log('Customer Contributions', data);
+      });
+      this.apiService.getDeviceLogins(this.userProfile?.customerID).subscribe((data: any) => {
+        console.log('Device Logins', data);
+      });
+    });
+  }
+
+  ngOnDestroy() {
+    this.userSubscription?.unsubscribe();
+  }
 
   loadProfile() {
     this.utilService.currentUser$.subscribe((user: any) => {
       if (user) {
-        this.userProfile$ = user;
+        this.userProfile = user;
       } else {
         this.apiService.getCustomerProfile().subscribe((data: any) => {
-          this.userProfile$ = data;
+          this.userProfile = data;
           this.utilService.setUserProfile(data);
         });
       }

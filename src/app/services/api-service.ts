@@ -4,6 +4,7 @@ import { Observable, from, Subject } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { Capacitor, CapacitorHttp } from '@capacitor/core';
 import * as CryptoJS from 'crypto-js';
+import { Database, ref, onValue } from '@angular/fire/database';
 
 @Injectable({
   providedIn: 'root',
@@ -16,10 +17,10 @@ export class ApiService {
 
   private api_base_url = environment.api_base_url;
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private db: Database) { }
 
   // =========================
-  // 🔐 HMAC GENERATOR
+  // HMAC GENERATOR
   // =========================
 
   nodeCompatibleHmacBase64(key: string, data: string): string {
@@ -54,7 +55,7 @@ export class ApiService {
   }
 
   // =========================
-  // 🚀 UNIVERSAL REQUEST
+  // UNIVERSAL REQUEST
   // =========================
 
   private request(
@@ -66,7 +67,7 @@ export class ApiService {
     const headers = this.constructAPIHeaders(method, endpoint);
     const fullUrl = this.api_base_url + endpoint;
 
-    // 👉 Native (Android / iOS)
+    // Native (Android / iOS)
     if (Capacitor.isNativePlatform()) {
 
       const options: any = {
@@ -89,7 +90,7 @@ export class ApiService {
       );
     }
 
-    // 👉 Web Browser
+    // Web Browser
     else {
       if (method === 'GET') {
         return this.http.get(fullUrl, { headers });
@@ -120,7 +121,7 @@ export class ApiService {
     }
   }
   // =========================
-  // 🔐 CUSTOMER APIs
+  // CUSTOMER APIs
   // =========================
 
   login(data: any) {
@@ -128,7 +129,6 @@ export class ApiService {
   }
 
   getCustomerProfile() {
-    // return this.http.get(this.api_base_url + 'customer/info',)
     return this.request('GET', 'customer/info');
   }
 
@@ -148,8 +148,30 @@ export class ApiService {
     return this.request('POST', 'customer/points', data);
   }
 
+  getCustomerContributions(userId: string): Observable<any> {
+    const contributionsRef = ref(this.db, `users/${userId}/contributions`);
+    return new Observable(observer => {
+      onValue(contributionsRef, (snapshot) => {
+        observer.next(snapshot.val());
+      }, (error) => {
+        observer.error(error);
+      });
+    });
+  }
+
+  getDeviceLogins(userId: string): Observable<any> {
+    const loginsRef = ref(this.db, `users/${userId}/logins`);
+    return new Observable(observer => {
+      onValue(loginsRef, (snapshot) => {
+        observer.next(snapshot.val());
+      }, (error) => {
+        observer.error(error);
+      });
+    });
+  }
+
   // =========================
-  // 📦 PRODUCT APIs
+  // PRODUCT APIs
   // =========================
 
   searchProducts(searchTerm: string) {
@@ -169,7 +191,7 @@ export class ApiService {
   }
 
   // =========================
-  // 🛒 CART APIs
+  // CART APIs
   // =========================
 
   getCartItems() {
@@ -181,7 +203,7 @@ export class ApiService {
   }
 
   // =========================
-  // 🔥 FIREBASE APIs (WEB ONLY SAFE)
+  // FIREBASE APIs (AUTHENTICATED)
   // =========================
 
   getCategoryList() {

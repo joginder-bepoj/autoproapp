@@ -3,15 +3,15 @@
 
     <!-- Profile Header Card -->
     <app-breadcrumbs></app-breadcrumbs>
-    <ng-container *ngIf="userProfile$ | async as user; else loading">
+    <ng-container *ngIf="userProfile; else loading">
       <div class="d-flex w-100 gap-3 profile-outer-card">
         <div class="profile-card w-100">
-          <div class="avatar-lg">{{ (user.firstName || 'U').substring(0, 1) }}</div>
+          <div class="avatar-lg">{{ (userProfile?.firstName || 'U').substring(0, 1) }}</div>
           <div class="profile-info">
-            <h2 class="user-name">{{ user.firstName }} {{ user.lastName }}</h2>
+            <h2 class="user-name">{{ userProfile?.firstName }} {{ userProfile?.lastName }}</h2>
             <p class="member-since">
               <ion-icon name="calendar-outline"></ion-icon>
-              Member ID: {{ user.customerID }}
+              Member ID: {{ userProfile?.customerID }}
             </p>
             <ion-button (click)="changePassword()" class="update-btn">
               Change Password
@@ -25,7 +25,7 @@
             <label>Email Address:</label>
             <div class="login-badge">
               <ion-icon name="mail-outline"></ion-icon>
-              {{ user.email }}
+              {{ userProfile?.email }}
             </div>
           </div>
           <div class="left-col">
@@ -33,7 +33,7 @@
           </div>
           <div class="right-col">
             <div class="input-wrapper">
-              <ion-input type="text" [value]="user.phoneNumber"></ion-input>
+              <ion-input type="text" [value]="userProfile?.phoneNumber"></ion-input>
             </div>
             <ion-button class="update-btn">
               <ion-icon slot="start" name="sync-outline"></ion-icon>

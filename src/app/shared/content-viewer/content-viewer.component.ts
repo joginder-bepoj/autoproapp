@@ -27,7 +27,6 @@ export class ContentViewerComponent implements OnInit, OnDestroy {
   dynamicHtml: any = "";
   pdfUrl: SafeResourceUrl | null = null;
   videoUrl: SafeResourceUrl | null = null;
-  externalUrl: string = "";
   rawPdfUrl: string = "";
   isPdfLoading: boolean = false;
   showFallbackHelp: boolean = false;
@@ -168,7 +167,6 @@ export class ContentViewerComponent implements OnInit, OnDestroy {
     this.dynamicHtml = "";
     this.pdfUrl = null;
     this.videoUrl = null;
-    this.externalUrl = "";
     this.rawPdfUrl = "";
     this.isPdfLoading = false;
     this.showFallbackHelp = false;

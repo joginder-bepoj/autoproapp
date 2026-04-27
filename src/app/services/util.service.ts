@@ -1,4 +1,5 @@
 import { Injectable, inject } from '@angular/core';
+import { Auth, signInAnonymously } from '@angular/fire/auth';
 import { Router } from '@angular/router';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { delay } from 'rxjs/operators';
@@ -15,6 +16,7 @@ export class UtilService {
   private alertController = inject(AlertController);
   private apiService = inject(ApiService);
   private storage = inject(Storage);
+  private auth = inject(Auth);
 
   private _storageReady: Promise<Storage>;
 
@@ -101,6 +103,14 @@ export class UtilService {
 
     // Fallback email to profile if email empty
     this.apiService.loginEmail = profile?.email || this._userEmail || '';
+
+    // Ensure Firebase Authentication
+    try {
+      await signInAnonymously(this.auth);
+      console.log('Firebase Authenticated Anonymously');
+    } catch (error) {
+      console.error('Firebase Auth Error:', error);
+    }
   }
 
   async setPrivateKey(key: string): Promise<void> {
@@ -136,7 +146,7 @@ export class UtilService {
   }
 
   isLoggedIn(): boolean {
-    return !!this._privateKey;
+    return !!this._privateKey && !!this._userEmail;
   }
 
   async logout(): Promise<void> {
