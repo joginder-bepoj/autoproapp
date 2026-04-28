@@ -6,6 +6,7 @@ import { delay } from 'rxjs/operators';
 import { ToastController, AlertController } from '@ionic/angular';
 import { ApiService } from './api-service';
 import { Storage } from '@ionic/storage-angular';
+import { Capacitor } from '@capacitor/core';
 
 @Injectable({
   providedIn: 'root'
@@ -155,6 +156,26 @@ export class UtilService {
     this.currentUserSubject.next(null);
     this.cartSubject.next(null);
     this.router.navigate(['/login']);
+  }
+
+  async getDeviceInfo() {
+    const platform = Capacitor.getPlatform();
+    let deviceId = '';
+    let model = '';
+
+    if (platform === 'web') {
+      deviceId = await this.storage.get('web_device_id');
+      if (!deviceId) {
+        deviceId = 'web-' + Math.random().toString(36).substring(2, 15);
+        await this.storage.set('web_device_id', deviceId);
+      }
+      model = 'Browser';
+    } else {
+      deviceId = 'native-device-id';
+      model = platform.toUpperCase() + ' Device';
+    }
+
+    return { deviceId, model };
   }
 
   // ─── Error / utility helpers ───────────────────────────────────────────────

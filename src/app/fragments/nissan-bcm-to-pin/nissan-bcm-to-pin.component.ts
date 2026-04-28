@@ -225,13 +225,13 @@ export class NissanBcmToPinComponent implements OnInit, OnDestroy {
   perform20DigitConversion(bcm: string) {
     if (!bcm) {
       this.utilService.hideLoader();
-      alert("Please enter the BCM");
+      this.utilService.showAlert('Error', "Please enter the BCM");
       return;
     }
 
     if (bcm.length !== 20) {
       this.utilService.hideLoader();
-      alert("Please correct BCM of length 20");
+      this.utilService.showAlert('Error', "Please correct BCM of length 20");
       return;
     }
 
@@ -265,7 +265,7 @@ export class NissanBcmToPinComponent implements OnInit, OnDestroy {
         this.user.points = parseInt(res.data.balance);
       },
       error: () => {
-        alert("Can not get your AutoProAPP Points");
+        this.utilService.showAlert('Error', "Can not get your AutoProAPP Points");
       },
     });
   }

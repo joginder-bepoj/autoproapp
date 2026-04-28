@@ -9,11 +9,20 @@
           <div class="avatar-lg">{{ (userProfile?.firstName || 'U').substring(0, 1) }}</div>
           <div class="profile-info">
             <h2 class="user-name">{{ userProfile?.firstName }} {{ userProfile?.lastName }}</h2>
-            <p class="member-since">
-              <ion-icon name="calendar-outline"></ion-icon>
-              Member ID: {{ userProfile?.customerID }}
-            </p>
+            <div class="profile-meta">
+              <p class="member-id">
+                <ion-icon name="ribbon-outline"></ion-icon>
+                Member ID: {{ userProfile?.customerID }}
+              </p>
+              <div class="user-stats-mini">
+                <div class="mini-stat">
+                  <span class="label"># of Logins:</span>
+                  <span class="value">{{ userLoginsInfo?.count || 0 }}</span>
+                </div>
+              </div>
+            </div>
             <ion-button (click)="changePassword()" class="update-btn">
+              <ion-icon slot="start" name="key-outline"></ion-icon>
               Change Password
             </ion-button>
           </div>
@@ -59,28 +68,33 @@
         After removing, you can log in on a new device in 24 hours.
       </p>
 
-      <div class="devices-grid">
-        <!-- Active Device -->
-        <div class="device-item">
+      <div class="devices-grid" *ngIf="activeDevices && activeDevices.length > 0; else noDevices">
+        <div class="device-item" *ngFor="let device of activeDevices; let i = index">
           <div class="device-info-top">
             <div class="device-icon">
               <ion-icon name="phone-portrait-outline"></ion-icon>
             </div>
             <div class="device-details">
-              <h4 class="m-0">iPhone 15,4</h4>
+              <h4 class="m-0">Device {{ i + 1 }}:</h4>
+              <p class="device-model">{{ device.modelName || 'Unknown Device' }}</p>
             </div>
           </div>
           <div class="device-id-box">
             <span class="id-label">Device ID</span>
-            <span class="id-value">557F8955-586B-4BDD-9907-854D4CA398D0</span>
+            <span class="id-value">{{ device.deviceID }}</span>
           </div>
-          <ion-button class="remove-btn" fill="outline">
+          <ion-button (click)="removeDevice(device)" class="remove-btn" fill="outline">
             <ion-icon slot="start" name="trash-outline"></ion-icon>
             Remove Device
           </ion-button>
         </div>
-
       </div>
+      <ng-template #noDevices>
+        <div class="no-devices">
+          <ion-icon name="shield-checkmark-outline"></ion-icon>
+          <p>No registered devices found.</p>
+        </div>
+      </ng-template>
     </div>
 
     <!--user details-->
@@ -94,8 +108,8 @@
             <ion-icon [name]="userDetail?.icon"></ion-icon>
           </div>
           <div class="stat-info">
-            <span class="stat-label">{{userDetail?.label || ''}}</span>
-            <span class="stat-value ">{{userDetail?.value || ''}}</span>
+            <span class="stat-label">{{userDetail?.label}}</span>
+            <span class="stat-value">{{userDetail?.value}}</span>
           </div>
         </div>
       </div>

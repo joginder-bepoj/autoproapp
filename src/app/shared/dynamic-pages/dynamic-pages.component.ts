@@ -95,13 +95,13 @@ export class DynamicPagesComponent implements OnInit {
     } else if (page['Page_Type'] === "Link") {
       const url = page['Page Content'];
       window.open(url, '_blank');
-      return;
-
-    } else {
+    } else if (page['Page_Type'] === "HTML" || page['Page_Type'] === "PDF" || page['Page_Type'] === "Video") {
       const pName = (page['Page Name'] || '').replace(/ /g, '-');
       const paramPage = (this.pageQuery || '').replace(/ /g, '-');
 
       this.router.navigate(['/view', paramPage, pName]);
+    } else {
+      this.utilService.showAlert('Notice', 'Coming soon');
     }
   }
 

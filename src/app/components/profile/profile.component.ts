@@ -21,6 +21,10 @@ export class ProfileComponent implements OnInit {
   public userProfile: any;
   userSubscription?: Subscription;
 
+  logins: any[] = [];
+  activeDevices: any[] = [];
+  userLoginsInfo: any = { count: 0, firstLogin: 0 };
+
   constructor(
     private router: Router,
     private utilService: UtilService,
@@ -35,16 +39,19 @@ export class ProfileComponent implements OnInit {
       label: 'User Level',
       options: [
         {
+          key: 'user_class',
           label: 'User Class',
           value: 'Gold',
           icon: 'medal-outline'
         },
         {
+          key: 'user_score',
           label: 'User Score',
           value: '0',
           icon: 'star-outline'
         },
         {
+          key: 'user_rank',
           label: 'User Rank',
           value: '0',
           icon: 'ribbon-outline'
@@ -53,58 +60,25 @@ export class ProfileComponent implements OnInit {
     },
     {
       label: 'User Contributions',
-      options: [
-        {
-          label: 'Vehicle Images',
-          value: '0',
-          icon: 'car-outline'
-        },
-        {
-          label: 'Corrections',
-          value: '0',
-          icon: 'pencil-outline'
-        },
-        {
-          label: 'Keymaking',
-          value: '0',
-          icon: 'key-outline'
-        },
-        {
-          label: 'Tips & Tricks',
-          value: '0',
-          icon: 'bulb-outline'
-        },
-        {
-          label: 'Ratings',
-          value: '0',
-          icon: 'star-outline'
-        },
-        {
-          label: 'New Vehicles',
-          value: '0',
-          icon: 'car-sport-outline'
-        },
-        {
-          label: 'Feedbacks',
-          value: '0',
-          icon: 'chatbox-ellipses-outline'
-        }
-      ]
+      options: []
     },
     {
       label: 'Order Activity',
       options: [
         {
+          key: 'aks_orders',
           label: 'AKS Orders',
           value: '0',
           icon: 'cart-outline'
         },
         {
+          key: 'total_orders',
           label: 'Total of All Orders',
           value: '0',
           icon: 'clipboard-outline'
         },
         {
+          key: 'avg_order_amount',
           label: 'Average Order Amount',
           value: '0',
           icon: 'bag-handle-outline'
@@ -113,16 +87,48 @@ export class ProfileComponent implements OnInit {
     }
   ]
 
+  contributionMetadata: any = {
+    vehicle_images: { label: 'Vehicle Images', icon: 'car-outline' },
+    corrections: { label: 'Corrections', icon: 'pencil-outline' },
+    keymaking: { label: 'Keymaking', icon: 'key-outline' },
+    tips_and_tricks: { label: 'Tips & Tricks', icon: 'bulb-outline' },
+    ratings: { label: 'Ratings', icon: 'star-outline' },
+    new_vehicles: { label: 'New Vehicles', icon: 'car-sport-outline' },
+    feedbacks: { label: 'Feedbacks', icon: 'chatbox-ellipses-outline' }
+  };
+
   ngOnInit() {
     this.userSubscription = this.utilService.currentUser$.subscribe((user: any) => {
-      this.userProfile = user;
-      console.log(user, 'user')
-      this.apiService.getCustomerContributions(this.userProfile?.customerID).subscribe((data: any) => {
-        console.log('Customer Contributions', data);
-      });
-      this.apiService.getDeviceLogins(this.userProfile?.customerID).subscribe((data: any) => {
-        console.log('Device Logins', data);
-      });
+      if (user) {
+        this.userProfile = user;
+        this.apiService.getCustomerContributions(this.userProfile?.customerID).subscribe((data: any) => {
+          console.log('Customer Contributions Raw Data:', data);
+          if (data) {
+            this.userDetailsOptions[1].options = Object.keys(data).map(key => ({
+              key: key,
+              label: this.contributionMetadata[key]?.label || key.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' '),
+              value: data[key],
+              icon: this.contributionMetadata[key]?.icon || 'help-outline'
+            }));
+            console.log('Mapped Options:', this.userDetailsOptions[1].options);
+          }
+        });
+        this.apiService.getDeviceLogins(this.userProfile?.customerID).subscribe((data: any) => {
+          this.userLoginsInfo = data
+        });
+        this.apiService.loadDevices(this.userProfile?.customerID).subscribe((data: any) => {
+          if (data) {
+            this.activeDevices = Object.keys(data)
+              .map(key => ({
+                key: key,
+                ...data[key]
+              }))
+              .filter(d => !d.removed);
+          } else {
+            this.activeDevices = [];
+          }
+        });
+      }
     });
   }
 
@@ -146,6 +152,23 @@ export class ProfileComponent implements OnInit {
 
   changePassword() {
     this.router.navigate(['/change-password']);
+  }
+
+  removeDevice(device: any) {
+    if (!this.userProfile?.customerID || !device.key) return;
+
+    this.utilService.showLoader();
+    this.apiService.removeDeviceFirebase(this.userProfile.customerID, device.key).subscribe({
+      next: () => {
+        this.utilService.hideLoader();
+        this.utilService.showToast('Device removed successfully', 'success');
+      },
+      error: (err) => {
+        this.utilService.hideLoader();
+        this.utilService.showToast('Failed to remove device', 'danger');
+        console.error('Removal error:', err);
+      }
+    });
   }
 
 }

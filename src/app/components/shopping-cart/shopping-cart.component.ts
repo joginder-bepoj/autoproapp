@@ -88,7 +88,7 @@ export class ShoppingCartComponent implements OnInit, OnDestroy {
       },
       error: () => {
         this.utilService.hideLoader();
-        alert("Something went wrong");
+        this.utilService.showAlert('Error', "Something went wrong");
         this.loading = false;
       }
     });

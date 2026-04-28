@@ -65,11 +65,23 @@ export class LoginComponent implements OnInit {
           this.utilService.setPrivateKey(privateKey);
           this.utilService.setLoginEmail(this.loginData.email);
           this.apiService.getCustomerProfile().subscribe(
-            (profile: any) => {
+            async (profile: any) => {
               if (profile && profile?.data) {
-                this.utilService.setUserProfile(profile.data);
-                this.utilService.hideLoader();
-                this.router.navigate(['/home']);
+                const customerID = profile.data.customerID;
+
+                try {
+                  const info = await this.utilService.getDeviceInfo();
+                  const deviceStatus = await this.apiService.checkDevice(info.model, info.deviceId, customerID);
+                  this.apiService.logLogin(customerID).subscribe();
+
+                  this.utilService.setUserProfile(profile.data);
+                  this.utilService.hideLoader();
+                  this.router.navigate(['/home']);
+
+                } catch (deviceError: any) {
+                  this.utilService.hideLoader();
+                  this.showAlert('Device Limit Reached', deviceError.message || 'You can only have 2 active devices.');
+                }
               }
             },
             (err) => {

@@ -4,7 +4,7 @@ import { Observable, from, Subject } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { Capacitor, CapacitorHttp } from '@capacitor/core';
 import * as CryptoJS from 'crypto-js';
-import { Database, ref, onValue } from '@angular/fire/database';
+import { Database, ref, onValue, update, get, set, push, serverTimestamp, remove, query, limitToLast } from '@angular/fire/database';
 
 @Injectable({
   providedIn: 'root',
@@ -152,7 +152,17 @@ export class ApiService {
     const contributionsRef = ref(this.db, `users/${userId}/contributions`);
     return new Observable(observer => {
       onValue(contributionsRef, (snapshot) => {
-        observer.next(snapshot.val());
+        const data = snapshot.val() || {};
+        const counts = {
+          vehicle_images: data.vehicle_images ? Object.keys(data.vehicle_images).length : 0,
+          corrections: data.corrections ? Object.keys(data.corrections).length : 0,
+          keymaking: data.keymaking ? Object.keys(data.keymaking).length : 0,
+          tips_and_tricks: data.tips_and_tricks ? Object.keys(data.tips_and_tricks).length : 0,
+          ratings: data.ratings ? Object.keys(data.ratings).length : 0,
+          new_vehicles: data.new_vehicles ? Object.keys(data.new_vehicles).length : 0,
+          feedbacks: data.feedbacks ? Object.keys(data.feedbacks).length : 0,
+        };
+        observer.next(counts);
       }, (error) => {
         observer.error(error);
       });
@@ -163,11 +173,145 @@ export class ApiService {
     const loginsRef = ref(this.db, `users/${userId}/logins`);
     return new Observable(observer => {
       onValue(loginsRef, (snapshot) => {
+        const val = snapshot.val();
+        const logins = val ? Object.values(val) : [];
+        let firstLogin = 0;
+        if (logins.length > 0) {
+          firstLogin = Number(logins[0]);
+        }
+        observer.next({
+          count: logins.length,
+          firstLogin: firstLogin
+        });
+      }, (error) => {
+        observer.error(error);
+      });
+    });
+  }
+
+  loadDevices(userId: string) {
+    const devicesRef = ref(this.db, `users/${userId}/devices`);
+    return new Observable(observer => {
+      onValue(devicesRef, (snapshot) => {
         observer.next(snapshot.val());
       }, (error) => {
         observer.error(error);
       });
     });
+  }
+
+  removeDeviceFirebase(userId: string, deviceKey: string) {
+    const deviceRef = ref(this.db, `users/${userId}/devices/${deviceKey}`);
+    return from(update(deviceRef, {
+      removed: true,
+      timeRemoved: Date.now()
+    }));
+  }
+
+  async checkDevice(modelName: string, deviceID: string, userId: string): Promise<string> {
+    const devicesRef = ref(this.db, `users/${userId}/devices`);
+    const snapshot = await get(devicesRef);
+    const devices = snapshot.val() || {};
+
+    const device1 = devices.device1;
+    const device2 = devices.device2;
+
+    const isSameDevice = (d: any) =>
+      d && d.deviceID?.toLowerCase() === deviceID.toLowerCase() && !d.removed;
+
+    if (isSameDevice(device1) || isSameDevice(device2)) {
+      return "already registered";
+    }
+
+    const isAvailable = (d: any) => {
+      if (!d) return true;
+      if (!d.removed) return false;
+      // Check if removed more than 24 hours ago
+      const twentyFourHours = 24 * 60 * 60 * 1000;
+      const timeSinceRemoved = Date.now() - (d.timeRemoved || 0);
+      return timeSinceRemoved > twentyFourHours;
+    };
+
+    const registerDevice = async (slot: string) => {
+      const deviceData = {
+        platform: Capacitor.getPlatform(),
+        modelName: modelName,
+        deviceID: deviceID,
+        removed: false,
+        timeRegistered: Date.now()
+      };
+      await set(ref(this.db, `users/${userId}/devices/${slot}`), deviceData);
+      return "newly registered";
+    };
+
+    if (isAvailable(device1)) {
+      return await registerDevice('device1');
+    }
+
+    if (isAvailable(device2)) {
+      return await registerDevice('device2');
+    }
+
+    throw new Error("Device limit reached. You can only have 2 active devices.");
+  }
+
+  logLogin(userId: string) {
+    const loginsRef = ref(this.db, `users/${userId}/logins`);
+    return from(push(loginsRef, serverTimestamp()));
+  }
+
+  logNissan5Conversion(userId: string) {
+    const nissanRef = ref(this.db, `users/${userId}/nissan5_conversion_logs`);
+    return from(push(nissanRef, serverTimestamp()));
+  }
+
+  async checkNissan5ConversionLimit(userId: string): Promise<'available' | 'daily_limit' | 'hourly_limit'> {
+    const nissanRef = ref(this.db, `users/${userId}/nissan5_conversion_logs`);
+    const q = query(nissanRef, limitToLast(20));
+    const snapshot = await get(q);
+
+    if (snapshot.exists()) {
+      let triesInDay = 0;
+      let triesInHour = 0;
+      const now = Date.now();
+      const oneHour = 60 * 60 * 1000;
+      const oneDay = 24 * oneHour;
+
+      snapshot.forEach(child => {
+        const timestamp = Number(child.val());
+        if (now - timestamp <= oneHour) triesInHour++;
+        if (now - timestamp <= oneDay) triesInDay++;
+      });
+
+      if (triesInDay >= 20) return 'daily_limit';
+      if (triesInHour >= 5) return 'hourly_limit';
+    }
+    return 'available';
+  }
+
+  addContribution(userId: string, type: string, key: string) {
+    const contrRef = ref(this.db, `users/${userId}/contributions/${type}/${key}`);
+    return from(set(contrRef, true));
+  }
+
+  getMachineToolSettings(userId: string): Observable<any> {
+    const settingsRef = ref(this.db, `users/${userId}/settings/machineTools`);
+    return new Observable(observer => {
+      onValue(settingsRef, (snapshot) => {
+        observer.next(snapshot.val());
+      }, (error) => {
+        observer.error(error);
+      });
+    });
+  }
+
+  changeMachineToolSetting(userId: string, groupName: string, childName: string, show: boolean) {
+    const settingRef = ref(this.db, `users/${userId}/settings/machineTools/${groupName}/${childName}`);
+    if (show) {
+      return from(remove(settingRef));
+    } else {
+      return from(set(settingRef, false));
+    }
   }
 
   // =========================

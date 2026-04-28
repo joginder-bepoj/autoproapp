@@ -66,20 +66,57 @@
       color: #2b2b2b;
     }
 
-    .member-since {
-      margin: 0 0 16px 0;
-      color: #666;
-      font-size: 0.95rem;
+    .profile-meta {
+      margin-bottom: 20px;
       display: flex;
-      align-items: center;
-      gap: 6px;
+      flex-direction: column;
+      gap: 12px;
 
-      ion-icon {
-        font-size: 1.1rem;
+      .member-id {
+        margin: 0;
+        color: #666;
+        font-size: 0.95rem;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+
+        ion-icon {
+          font-size: 1.1rem;
+          color: var(--main-bg-color);
+        }
+      }
+
+      .user-stats-mini {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        padding: 12px 16px;
+        background: #f8fafc;
+        border-radius: 12px;
+        border-left: 4px solid var(--main-bg-color);
+        width: fit-content;
+        min-width: 200px;
+
+        .mini-stat {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          gap: 20px;
+
+          .label {
+            font-size: 0.9rem;
+            color: #64748b;
+            font-weight: 500;
+          }
+
+          .value {
+            font-size: 0.95rem;
+            color: #1e293b;
+            font-weight: 700;
+          }
+        }
       }
     }
-
-
   }
 }
 
@@ -234,10 +271,19 @@
 
       .device-details {
         h4 {
-          margin: 0 0 6px 0;
-          font-size: 1.2rem;
+          margin: 0 0 2px 0;
+          font-size: 0.9rem;
+          font-weight: 600;
+          color: #64748b;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+        }
+
+        .device-model {
+          margin: 0;
+          font-size: 1.25rem;
           font-weight: 700;
-          color: #2b2b2b;
+          color: #1e293b;
         }
       }
     }
@@ -279,6 +325,26 @@
     .remove-btn:hover {
       --background: #e53935;
       --color: var(--ion-color-primary-contrast);
+    }
+  }
+
+  .no-devices {
+    text-align: center;
+    padding: 40px;
+    background: #f8fafc;
+    border-radius: 12px;
+    border: 1px dashed #cbd5e1;
+
+    ion-icon {
+      font-size: 3rem;
+      color: #94a3b8;
+      margin-bottom: 12px;
+    }
+
+    p {
+      margin: 0;
+      color: #64748b;
+      font-size: 1.1rem;
     }
   }
 }
