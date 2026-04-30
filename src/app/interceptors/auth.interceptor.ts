@@ -1,14 +1,22 @@
 import { HttpInterceptorFn, HttpErrorResponse, HttpResponse } from '@angular/common/http';
-import { inject } from '@angular/core';
+import { inject, Injector } from '@angular/core';
 import { catchError, map, throwError } from 'rxjs';
 import { UtilService } from '../services/util.service';
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
-  const utilService = inject(UtilService);
+  const injector = inject(Injector);
+  let _utilService: UtilService | null = null;
+
+  const getUtilService = () => {
+    if (!_utilService) {
+      _utilService = injector.get(UtilService);
+    }
+    return _utilService;
+  };
 
   const methodSend = req.method;
   const isChangeRequest = ['POST', 'PUT', 'DELETE', 'PATCH'].includes(methodSend);
-  const token = utilService.getPrivateKey();
+  const token = getUtilService().getPrivateKey();
 
   // Extract API path
   const targetPath = req.url.split('/V1/').pop() || '';
@@ -17,7 +25,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
 
   // if (token) {
   // ✅ Admin Authentication
-  const headers = utilService.constructAPIHeaders(methodSend, targetPath);
+  const headers = getUtilService().constructAPIHeaders(methodSend, targetPath);
 
   modifiedReq = req.clone({
     setHeaders: {
@@ -34,7 +42,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
 
   // } else if (isChangeRequest) {
   //   // ✅ Catalogue Authentication
-  //   const headers = utilService.constructCatalogueHeaders(methodSend, targetPath);
+  //   const headers = getUtilService().constructCatalogueHeaders(methodSend, targetPath);
 
   //   modifiedReq = req.clone({
   //     setHeaders: {
@@ -48,7 +56,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   //   });
   // }
 
-  return next(modifiedReq).pipe(handleResponses(utilService));
+  return next(modifiedReq).pipe(handleResponses(getUtilService()));
 };
 
 

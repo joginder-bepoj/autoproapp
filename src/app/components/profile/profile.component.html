@@ -14,12 +14,9 @@
                 <ion-icon name="ribbon-outline"></ion-icon>
                 Member ID: {{ userProfile?.customerID }}
               </p>
-              <div class="user-stats-mini">
-                <div class="mini-stat">
-                  <span class="label"># of Logins:</span>
-                  <span class="value">{{ userLoginsInfo?.count || 0 }}</span>
-                </div>
-              </div>
+              <p class="member-id">
+                # of Logins: {{ userLoginsInfo?.count ?? 0 }}
+              </p>
             </div>
             <ion-button (click)="changePassword()" class="update-btn">
               <ion-icon slot="start" name="key-outline"></ion-icon>

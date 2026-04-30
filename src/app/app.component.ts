@@ -1,5 +1,5 @@
 import { Component, ViewChild, OnInit } from '@angular/core';
-import { IonApp, IonContent } from '@ionic/angular/standalone';
+import { IonApp, IonRouterOutlet, IonContent } from '@ionic/angular/standalone';
 import { Router, NavigationEnd, RouterOutlet } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { HeaderComponent } from './shared/header/header.component';
@@ -10,18 +10,21 @@ import { AsyncPipe } from '@angular/common';
 import { SplashScreen } from '@capacitor/splash-screen';
 import { App } from '@capacitor/app';
 import { Location } from '@angular/common';
+import { ToastController } from '@ionic/angular/standalone';
+import { CustomToastComponent } from './shared/custom-toast/custom-toast.component';
 
 @Component({
   selector: 'app-root',
   templateUrl: 'app.component.html',
+  styleUrls: ['app.component.scss'],
   standalone: true,
-  imports: [
-    IonApp,
+  imports: [IonContent,
     RouterOutlet,
+    IonApp,
     HeaderComponent,
-    IonContent,
     FooterComponent,
-    AsyncPipe
+    AsyncPipe,
+    CustomToastComponent
   ],
 })
 export class AppComponent implements OnInit {
@@ -37,7 +40,8 @@ export class AppComponent implements OnInit {
     private router: Router,
     private utilService: UtilService,
     private apiService: ApiService,
-    private location: Location
+    private location: Location,
+    public toastController: ToastController,
   ) {
     this.loadSplashScreen();
     this.router.events

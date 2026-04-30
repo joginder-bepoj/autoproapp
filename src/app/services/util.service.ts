@@ -3,21 +3,20 @@ import { Auth, signInAnonymously } from '@angular/fire/auth';
 import { Router } from '@angular/router';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { delay } from 'rxjs/operators';
-import { ToastController, AlertController } from '@ionic/angular';
 import { ApiService } from './api-service';
 import { Storage } from '@ionic/storage-angular';
 import { Capacitor } from '@capacitor/core';
+import { AppToastService } from './app-toast.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UtilService {
   private router = inject(Router);
-  private toastController = inject(ToastController);
-  private alertController = inject(AlertController);
   private apiService = inject(ApiService);
   private storage = inject(Storage);
   private auth = inject(Auth);
+  private customToast = inject(AppToastService);
 
   private _storageReady: Promise<Storage>;
 
@@ -244,31 +243,8 @@ export class UtilService {
   // ─── Toast ─────────────────────────────────────────────────────────────────
 
   async showToast(message: string, color: 'success' | 'danger' | 'warning' | 'primary' = 'primary', duration: number = 3000) {
-    const toast = await this.toastController.create({
-      message,
-      duration,
-      position: 'top',
-      positionAnchor: 'app-header',
-      cssClass: `premium-top-right-toast toast-${color}`,
-      buttons: [
-        {
-          text: 'Ok',
-          role: 'cancel'
-        }
-      ]
-    });
-    await toast.present();
-  }
-
-  // ─── Alert ─────────────────────────────────────────────────────────────────
-
-  async showAlert(header: string, message: string) {
-    const alert = await this.alertController.create({
-      header,
-      message,
-      buttons: ['OK']
-    });
-    await alert.present();
+    const type = color === 'primary' ? 'info' : color;
+    this.customToast.show(message, type, duration);
   }
 
   // ─── Cart ──────────────────────────────────────────────────────────────────

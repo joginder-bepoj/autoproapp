@@ -168,48 +168,6 @@ ion-input input:-webkit-autofill:active {
   }
 }
 
-/* Premium Top-Right Toast Positioning */
-ion-toast.premium-top-right-toast {
-  --width: 380px;
-  --max-width: 90vw;
-  --background: #ffffff;
-  --color: var(--main-bg-color);
-  --box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
-  --border-radius: 12px;
-  --start: auto;
-  --end: 20px;
-
-  &::part(container) {
-    background: #ffffff !important;
-    color: var(--main-bg-color);
-    border: 1.5px solid var(--main-bg-color);
-    box-shadow: var(--box-shadow);
-    border-radius: var(--border-radius);
-    padding: 2px;
-  }
-
-  &.toast-success::part(container) {
-    border-color: var(--main-bg-color);
-    color: var(--main-bg-color);
-  }
-
-  &.toast-danger::part(container) {
-    border-color: #eb445a;
-    color: #eb445a;
-  }
-
-  &::part(message) {
-    font-weight: 500;
-    font-size: 14px;
-    padding: 8px 16px;
-  }
-
-  &::part(button) {
-    color: inherit;
-    font-weight: 700;
-    opacity: 0.8;
-  }
-}
 
 /* Global Loader Overlay */
 .global-loader-overlay {
@@ -218,7 +176,6 @@ ion-toast.premium-top-right-toast {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(255, 255, 255, 0.6);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   z-index: 99999;
@@ -252,10 +209,19 @@ ion-toast.premium-top-right-toast {
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 @keyframes scaleIn {
-  from { opacity: 0; transform: scale(0.8); }
-  to { opacity: 1; transform: scale(1); }
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }

@@ -132,10 +132,10 @@ export class NissanBcmToPinComponent implements OnInit, OnDestroy {
 
         if (triesInDay >= 20) {
           this.utilService.hideLoader();
-          this.utilService.showAlert('Limit Reached', 'Sorry, you reached daily limit (20)');
+          this.utilService.showToast('Sorry, you reached daily limit (20)', 'danger');
         } else if (triesInHour >= 5) {
           this.utilService.hideLoader();
-          this.utilService.showAlert('Limit Reached', 'Sorry, you reached hourly limit (5)');
+          this.utilService.showToast('Sorry, you reached hourly limit (5)', 'danger');
         } else {
           this.performConversion(bcmCode, userIdHex);
         }
@@ -214,7 +214,7 @@ export class NissanBcmToPinComponent implements OnInit, OnDestroy {
     // 1. Check Limits First
     if (this.user.points < 2) {
       this.utilService.hideLoader();
-      this.utilService.showAlert('Nissan BCM 20-digit Conversion', 'Sorry, you dont have enough points to convert Do you want to purchase points?');
+      this.utilService.showToast('Sorry, you dont have enough points to convert', 'danger');
     } else {
       this.perform20DigitConversion(bcmCode);
       console.log(bcmCode, 'bcm code')
@@ -225,13 +225,13 @@ export class NissanBcmToPinComponent implements OnInit, OnDestroy {
   perform20DigitConversion(bcm: string) {
     if (!bcm) {
       this.utilService.hideLoader();
-      this.utilService.showAlert('Error', "Please enter the BCM");
+      this.utilService.showToast('Please enter the BCM', 'warning');
       return;
     }
 
     if (bcm.length !== 20) {
       this.utilService.hideLoader();
-      this.utilService.showAlert('Error', "Please correct BCM of length 20");
+      this.utilService.showToast('Please correct BCM of length 20', 'warning');
       return;
     }
 
@@ -265,7 +265,7 @@ export class NissanBcmToPinComponent implements OnInit, OnDestroy {
         this.user.points = parseInt(res.data.balance);
       },
       error: () => {
-        this.utilService.showAlert('Error', "Can not get your AutoProAPP Points");
+        this.utilService.showToast('Can not get your AutoProAPP Points', 'danger');
       },
     });
   }

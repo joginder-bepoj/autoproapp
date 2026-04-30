@@ -1,6 +1,6 @@
 import { CommonModule, NgFor } from '@angular/common';
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
-import { IonGrid, IonRow, IonCol, IonIcon, IonButton } from '@ionic/angular/standalone';
+import { IonGrid, IonRow, IonCol, IonIcon } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
   chevronForwardOutline, listOutline, arrowBackOutline, downloadOutline, openOutline, globeOutline
@@ -101,7 +101,7 @@ export class DynamicPagesComponent implements OnInit {
 
       this.router.navigate(['/view', paramPage, pName]);
     } else {
-      this.utilService.showAlert('Notice', 'Coming soon');
+      this.utilService.showToast('Coming soon', 'warning');
     }
   }
 

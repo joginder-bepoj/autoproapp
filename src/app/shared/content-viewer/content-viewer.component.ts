@@ -15,7 +15,7 @@ import { Subscription } from 'rxjs';
   templateUrl: './content-viewer.component.html',
   styleUrls: ['./content-viewer.component.scss'],
   standalone: true,
-  imports: [IonGrid, IonRow, IonCol, IonIcon, BreadcrumbsComponent, CommonModule, IonContent, IonButton, IonSpinner]
+  imports: [IonIcon, CommonModule, IonButton]
 })
 export class ContentViewerComponent implements OnInit, OnDestroy {
   pageQuery: string = '';
