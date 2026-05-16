@@ -1,5 +1,6 @@
+import { FooterComponent } from 'src/app/shared/footer/footer.component';
 import { Component, OnInit } from '@angular/core';
-import { IonIcon, IonInput } from "@ionic/angular/standalone";
+import { IonIcon, IonInput, IonContent } from "@ionic/angular/standalone";
 import { addIcons } from 'ionicons';
 import {
   personOutline,
@@ -20,7 +21,7 @@ import {
   selector: 'app-change-password',
   templateUrl: './change-password.component.html',
   styleUrls: ['./change-password.component.scss'],
-  imports: [IonIcon, IonInput]
+  imports: [IonContent, IonIcon, IonInput, FooterComponent]
 })
 export class ChangePasswordComponent implements OnInit {
 

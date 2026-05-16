@@ -1,3 +1,4 @@
+import { FooterComponent } from 'src/app/shared/footer/footer.component';
 import { Component, OnInit, CUSTOM_ELEMENTS_SCHEMA, inject } from '@angular/core';
 import { CommonModule, DecimalPipe } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
@@ -41,7 +42,7 @@ interface ProductDetails {
   templateUrl: './product-details.component.html',
   styleUrls: ['./product-details.component.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, DecimalPipe, RouterModule, BreadcrumbsComponent],
+  imports: [CommonModule, IonicModule, DecimalPipe, RouterModule, BreadcrumbsComponent, FooterComponent],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class ProductDetailsComponent implements OnInit {

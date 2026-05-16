@@ -1,6 +1,7 @@
+import { FooterComponent } from 'src/app/shared/footer/footer.component';
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IonIcon, IonButton, IonInput } from '@ionic/angular/standalone';
+import { IonIcon, IonButton, IonInput, IonContent } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { calendarOutline, syncOutline, phonePortraitOutline, trashOutline, addOutline, shieldCheckmarkOutline, starOutline, ribbonOutline, pieChartOutline, carOutline, pencilOutline, keyOutline, bulbOutline, chatboxEllipsesOutline, bagHandleOutline, cartOutline, clipboardOutline, medalOutline, carSportOutline, mailOutline } from 'ionicons/icons';
 import { Router } from '@angular/router';
@@ -14,7 +15,7 @@ import { ApiService } from 'src/app/services/api-service';
   templateUrl: './profile.component.html',
   styleUrls: ['./profile.component.scss'],
   standalone: true,
-  imports: [CommonModule, IonIcon, IonButton, IonInput, BreadcrumbsComponent]
+  imports: [CommonModule, IonIcon, IonButton, IonInput, IonContent, BreadcrumbsComponent, FooterComponent]
 })
 export class ProfileComponent implements OnInit {
 

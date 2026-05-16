@@ -100,26 +100,26 @@ export class ApiService {
     }
   }
 
-  fetchExternalPdfs(url: string): Observable<any> {
-    if (Capacitor.isNativePlatform()) {
-      const options: any = {
-        url: url,
-        method: 'GET',
-        responseType: 'arraybuffer'
-      };
+  // fetchExternalPdfs(url: string): Observable<any> {
+  //   if (Capacitor.isNativePlatform()) {
+  //     const options: any = {
+  //       url: url,
+  //       method: 'GET',
+  //       responseType: 'arraybuffer'
+  //     };
 
-      return from(
-        CapacitorHttp.request(options).then((response: any) => {
-          return response;
-        })
-      );
-    } else {
-      return this.http.get(url, {
-        responseType: 'blob',
-        observe: 'response'
-      });
-    }
-  }
+  //     return from(
+  //       CapacitorHttp.request(options).then((response: any) => {
+  //         return response;
+  //       })
+  //     );
+  //   } else {
+  //     return this.http.get(url, {
+  //       responseType: 'blob',
+  //       observe: 'response'
+  //     });
+  //   }
+  // }
   // =========================
   // CUSTOMER APIs
   // =========================
@@ -398,6 +398,17 @@ export class ApiService {
       'users/' + userId + '/nissan5_conversion_logs.json',
       timestamp
     );
+  }
+
+  getSearchHistory(userId: string): Observable<any> {
+    const historyRef = ref(this.db, `search_history/${userId}`);
+    return new Observable(observer => {
+      onValue(historyRef, (snapshot) => {
+        observer.next(snapshot.val());
+      }, (error) => {
+        observer.error(error);
+      });
+    });
   }
 
 }

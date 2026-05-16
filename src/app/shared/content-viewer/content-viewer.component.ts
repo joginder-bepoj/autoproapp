@@ -1,3 +1,4 @@
+import { FooterComponent } from 'src/app/shared/footer/footer.component';
 import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ApiService } from 'src/app/services/api-service';
@@ -15,7 +16,7 @@ import { Subscription } from 'rxjs';
   templateUrl: './content-viewer.component.html',
   styleUrls: ['./content-viewer.component.scss'],
   standalone: true,
-  imports: [IonIcon, CommonModule, IonButton]
+  imports: [IonContent, IonIcon, CommonModule, IonButton, FooterComponent]
 })
 export class ContentViewerComponent implements OnInit, OnDestroy {
   pageQuery: string = '';

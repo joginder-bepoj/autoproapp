@@ -1,3 +1,4 @@
+import { FooterComponent } from 'src/app/shared/footer/footer.component';
 import { Component, OnInit } from '@angular/core';
 import { ApiService } from 'src/app/services/api-service';
 import { IonicModule } from "@ionic/angular";
@@ -12,7 +13,7 @@ import { UtilService } from 'src/app/services/util.service';
   templateUrl: './category.component.html',
   styleUrls: ['./category.component.scss'],
   standalone: true,
-  imports: [IonicModule, FormsModule, CommonModule, BreadcrumbsComponent],
+  imports: [IonicModule, FormsModule, CommonModule, BreadcrumbsComponent, FooterComponent],
 })
 export class CategoryComponent implements OnInit {
 

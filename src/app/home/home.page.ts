@@ -1,10 +1,12 @@
+import { FooterComponent } from 'src/app/shared/footer/footer.component';
 import { Component } from '@angular/core';
 import {
   IonGrid,
   IonRow,
   IonCol,
   IonInput,
-  IonIcon
+  IonIcon,
+  IonContent
 } from '@ionic/angular/standalone';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -23,7 +25,7 @@ import {
   carOutline,
   notificationsOutline,
   personCircleOutline,
-  barcodeOutline, carSportOutline, arrowForwardOutline, chevronDownOutline
+  barcodeOutline, carSportOutline, arrowForwardOutline, chevronDownOutline, timeOutline
 } from 'ionicons/icons';
 
 
@@ -41,7 +43,9 @@ import {
     IonRow,
     IonCol,
     IonInput,
-    IonIcon
+    IonIcon,
+    IonContent,
+    FooterComponent
   ],
 })
 export class HomePage {
@@ -55,6 +59,7 @@ export class HomePage {
     { title: 'LOCKSMITH\nREFERENCES', icon: 'book-outline', url: '/locksmith-references' },
     { title: 'TOOLS &\nREFERENCES', icon: 'construct-outline', url: '/tool-references' },
     { title: 'ARTICLES\n& TUTORIALS', icon: 'document-text-outline', url: '/Articles-Tutorials' },
+    { title: 'SEARCH\nHISTORY', icon: 'time-outline', url: '/search-history' },
     { title: 'PROFESSIONAL\nTALK', icon: 'people-outline' },
   ];
 
@@ -65,7 +70,7 @@ export class HomePage {
   ];
 
   constructor(private router: Router) {
-    addIcons({ searchOutline, carSportOutline, chevronForwardOutline, carOutline, keyOutline, barcodeOutline, cameraOutline, speedometerOutline, bookOutline, constructOutline, documentTextOutline, peopleOutline, notificationsOutline, personCircleOutline, arrowForwardOutline, chevronDownOutline });
+    addIcons({ searchOutline, carSportOutline, chevronForwardOutline, carOutline, keyOutline, barcodeOutline, cameraOutline, speedometerOutline, bookOutline, constructOutline, documentTextOutline, peopleOutline, notificationsOutline, personCircleOutline, arrowForwardOutline, chevronDownOutline, timeOutline });
   }
 
   onModelSearch() {
@@ -97,7 +102,11 @@ export class HomePage {
 
   navigateTo(url: string | undefined) {
     if (url) {
-      this.router.navigate(['/pages' + url]);
+      if (url.startsWith('/search-history')) {
+        this.router.navigate([url]);
+      } else {
+        this.router.navigate(['/pages' + url]);
+      }
     }
   }
 }

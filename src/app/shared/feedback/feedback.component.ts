@@ -1,7 +1,8 @@
+import { FooterComponent } from 'src/app/shared/footer/footer.component';
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonIcon, IonInput, IonTextarea } from '@ionic/angular/standalone';
+import { IonIcon, IonInput, IonTextarea, IonContent } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
   chatbubbleEllipsesOutline,
@@ -34,7 +35,7 @@ export interface FeedbackCategory {
   templateUrl: './feedback.component.html',
   styleUrls: ['./feedback.component.scss'],
   standalone: true,
-  imports: [CommonModule, FormsModule, IonIcon, IonInput, IonTextarea],
+  imports: [IonContent, CommonModule, FormsModule, IonIcon, IonInput, IonTextarea, FooterComponent],
 })
 export class FeedbackComponent implements OnInit {
 

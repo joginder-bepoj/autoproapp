@@ -1,6 +1,7 @@
+import { FooterComponent } from 'src/app/shared/footer/footer.component';
 import { CommonModule, NgFor } from '@angular/common';
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
-import { IonGrid, IonRow, IonCol, IonIcon } from '@ionic/angular/standalone';
+import { IonGrid, IonRow, IonCol, IonIcon, IonContent } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
   chevronForwardOutline, listOutline, arrowBackOutline, downloadOutline, openOutline, globeOutline
@@ -16,7 +17,7 @@ import { BreadcrumbsComponent } from '../breadcrumbs/breadcrumbs.component';
   templateUrl: './dynamic-pages.component.html',
   styleUrls: ['./dynamic-pages.component.scss'],
   standalone: true,
-  imports: [NgFor, IonGrid, IonRow, IonCol, IonIcon, CommonModule, BreadcrumbsComponent],
+  imports: [IonContent, NgFor, IonGrid, IonRow, IonCol, IonIcon, CommonModule, BreadcrumbsComponent, FooterComponent],
 })
 export class DynamicPagesComponent implements OnInit {
 

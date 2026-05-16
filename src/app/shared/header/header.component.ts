@@ -21,7 +21,7 @@ export class HeaderComponent implements OnInit {
   navItems = [
     { label: 'Home', route: '/home' },
     { label: 'Settings', route: '/home' },
-    { label: 'History', route: '/home' },
+    { label: 'History', route: '/search-history' },
     { label: 'Cart', route: '/cart' },
     { label: 'Login', route: '/login' },
 

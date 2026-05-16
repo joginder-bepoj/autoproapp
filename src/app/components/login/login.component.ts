@@ -2,7 +2,7 @@ import { NgIf } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
-import { IonInput, IonButton, AlertController } from '@ionic/angular/standalone';
+import { IonInput, IonButton, IonContent, AlertController } from '@ionic/angular/standalone';
 import { ApiService } from '../../services/api-service';
 import { UtilService } from '../../services/util.service';
 
@@ -11,7 +11,7 @@ import { UtilService } from '../../services/util.service';
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss'],
   standalone: true,
-  imports: [IonInput, IonButton, RouterLink, FormsModule, NgIf],
+  imports: [IonContent, IonInput, IonButton, RouterLink, FormsModule, NgIf],
 })
 export class LoginComponent implements OnInit {
 

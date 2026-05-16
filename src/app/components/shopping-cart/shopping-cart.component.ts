@@ -1,3 +1,4 @@
+import { FooterComponent } from 'src/app/shared/footer/footer.component';
 import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
@@ -23,7 +24,7 @@ import { BreadcrumbsComponent } from '../../shared/breadcrumbs/breadcrumbs.compo
   templateUrl: './shopping-cart.component.html',
   styleUrls: ['./shopping-cart.component.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, RouterModule, BreadcrumbsComponent]
+  imports: [CommonModule, IonicModule, RouterModule, BreadcrumbsComponent, FooterComponent]
 })
 export class ShoppingCartComponent implements OnInit, OnDestroy {
   cart: any = null;

@@ -22,13 +22,13 @@
     <!-- Header Actions -->
     <div class="header-actions">
       <ng-container *ngIf="userProfile$ | async as user; else guest">
-        <button class="action-link sign-in" routerLink="/profile">
+        <button class="action-link sign-in btn-header-cta" routerLink="/profile">
           <ion-icon name="person-circle-outline"></ion-icon>
           <span>{{ user.firstName || 'Account' }}</span>
         </button>
       </ng-container>
       <ng-template #guest>
-        <button class="action-link sign-in" routerLink="/login">
+        <button class="action-link sign-in btn-header-cta" routerLink="/login">
           <ion-icon name="person-circle-outline"></ion-icon>
           <span>Sign in</span>
         </button>

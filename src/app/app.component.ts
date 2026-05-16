@@ -1,9 +1,8 @@
-import { Component, ViewChild, OnInit } from '@angular/core';
-import { IonApp, IonRouterOutlet, IonContent } from '@ionic/angular/standalone';
-import { Router, NavigationEnd, RouterOutlet } from '@angular/router';
+import { Component, OnInit } from '@angular/core';
+import { IonApp, IonRouterOutlet } from '@ionic/angular/standalone';
+import { Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { HeaderComponent } from './shared/header/header.component';
-import { FooterComponent } from './shared/footer/footer.component';
 import { UtilService } from './services/util.service';
 import { ApiService } from './services/api-service';
 import { AsyncPipe } from '@angular/common';
@@ -18,11 +17,10 @@ import { CustomToastComponent } from './shared/custom-toast/custom-toast.compone
   templateUrl: 'app.component.html',
   styleUrls: ['app.component.scss'],
   standalone: true,
-  imports: [IonContent,
-    RouterOutlet,
+  imports: [
+    IonRouterOutlet,
     IonApp,
     HeaderComponent,
-    FooterComponent,
     AsyncPipe,
     CustomToastComponent
   ],
@@ -33,8 +31,6 @@ export class AppComponent implements OnInit {
   isHomePage: boolean = false;
 
   loading$ = this.utilService.isLoading$;
-
-  @ViewChild(IonContent, { static: false }) content!: IonContent;
 
   constructor(
     private router: Router,
@@ -56,7 +52,6 @@ export class AppComponent implements OnInit {
         this.showAppComponents =
           !url.includes('/login') &&
           !url.includes('/register');
-        this.scrollToTop();
       });
   }
 
@@ -121,9 +116,4 @@ export class AppComponent implements OnInit {
     }
   }
 
-  private scrollToTop() {
-    setTimeout(() => {
-      this.content?.scrollToTop(0);
-    }, 50);
-  }
 }

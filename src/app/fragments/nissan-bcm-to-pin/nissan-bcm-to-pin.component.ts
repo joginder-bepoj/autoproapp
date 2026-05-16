@@ -1,3 +1,4 @@
+import { FooterComponent } from 'src/app/shared/footer/footer.component';
 import { Component, OnInit, ViewChildren, QueryList, ElementRef, OnDestroy } from '@angular/core';
 import { ApiService } from 'src/app/services/api-service';
 import { UtilService } from 'src/app/services/util.service';
@@ -14,7 +15,7 @@ import { Router } from '@angular/router';
   templateUrl: './nissan-bcm-to-pin.component.html',
   styleUrls: ['./nissan-bcm-to-pin.component.scss'],
   standalone: true,
-  imports: [CommonModule, FormsModule, IonicModule]
+  imports: [CommonModule, FormsModule, IonicModule, FooterComponent]
 })
 export class NissanBcmToPinComponent implements OnInit, OnDestroy {
 

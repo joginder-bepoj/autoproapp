@@ -10,7 +10,7 @@
  */
 
 /* Google Fonts */
-@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Merriweather:wght@300;400;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap");
 
 /* Core CSS required for Ionic components to work properly */
 @import "@ionic/angular/css/core.css";
@@ -42,22 +42,52 @@
 /* @import "@ionic/angular/css/palettes/dark.class.css"; */
 // @import '@ionic/angular/css/palettes/dark.system.css';
 
-// color schema
+// Premium Design System
 
 :root {
-  --ion-color-primary: #57a9d0;
-  --ion-color-primary-rgb: 87, 169, 208;
+  // Primary - brand blue (matches logo)
+  --ion-color-primary: #0085be;
+  --ion-color-primary-rgb: 0, 133, 190;
   --ion-color-primary-contrast: #ffffff;
   --ion-color-primary-contrast-rgb: 255, 255, 255;
-  --ion-color-primary-shade: #4ca3c3;
-  --ion-color-primary-tint: #68b2d1;
+  --ion-color-primary-shade: #006a98;
+  --ion-color-primary-tint: #1a91c5;
+
+  // Core brand
   --main-bg-color: #0085be;
   --main-bg-color-rgb: 0, 133, 190;
-  --border-color: #e5e8f0;
-  --text-color: #777777;
-  --dark-text-color: #0a0a0a;
-  --text-color-light: #333333;
-  --ion-font-family: "Poppins", sans-serif;
+
+  // Borders
+  --border-color: #ebedf0;
+  --border-subtle: #f0f1f3;
+
+  // Text hierarchy
+  --text-color: #4b5563;
+  --dark-text-color: #0a0d14;
+  --text-color-light: #0a0d14;
+  --text-secondary: #4b5563;
+  --text-tertiary: #9ca3af;
+
+  // Dark surfaces
+  --dark-surface: #0a0d14;
+  --dark-surface-elevated: #141821;
+
+  // Shadow system
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.10);
+  --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.12);
+
+  // Radius system
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-full: 9999px;
+
+  // Typography
+  --ion-font-family: "Inter", "Poppins", sans-serif;
   --serif-font-family: "Merriweather", serif;
 }
 
@@ -121,22 +151,26 @@ ion-select::part(label) {
 
 ion-button {
   --background: var(--main-bg-color);
-  --color: var(--ion-color-primary-contrast);
-  --border-radius: 12px;
-  --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  font-weight: 700;
+  --color: #ffffff;
+  --border-radius: 10px;
+  --transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  font-weight: 600;
+  font-size: 14px;
+  letter-spacing: -0.2px;
   margin: 0;
-  opacity: 0.8;
-  height: 48px;
+  height: 44px;
 
   &:hover {
-    opacity: 1;
-    --box-shadow: 0 10px 20px rgba(var(--main-bg-color-rgb), 0.2);
+    --box-shadow: 0 4px 12px rgba(var(--main-bg-color-rgb), 0.25);
+    filter: brightness(1.05);
+  }
+
+  &:active {
+    transform: scale(0.98);
   }
 
   &::part(native) {
     transition: var(--transition);
-    transform: none !important;
   }
 }
 

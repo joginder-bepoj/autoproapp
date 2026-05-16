@@ -1,0 +1,67 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar color="white">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/home" mode="md"></ion-back-button>
+    </ion-buttons>
+    <ion-title mode="md" class="page-title">Search History</ion-title>
+    <ion-buttons slot="end" *ngIf="history.length > 0">
+      <ion-button (click)="clearHistory()" color="danger">
+        <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="main-container container">
+
+    <!-- Loading State -->
+    <div class="loading-wrapper" *ngIf="isLoading">
+      <ion-spinner name="crescent"></ion-spinner>
+      <p>Fetching your history...</p>
+    </div>
+
+    <!-- Empty State -->
+    <div class="empty-state" *ngIf="!isLoading && history.length === 0">
+      <div class="empty-icon-wrapper">
+        <ion-icon name="search-outline"></ion-icon>
+      </div>
+      <h2>No Search History</h2>
+      <p>Your recent searches will appear here once you start exploring.</p>
+      <ion-button routerLink="/home" expand="block" shape="round" class="btn-primary">
+        Start Searching
+      </ion-button>
+    </div>
+
+    <!-- History List -->
+    <div class="history-container" *ngIf="!isLoading && history.length > 0">
+      <div class="section-header">
+        <p class="section-subtext">Review your previous searches and find what you're looking for faster.</p>
+      </div>
+
+      <ion-list lines="none" class="premium-list">
+        <ion-item-sliding *ngFor="let item of history">
+          <ion-item class="history-item" detail="false">
+            <div class="icon-wrapper" slot="start">
+              <ion-icon name="time-outline"></ion-icon>
+            </div>
+            <ion-label>
+              <h2 class="search-term">{{ item.searchTerm || 'Unknown Search' }}</h2>
+              <!-- <p class="timestamp">{{ formatDate(item.timestamp) }}</p> -->
+            </ion-label>
+            <ion-icon name="chevron-forward-outline" slot="end" class="arrow-icon"></ion-icon>
+          </ion-item>
+
+          <ion-item-options side="end">
+            <ion-item-option color="danger" (click)="clearHistory()">
+              <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
+            </ion-item-option>
+          </ion-item-options>
+        </ion-item-sliding>
+      </ion-list>
+    </div>
+
+  </div>
+
+  <app-footer></app-footer>
+</ion-content>

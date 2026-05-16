@@ -1,1 +1,9 @@
-// Loader styles moved to global.scss
+// Layout: header stays at top, ion-router-outlet fills remaining space
+ion-router-outlet {
+  flex: 1;
+  position: relative;
+}
+
+app-header {
+  flex-shrink: 0;
+}

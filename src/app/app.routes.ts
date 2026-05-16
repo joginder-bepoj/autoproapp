@@ -101,5 +101,11 @@ export const routes: Routes = [
     path: 'nissan-bcm-to-pin',
     canActivate: [authGuard],
     loadComponent: () => import('./fragments/nissan-bcm-to-pin/nissan-bcm-to-pin.component').then((m) => m.NissanBcmToPinComponent),
+  },
+  {
+    path: 'search-history',
+    canActivate: [authGuard],
+    loadComponent: () => import('./pages/search-history/search-history').then(m => m.SearchHistoryPage)
   }
+
 ];

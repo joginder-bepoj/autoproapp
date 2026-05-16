@@ -11,7 +11,7 @@ import { cameraOutline, arrowBackOutline } from 'ionicons/icons';
   templateUrl: './register.component.html',
   styleUrls: ['./register.component.scss'],
   standalone: true,
-  imports: [IonInput, IonButton, IonSelect, IonSelectOption, RouterLink, CommonModule, FormsModule, IonToggle, IonLabel, IonIcon],
+  imports: [IonContent, IonInput, IonButton, IonSelect, IonSelectOption, RouterLink, CommonModule, FormsModule, IonToggle, IonLabel, IonIcon],
 })
 export class RegisterComponent implements OnInit {
   currentStep: number = 1;

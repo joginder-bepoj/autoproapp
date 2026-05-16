@@ -1,9 +1,10 @@
+import { FooterComponent } from 'src/app/shared/footer/footer.component';
 import { NgFor, CommonModule } from '@angular/common';
 import { Component, OnInit, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { ApiService } from 'src/app/services/api-service';
 import { DropDownsComponent } from '../../shared/drop-downs/drop-downs.component';
 import { BreadcrumbsComponent } from 'src/app/shared/breadcrumbs/breadcrumbs.component';
-import { IonButton, IonIcon } from "@ionic/angular/standalone";
+import { IonButton, IonIcon, IonContent } from "@ionic/angular/standalone";
 import { Router } from '@angular/router';
 
 interface CategoryStep {
@@ -18,7 +19,7 @@ interface CategoryStep {
   templateUrl: './product-category.component.html',
   styleUrls: ['./product-category.component.scss'],
   standalone: true,
-  imports: [NgFor, CommonModule, DropDownsComponent, BreadcrumbsComponent, IonButton],
+  imports: [IonContent, NgFor, CommonModule, DropDownsComponent, BreadcrumbsComponent, IonButton, FooterComponent],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class ProductCategoryComponent implements OnInit {

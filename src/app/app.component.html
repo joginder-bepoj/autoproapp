@@ -1,13 +1,8 @@
 <ion-app>
-  <ion-content #content>
-    @if (showAppComponents) {
-    <app-header></app-header>
-    }
-    <router-outlet></router-outlet>
-    @if (showAppComponents) {
-    <app-footer></app-footer>
-    }
-  </ion-content>
+  @if (showAppComponents) {
+  <app-header></app-header>
+  }
+  <ion-router-outlet></ion-router-outlet>
 
   <app-custom-toast></app-custom-toast>
   @if (loading$ | async) {
