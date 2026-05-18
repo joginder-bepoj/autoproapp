@@ -1,7 +1,7 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { IonIcon, IonBadge } from "@ionic/angular/standalone";
 import { addIcons } from 'ionicons';
-import { searchOutline, chevronBackOutline, chevronDownOutline, notificationsOutline, personCircleOutline, menuOutline, closeOutline, carOutline, logInOutline, addCircleOutline, } from 'ionicons/icons';
+import { searchOutline, chevronBackOutline, chevronDownOutline, notificationsOutline, personCircleOutline, menuOutline, closeOutline, carOutline, logInOutline, addCircleOutline, chevronForwardOutline, homeOutline, cartOutline, timeOutline, settingsOutline } from 'ionicons/icons';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 
@@ -19,12 +19,11 @@ import { Observable, Subscription } from 'rxjs';
 export class HeaderComponent implements OnInit {
 
   navItems = [
-    { label: 'Home', route: '/home' },
-    { label: 'Settings', route: '/home' },
-    { label: 'History', route: '/search-history' },
-    { label: 'Cart', route: '/cart' },
-    { label: 'Login', route: '/login' },
-
+    { label: 'Home', route: '/home', icon: 'home-outline' },
+    { label: 'Settings', route: '/home', icon: 'settings-outline' },
+    { label: 'History', route: '/search-history', icon: 'time-outline' },
+    { label: 'Cart', route: '/cart', icon: 'cart-outline' },
+    // { label: 'Login', route: '/login', icon: 'log-in-outline' },
   ];
 
   isMenuOpen = false;
@@ -36,7 +35,7 @@ export class HeaderComponent implements OnInit {
   public userProfile$: Observable<any> = this.utilService.currentUser$;
 
   constructor() {
-    addIcons({ searchOutline, chevronBackOutline, chevronDownOutline, notificationsOutline, personCircleOutline, menuOutline, closeOutline, carOutline, logInOutline, addCircleOutline });
+    addIcons({ searchOutline, chevronBackOutline, chevronDownOutline, notificationsOutline, personCircleOutline, menuOutline, closeOutline, carOutline, logInOutline, addCircleOutline, chevronForwardOutline, homeOutline, cartOutline, timeOutline, settingsOutline });
   }
 
   ngOnInit(): void {

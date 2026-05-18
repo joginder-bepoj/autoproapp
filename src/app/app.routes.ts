@@ -78,6 +78,11 @@ export const routes: Routes = [
     loadComponent: () => import('./components/vehicle-details/vehicle-details.component').then((m) => m.VehicleDetailsComponent),
   },
   {
+    path: 'vehicle-details/:id',
+    canActivate: [authGuard],
+    loadComponent: () => import('./components/vehicle-details/vehicle-details.component').then((m) => m.VehicleDetailsComponent),
+  },
+  {
     path: 'product-category',
     canActivate: [authGuard],
     loadComponent: () => import('./components/product-category/product-category.component').then((m) => m.ProductCategoryComponent),

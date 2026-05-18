@@ -1,25 +1,6 @@
-<ion-header class="ion-no-border">
-  <ion-toolbar color="white">
-    <ion-buttons slot="start">
-      <ion-back-button defaultHref="/home" mode="md"></ion-back-button>
-    </ion-buttons>
-    <ion-title mode="md" class="page-title">Search History</ion-title>
-    <ion-buttons slot="end" *ngIf="history.length > 0">
-      <ion-button (click)="clearHistory()" color="danger">
-        <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
-      </ion-button>
-    </ion-buttons>
-  </ion-toolbar>
-</ion-header>
-
 <ion-content>
-  <div class="main-container container">
-
-    <!-- Loading State -->
-    <div class="loading-wrapper" *ngIf="isLoading">
-      <ion-spinner name="crescent"></ion-spinner>
-      <p>Fetching your history...</p>
-    </div>
+  <div class=" main-container container">
+    <app-breadcrumbs></app-breadcrumbs>
 
     <!-- Empty State -->
     <div class="empty-state" *ngIf="!isLoading && history.length === 0">
@@ -34,29 +15,23 @@
     </div>
 
     <!-- History List -->
-    <div class="history-container" *ngIf="!isLoading && history.length > 0">
+    <div class="history-container m-auto mt-4" *ngIf="!isLoading && history.length > 0">
       <div class="section-header">
         <p class="section-subtext">Review your previous searches and find what you're looking for faster.</p>
       </div>
 
       <ion-list lines="none" class="premium-list">
         <ion-item-sliding *ngFor="let item of history">
-          <ion-item class="history-item" detail="false">
+          <ion-item class="history-item" detail="false" (click)="navigateToVehicle(item)" button>
             <div class="icon-wrapper" slot="start">
               <ion-icon name="time-outline"></ion-icon>
             </div>
             <ion-label>
-              <h2 class="search-term">{{ item.searchTerm || 'Unknown Search' }}</h2>
-              <!-- <p class="timestamp">{{ formatDate(item.timestamp) }}</p> -->
+              <h2 class="search-term">{{ item.vehicleName || 'Unknown Search' }}</h2>
+              <p class="timestamp">{{ formatDate(item.time) }}</p>
             </ion-label>
             <ion-icon name="chevron-forward-outline" slot="end" class="arrow-icon"></ion-icon>
           </ion-item>
-
-          <ion-item-options side="end">
-            <ion-item-option color="danger" (click)="clearHistory()">
-              <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
-            </ion-item-option>
-          </ion-item-options>
         </ion-item-sliding>
       </ion-list>
     </div>

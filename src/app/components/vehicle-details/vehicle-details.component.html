@@ -280,16 +280,8 @@
         </div>
       </div> -->
 
-      <!-- Remotes -->
-
-
-    </div>
-
-    <!-- ─── TAB: TIPS & TRICKS ─── -->
-    <div class="vd-tab-panel" *ngIf="activeTab === 'tips'">
-
       <!-- Keymaking Methods -->
-      <div class="vd-section-block" *ngIf="keymakingMethods.length">
+      <div class="vd-section-block" *ngIf="keymakingMethods.length; else noKeymaking">
         <div class="vd-section-header">
           <h2 class="vd-section-heading">Key Making Methods</h2>
         </div>
@@ -304,29 +296,51 @@
           </div>
         </div>
       </div>
+      
+      <ng-template #noKeymaking>
+        <div class="vd-empty-state">
+          <ion-icon name="key-outline"></ion-icon>
+          <p>No key making methods found for this vehicle.</p>
+        </div>
+      </ng-template>
+
+    </div>
+
+    <!-- ─── TAB: TIPS & TRICKS ─── -->
+    <div class="vd-tab-panel" *ngIf="activeTab === 'tips'">
+
 
       <!-- Tips by Category -->
-      <ng-container *ngFor="let category of tipCategories">
-        <div class="vd-section-block" *ngIf="getTipsByCategory(category).length">
-          <div class="vd-section-header">
-            <h2 class="vd-section-heading">{{ category }}</h2>
-          </div>
-          <div class="vd-method-list">
-            <div class="vd-method-card" *ngFor="let tip of getTipsByCategory(category)">
-              <div class="vd-method-header">
-                <ion-icon [name]="getCategoryIcon(category)"></ion-icon>
-                <h3>{{ tip.title }}</h3>
+      <ng-container *ngIf="tipCategories && tipCategories.length > 0; else noTips">
+        <ng-container *ngFor="let category of tipCategories">
+          <div class="vd-section-block" *ngIf="getTipsByCategory(category).length">
+            <div class="vd-section-header">
+              <h2 class="vd-section-heading">{{ category }}</h2>
+            </div>
+            <div class="vd-method-list">
+              <div class="vd-method-card" *ngFor="let tip of getTipsByCategory(category)">
+                <div class="vd-method-header">
+                  <ion-icon [name]="getCategoryIcon(category)"></ion-icon>
+                  <h3>{{ tip.title }}</h3>
+                </div>
+                <p class="vd-method-body" *ngIf="tip.methodDescription">{{ tip.methodDescription }}</p>
+                <!-- YouTube embed -->
+                <div class="vd-video-wrap" *ngIf="tip.video">
+                  <iframe [src]="getSafeUrl(tip.video)" frameborder="0" allowfullscreen loading="lazy"></iframe>
+                </div>
+                <div class="vd-method-meta" *ngIf="tip.date">{{ tip.date | date:'mediumDate' }}</div>
               </div>
-              <p class="vd-method-body" *ngIf="tip.methodDescription">{{ tip.methodDescription }}</p>
-              <!-- YouTube embed -->
-              <div class="vd-video-wrap" *ngIf="tip.video">
-                <iframe [src]="getSafeUrl(tip.video)" frameborder="0" allowfullscreen loading="lazy"></iframe>
-              </div>
-              <div class="vd-method-meta" *ngIf="tip.date">{{ tip.date | date:'mediumDate' }}</div>
             </div>
           </div>
-        </div>
+        </ng-container>
       </ng-container>
+
+      <ng-template #noTips>
+        <div class="vd-empty-state">
+          <ion-icon name="alert-circle-outline"></ion-icon>
+          <p>No tips or tricks found for this vehicle.</p>
+        </div>
+      </ng-template>
 
     </div>
 

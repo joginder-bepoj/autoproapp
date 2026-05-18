@@ -1,4 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
@@ -6,15 +7,16 @@ import { ApiService } from 'src/app/services/api-service';
 import { UtilService } from 'src/app/services/util.service';
 import { Subscription } from 'rxjs';
 import { addIcons } from 'ionicons';
-import { timeOutline, searchOutline, chevronForwardOutline, trashOutline, cogSharp } from 'ionicons/icons';
+import { timeOutline, searchOutline, chevronForwardOutline, trashOutline } from 'ionicons/icons';
 import { FooterComponent } from 'src/app/shared/footer/footer.component';
+import { BreadcrumbsComponent } from 'src/app/shared/breadcrumbs/breadcrumbs.component';
 
 @Component({
   selector: 'app-search-history',
   templateUrl: './search-history.html',
   styleUrls: ['./search-history.scss'],
   standalone: true,
-  imports: [IonicModule, CommonModule, FormsModule, FooterComponent]
+  imports: [IonicModule, CommonModule, FormsModule, FooterComponent, BreadcrumbsComponent]
 })
 export class SearchHistoryPage implements OnInit, OnDestroy {
 
@@ -25,26 +27,37 @@ export class SearchHistoryPage implements OnInit, OnDestroy {
 
   constructor(
     private apiService: ApiService,
-    private utilService: UtilService
+    private utilService: UtilService,
+    private router: Router
   ) {
     addIcons({ timeOutline, searchOutline, chevronForwardOutline, trashOutline });
   }
 
   ngOnInit() {
+    this.userSub = this.utilService.currentUser$.subscribe((user: any) => {
+      if (user?.customerID) {
+        this.user = user;
+        this.loadHistory(user.customerID);
+      }
+    });
+  }
 
-    this.apiService.getSearchHistory('3135363938').subscribe((res) => {
-      console.log(res)
-
-    }, err => {
-      console.log(err)
-    })
-    console.log('i ma nasdnakld')
-    // this.userSub = this.utilService.currentUser$.subscribe((user: any) => {
-    //   this.user = user;
-    //   if (user) {
-    //     this.loadHistory();
-    //   }
-    // });
+  loadHistory(userIdHex: string) {
+    this.isLoading = true;
+    this.apiService.vehicleSearchHistory(userIdHex).subscribe({
+      next: (res: any) => {
+        this.isLoading = false;
+        if (res) {
+          this.history = Object.values(res).sort((a: any, b: any) => b.time - a.time);
+        } else {
+          this.history = [];
+        }
+      },
+      error: (err) => {
+        this.isLoading = false;
+        console.error('Error fetching search history:', err);
+      }
+    });
   }
 
   ngOnDestroy() {
@@ -53,42 +66,21 @@ export class SearchHistoryPage implements OnInit, OnDestroy {
     }
   }
 
-  // loadHistory() {
-
-  //   this.isLoading = true;
-  //   const userIdHex = this.utilService.strToHex(this.user.customerID);
-  //   const timestamp = Date.now();
-
-  //   this.apiService.getSearchHistory(userIdHex).subscribe({
-  //     next: (res: any) => {
-  //       this.isLoading = false;
-  //       if (res) {
-  //         if (typeof res === 'object' && !Array.isArray(res)) {
-  //           this.history = Object.keys(res).map(key => ({
-  //             id: key,
-  //             ...res[key]
-  //           })).reverse();
-  //         } else if (Array.isArray(res)) {
-  //           this.history = res.reverse();
-  //         }
-  //       }
-  //     },
-  //     error: (err) => {
-  //       this.isLoading = false;
-  //       console.error('Error fetching search history:', err);
-  //       this.utilService.showToast('Failed to load search history', 'danger');
-  //     }
-  //   });
-  // }
-
-  // formatDate(timestamp: any): string {
-  //   if (!timestamp) return '';
-  //   const date = new Date(Number(timestamp));
-  //   return date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-  // }
-
-  clearHistory() {
-    // This functionality isn't requested but would be a nice-to-have.
-    // For now, I'll just leave it as a placeholder or skip if not needed.
+  formatDate(timestamp: any): string {
+    if (!timestamp) return '';
+    const date = new Date(Number(timestamp));
+    return date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   }
+
+  navigateToVehicle(item: any) {
+    if (item && item.id && item.vehicleName) {
+      let vehicleName = item.vehicleName.toLowerCase().split(' ');
+      if (vehicleName.length == 2) {
+        this.router.navigate(['/' + vehicleName[0], vehicleName[1], 'vehicle-details', item.id], { queryParams: { from: 'history' } });
+      } else {
+        this.router.navigate(['/vehicle-details', item.id], { queryParams: { from: 'history' } });
+      }
+    }
+  }
+
 }

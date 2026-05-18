@@ -95,6 +95,19 @@ export class VehicleDetailsComponent implements OnInit {
       const id = params.get('id') || '';
       this.selectedMake = params.get('make') || '';
       this.selectedModel = params.get('model') || '';
+
+      const from = this.route.snapshot.queryParamMap.get('from');
+
+      if (from === 'history' || (!this.selectedMake && !this.selectedModel)) {
+        this.breadcrumb = [
+          { label: 'Search History', url: '/search-history' }
+        ];
+      } else {
+        this.breadcrumb = [
+          { label: 'Vehicle Search', url: '/category' }
+        ];
+      }
+
       if (id) {
         this.fetchVehicle(id);
       }

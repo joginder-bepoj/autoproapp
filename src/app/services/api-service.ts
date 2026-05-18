@@ -208,6 +208,12 @@ export class ApiService {
     }));
   }
 
+  async getDeviceSnapshot(userId: string): Promise<any> {
+    const devicesRef = ref(this.db, `users/${userId}/devices`);
+    const snapshot = await get(devicesRef);
+    return snapshot.val();
+  }
+
   async checkDevice(modelName: string, deviceID: string, userId: string): Promise<string> {
     const devicesRef = ref(this.db, `users/${userId}/devices`);
     const snapshot = await get(devicesRef);
@@ -223,13 +229,13 @@ export class ApiService {
       return "already registered";
     }
 
+    const isSameRemovedDevice = (d: any) =>
+      d && d.deviceID?.toLowerCase() === deviceID.toLowerCase() && d.removed;
+
     const isAvailable = (d: any) => {
       if (!d) return true;
-      if (!d.removed) return false;
-      // Check if removed more than 24 hours ago
-      const twentyFourHours = 24 * 60 * 60 * 1000;
-      const timeSinceRemoved = Date.now() - (d.timeRemoved || 0);
-      return timeSinceRemoved > twentyFourHours;
+      if (!d.removed) return false;   // Slot is actively used by another device
+      return true;                    // Slot was removed — always allow reuse
     };
 
     const registerDevice = async (slot: string) => {
@@ -243,6 +249,14 @@ export class ApiService {
       await set(ref(this.db, `users/${userId}/devices/${slot}`), deviceData);
       return "newly registered";
     };
+
+    if (isSameRemovedDevice(device1)) {
+      return await registerDevice('device1');
+    }
+
+    if (isSameRemovedDevice(device2)) {
+      return await registerDevice('device2');
+    }
 
     if (isAvailable(device1)) {
       return await registerDevice('device1');
@@ -397,6 +411,13 @@ export class ApiService {
       environment.api_firebase_url +
       'users/' + userId + '/nissan5_conversion_logs.json',
       timestamp
+    );
+  }
+
+  vehicleSearchHistory(userId: string) {
+    return this.http.get(
+      environment.api_firebase_url +
+      'search_history/' + userId + '.json'
     );
   }
 

@@ -1,5 +1,4 @@
 import { Injectable, inject } from '@angular/core';
-import { Auth, signInAnonymously } from '@angular/fire/auth';
 import { Router } from '@angular/router';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { delay } from 'rxjs/operators';
@@ -15,7 +14,6 @@ export class UtilService {
   private router = inject(Router);
   private apiService = inject(ApiService);
   private storage = inject(Storage);
-  private auth = inject(Auth);
   private customToast = inject(AppToastService);
 
   private _storageReady: Promise<Storage>;
@@ -104,13 +102,6 @@ export class UtilService {
     // Fallback email to profile if email empty
     this.apiService.loginEmail = profile?.email || this._userEmail || '';
 
-    // Ensure Firebase Authentication
-    try {
-      await signInAnonymously(this.auth);
-      console.log('Firebase Authenticated Anonymously');
-    } catch (error) {
-      console.error('Firebase Auth Error:', error);
-    }
   }
 
   async setPrivateKey(key: string): Promise<void> {
@@ -150,11 +141,32 @@ export class UtilService {
   }
 
   async logout(): Promise<void> {
+    try {
+      const user = this.getUserProfile();
+      if (user?.customerID) {
+        const { deviceId } = await this.getDeviceInfo();
+        const snapshot = await this.apiService.getDeviceSnapshot(user.customerID);
+        if (snapshot) {
+          for (const [slot, device] of Object.entries(snapshot) as any) {
+            if (device?.deviceID?.toLowerCase() === deviceId?.toLowerCase() && !device?.removed) {
+              await this.apiService.removeDeviceFirebase(user.customerID, slot).toPromise();
+              break;
+            }
+          }
+        }
+      }
+    } catch (e) {
+      console.warn('Device removal failed during logout:', e);
+    }
     const store = await this.ready();
     await store.clear();
+    this._privateKey = null;
+    this._userEmail = null;
+    this.apiService.privateKey = null;
+    this.apiService.loginEmail = null;
     this.currentUserSubject.next(null);
     this.cartSubject.next(null);
-    this.router.navigate(['/login']);
+    this.router.navigate(['/login'], { replaceUrl: true });
   }
 
   async getDeviceInfo() {

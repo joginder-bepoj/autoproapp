@@ -36,15 +36,56 @@
 
       <!-- Mobile Menu Toggle -->
       <button class="mobile-toggle" (click)="toggleMenu()">
-        <ion-icon [name]="isMenuOpen ? 'close-outline' : 'menu-outline'"></ion-icon>
+        <ion-icon name="menu-outline"></ion-icon>
       </button>
     </div>
 
   </div>
 
 </header>
-<!-- Mobile Menu Overlay -->
-<div class="mobile-menu" [class.open]="isMenuOpen">
-  <a *ngFor="let item of navItems" [routerLink]="[item.route]" (click)="isMenuOpen = false">{{item.label}}</a>
-  <a *ngIf="(userProfile$ | async)" (click)="logout(); isMenuOpen = false" class="logout-link">Logout</a>
+
+<!-- Side Drawer Backdrop -->
+<div class="side-drawer-backdrop" [class.visible]="isMenuOpen" (click)="toggleMenu()"></div>
+
+<!-- Side Drawer -->
+<div class="side-drawer" [class.open]="isMenuOpen">
+  <!-- Drawer Header -->
+  <div class="drawer-header">
+    <div class="drawer-logo">
+      <img src="assets/images/logo.png" alt="AutoPro Logo">
+      <span>AutoPro</span>
+    </div>
+    <button class="drawer-close" (click)="toggleMenu()">
+      <ion-icon name="close-outline"></ion-icon>
+    </button>
+  </div>
+
+  <!-- User Info -->
+  <a class="drawer-user" *ngIf="userProfile$ | async as user" routerLink="/profile" (click)="isMenuOpen = false">
+    <div class="user-avatar">
+      <ion-icon name="person-circle-outline"></ion-icon>
+    </div>
+    <div class="user-info">
+      <div class="user-name">{{ user.firstName }} {{ user.lastName }}</div>
+      <div class="user-email">{{ user.email }}</div>
+    </div>
+    <ion-icon name="chevron-forward-outline" class="profile-arrow"></ion-icon>
+  </a>
+
+  <!-- Nav Items -->
+  <nav class="drawer-nav">
+    <a *ngFor="let item of navItems" [routerLink]="[item.route]" class="drawer-nav-item" (click)="isMenuOpen = false">
+      <ion-icon [name]="item.icon || 'chevron-forward-outline'"></ion-icon>
+      <span>{{ item.label }}</span>
+      <ion-icon name="chevron-forward-outline" class="arrow"></ion-icon>
+    </a>
+  </nav>
+
+  <!-- Drawer Footer -->
+  <div class="drawer-footer">
+    <button class="drawer-logout" *ngIf="userProfile$ | async" (click)="logout(); isMenuOpen = false">
+      <ion-icon name="log-in-outline"></ion-icon>
+      <span>Logout</span>
+    </button>
+  </div>
 </div>

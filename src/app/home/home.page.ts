@@ -59,7 +59,7 @@ export class HomePage {
     { title: 'LOCKSMITH\nREFERENCES', icon: 'book-outline', url: '/locksmith-references' },
     { title: 'TOOLS &\nREFERENCES', icon: 'construct-outline', url: '/tool-references' },
     { title: 'ARTICLES\n& TUTORIALS', icon: 'document-text-outline', url: '/Articles-Tutorials' },
-    { title: 'SEARCH\nHISTORY', icon: 'time-outline', url: '/search-history' },
+    // { title: 'SEARCH\nHISTORY', icon: 'time-outline', url: '/search-history' },
     { title: 'PROFESSIONAL\nTALK', icon: 'people-outline' },
   ];
 
