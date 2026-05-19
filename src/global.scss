@@ -259,3 +259,14 @@ ion-input input:-webkit-autofill:active {
     transform: scale(1);
   }
 }
+
+/* Global Min-Height for Main Content Pages */
+.page-container,
+.dynamic-page,
+.dynamic-html,
+.main-container,
+.cart-container,
+.cart-page-container,
+.category-page {
+  min-height: calc(100dvh - 145px) !important;
+}

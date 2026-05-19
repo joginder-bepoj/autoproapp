@@ -6,7 +6,6 @@ import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 
 import { UtilService } from '../../services/util.service';
-import { ApiService } from '../../services/api-service';
 import { Observable, Subscription } from 'rxjs';
 
 @Component({
@@ -23,7 +22,6 @@ export class HeaderComponent implements OnInit {
     { label: 'Settings', route: '/home', icon: 'settings-outline' },
     { label: 'History', route: '/search-history', icon: 'time-outline' },
     { label: 'Cart', route: '/cart', icon: 'cart-outline' },
-    // { label: 'Login', route: '/login', icon: 'log-in-outline' },
   ];
 
   isMenuOpen = false;
@@ -31,7 +29,6 @@ export class HeaderComponent implements OnInit {
   cartSubscription: Subscription | undefined;
 
   private utilService = inject(UtilService);
-  // private apiService = inject(ApiService);
   public userProfile$: Observable<any> = this.utilService.currentUser$;
 
   constructor() {

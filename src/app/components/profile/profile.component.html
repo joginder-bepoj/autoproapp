@@ -1,118 +1,122 @@
 <ion-content>
-<div class="profile-content">
-  <div class="main-container container">
+  <div class="profile-content">
+    <div class="main-container container">
 
-    <!-- Profile Header Card -->
-    <app-breadcrumbs></app-breadcrumbs>
-    <ng-container *ngIf="userProfile; else loading">
-      <div class="d-flex w-100 gap-3 profile-outer-card">
-        <div class="profile-card w-100">
-          <div class="avatar-lg">{{ (userProfile?.firstName || 'U').substring(0, 1) }}</div>
-          <div class="profile-info">
-            <h2 class="user-name">{{ userProfile?.firstName }} {{ userProfile?.lastName }}</h2>
-            <div class="profile-meta">
-              <p class="member-id">
-                <ion-icon name="ribbon-outline"></ion-icon>
-                Member ID: {{ userProfile?.customerID }}
-              </p>
-              <p class="member-id">
-                # of Logins: {{ userLoginsInfo?.count ?? 0 }}
-              </p>
+      <!-- Profile Header Card -->
+      <app-breadcrumbs></app-breadcrumbs>
+      <ng-container *ngIf="userProfile; else loading">
+        <div class="d-flex w-100 gap-3 profile-outer-card">
+          <div class="profile-card w-100">
+            <div class="avatar-lg">{{ (userProfile?.firstName || 'U').substring(0, 1) }}</div>
+            <div class="profile-info">
+              <h2 class="user-name">{{ userProfile?.firstName }} {{ userProfile?.lastName }}</h2>
+              <div class="profile-meta">
+                <p class="member-id">
+                  <ion-icon name="ribbon-outline"></ion-icon>
+                  Member ID: {{ userProfile?.customerID }}
+                </p>
+                <p class="member-id">
+                  # of Logins: {{ userLoginsInfo?.count ?? 0 }}
+                </p>
+              </div>
+              <ion-button (click)="changePassword()" class="update-btn me-2">
+                <ion-icon slot="start" name="key-outline"></ion-icon>
+                Change Password
+              </ion-button>
+              <ion-button (click)="logout()" class="update-btn" color="danger">
+                <ion-icon slot="start" name="log-out-outline"></ion-icon>
+                Logout
+              </ion-button>
             </div>
-            <ion-button (click)="changePassword()" class="update-btn">
-              <ion-icon slot="start" name="key-outline"></ion-icon>
-              Change Password
-            </ion-button>
+          </div>
+
+          <!-- Display Name Card -->
+          <div class="display-name-card card-box flex-column w-100">
+            <div class="left-col mb-2">
+              <label>Email Address:</label>
+              <div class="login-badge">
+                <ion-icon name="mail-outline"></ion-icon>
+                {{ userProfile?.email }}
+              </div>
+            </div>
+            <div class="left-col">
+              <label>Contact Phone</label>
+            </div>
+            <div class="right-col">
+              <div class="input-wrapper">
+                <ion-input type="text" [value]="userProfile?.phoneNumber"></ion-input>
+              </div>
+              <ion-button class="update-btn">
+                <ion-icon slot="start" name="sync-outline"></ion-icon>
+                Update
+              </ion-button>
+            </div>
           </div>
         </div>
-
-        <!-- Display Name Card -->
-        <div class="display-name-card card-box flex-column w-100">
-          <div class="left-col mb-2">
-            <label>Email Address:</label>
-            <div class="login-badge">
-              <ion-icon name="mail-outline"></ion-icon>
-              {{ userProfile?.email }}
-            </div>
-          </div>
-          <div class="left-col">
-            <label>Contact Phone</label>
-          </div>
-          <div class="right-col">
-            <div class="input-wrapper">
-              <ion-input type="text" [value]="userProfile?.phoneNumber"></ion-input>
-            </div>
-            <ion-button class="update-btn">
-              <ion-icon slot="start" name="sync-outline"></ion-icon>
-              Update
-            </ion-button>
-          </div>
-        </div>
-      </div>
-    </ng-container>
-    <ng-template #loading>
-      <div class="profile-card p-4 text-center">
-        <p>Loading profile details...</p>
-      </div>
-    </ng-template>
-
-    <!-- Devices Card -->
-    <div class="devices-card card-box">
-      <div class="device-header">
-        <h3>Devices</h3>
-      </div>
-      <p class="device-subtext">
-        You can have a maximum of 2 devices on your account. Remove a device to add a new one.<br>
-        After removing, you can log in on a new device in 24 hours.
-      </p>
-
-      <div class="devices-grid" *ngIf="activeDevices && activeDevices.length > 0; else noDevices">
-        <div class="device-item" *ngFor="let device of activeDevices; let i = index">
-          <div class="device-info-top">
-            <div class="device-icon">
-              <ion-icon name="phone-portrait-outline"></ion-icon>
-            </div>
-            <div class="device-details">
-              <h4 class="m-0">Device {{ i + 1 }}:</h4>
-              <p class="device-model">{{ device.modelName || 'Unknown Device' }}</p>
-            </div>
-          </div>
-          <div class="device-id-box">
-            <span class="id-label">Device ID</span>
-            <span class="id-value">{{ device.deviceID }}</span>
-          </div>
-          <ion-button (click)="removeDevice(device)" class="remove-btn" fill="outline">
-            <ion-icon slot="start" name="trash-outline"></ion-icon>
-            Remove Device
-          </ion-button>
-        </div>
-      </div>
-      <ng-template #noDevices>
-        <div class="no-devices">
-          <ion-icon name="shield-checkmark-outline"></ion-icon>
-          <p>No registered devices found.</p>
+      </ng-container>
+      <ng-template #loading>
+        <div class="profile-card p-4 text-center">
+          <p>Loading profile details...</p>
         </div>
       </ng-template>
-    </div>
 
-    <!--user details-->
-    <div class="stats-section card-box" *ngFor="let item of userDetailsOptions">
-      <div class="stats-header">
-        <h3>{{item.label}}</h3>
-      </div>
-      <div class="stats-grid grid-3">
-        <div class="stat-item" *ngFor="let userDetail of item.options">
-          <div class="stat-icon-wrapper">
-            <ion-icon [name]="userDetail?.icon"></ion-icon>
+      <!-- Devices Card -->
+      <div class="devices-card card-box">
+        <div class="device-header">
+          <h3>Devices</h3>
+        </div>
+        <p class="device-subtext">
+          You can have a maximum of 2 devices on your account. Remove a device to add a new one.<br>
+          After removing, you can log in on a new device in 24 hours.
+        </p>
+
+        <div class="devices-grid" *ngIf="activeDevices && activeDevices.length > 0; else noDevices">
+          <div class="device-item" *ngFor="let device of activeDevices; let i = index">
+            <div class="device-info-top">
+              <div class="device-icon">
+                <ion-icon name="phone-portrait-outline"></ion-icon>
+              </div>
+              <div class="device-details">
+                <h4 class="m-0">Device {{ i + 1 }}:</h4>
+                <p class="device-model">{{ device.modelName || 'Unknown Device' }}</p>
+              </div>
+            </div>
+            <div class="device-id-box">
+              <span class="id-label">Device ID</span>
+              <span class="id-value">{{ device.deviceID }}</span>
+            </div>
+            <ion-button (click)="removeDevice(device)" class="remove-btn" fill="outline">
+              <ion-icon slot="start" name="trash-outline"></ion-icon>
+              Remove Device
+            </ion-button>
           </div>
-          <div class="stat-info">
-            <span class="stat-label">{{userDetail?.label}}</span>
-            <span class="stat-value">{{userDetail?.value}}</span>
+        </div>
+        <ng-template #noDevices>
+          <div class="no-devices">
+            <ion-icon name="shield-checkmark-outline"></ion-icon>
+            <p>No registered devices found.</p>
+          </div>
+        </ng-template>
+      </div>
+
+      <!--user details-->
+      <div class="stats-section card-box" *ngFor="let item of userDetailsOptions">
+        <div class="stats-header">
+          <h3>{{item.label}}</h3>
+        </div>
+        <div class="stats-grid grid-3">
+          <div class="stat-item" *ngFor="let userDetail of item.options">
+            <div class="stat-icon-wrapper">
+              <ion-icon [name]="userDetail?.icon"></ion-icon>
+            </div>
+            <div class="stat-info">
+              <span class="stat-label">{{userDetail?.label}}</span>
+              <span class="stat-value">{{userDetail?.value}}</span>
+            </div>
           </div>
         </div>
       </div>
     </div>
   </div>
-</div>
-<app-footer></app-footer>
+  <app-footer></app-footer>
 </ion-content>

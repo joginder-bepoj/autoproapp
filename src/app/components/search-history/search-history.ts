@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
@@ -16,7 +16,7 @@ import { BreadcrumbsComponent } from 'src/app/shared/breadcrumbs/breadcrumbs.com
   templateUrl: './search-history.html',
   styleUrls: ['./search-history.scss'],
   standalone: true,
-  imports: [IonicModule, CommonModule, FormsModule, FooterComponent, BreadcrumbsComponent]
+  imports: [IonicModule, CommonModule, FormsModule, FooterComponent, BreadcrumbsComponent, RouterLink]
 })
 export class SearchHistoryPage implements OnInit, OnDestroy {
 

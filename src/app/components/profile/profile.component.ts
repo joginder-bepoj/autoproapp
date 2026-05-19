@@ -3,7 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonIcon, IonButton, IonInput, IonContent } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { calendarOutline, syncOutline, phonePortraitOutline, trashOutline, addOutline, shieldCheckmarkOutline, starOutline, ribbonOutline, pieChartOutline, carOutline, pencilOutline, keyOutline, bulbOutline, chatboxEllipsesOutline, bagHandleOutline, cartOutline, clipboardOutline, medalOutline, carSportOutline, mailOutline } from 'ionicons/icons';
+import { calendarOutline, syncOutline, phonePortraitOutline, trashOutline, addOutline, shieldCheckmarkOutline, starOutline, ribbonOutline, pieChartOutline, carOutline, pencilOutline, keyOutline, bulbOutline, chatboxEllipsesOutline, bagHandleOutline, cartOutline, clipboardOutline, medalOutline, carSportOutline, mailOutline, logOutOutline } from 'ionicons/icons';
 import { Router } from '@angular/router';
 import { BreadcrumbsComponent } from '../../shared/breadcrumbs/breadcrumbs.component';
 import { UtilService } from '../../services/util.service';
@@ -31,7 +31,7 @@ export class ProfileComponent implements OnInit {
     private utilService: UtilService,
     private apiService: ApiService
   ) {
-    addIcons({ calendarOutline, syncOutline, phonePortraitOutline, trashOutline, addOutline, shieldCheckmarkOutline, starOutline, ribbonOutline, pieChartOutline, carOutline, pencilOutline, keyOutline, bulbOutline, chatboxEllipsesOutline, bagHandleOutline, cartOutline, clipboardOutline, medalOutline, carSportOutline, mailOutline });
+    addIcons({ calendarOutline, syncOutline, phonePortraitOutline, trashOutline, addOutline, shieldCheckmarkOutline, starOutline, ribbonOutline, pieChartOutline, carOutline, pencilOutline, keyOutline, bulbOutline, chatboxEllipsesOutline, bagHandleOutline, cartOutline, clipboardOutline, medalOutline, carSportOutline, mailOutline, logOutOutline });
     this.userProfile = this.utilService.currentUser$;
   }
 
@@ -153,6 +153,10 @@ export class ProfileComponent implements OnInit {
 
   changePassword() {
     this.router.navigate(['/change-password']);
+  }
+
+  logout() {
+    this.utilService.logout();
   }
 
   removeDevice(device: any) {

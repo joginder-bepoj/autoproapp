@@ -140,6 +140,14 @@ export class ApiService {
     return this.request('GET', 'customer/points');
   }
 
+  getCustomerQuestion() {
+    return this.request('GET', 'customer/question');
+  }
+
+  createCustomer(data: any) {
+    return this.request('POST', 'customer/create', data);
+  }
+
   updateCustomerPoints(points: number, reason: string) {
     const data = {
       points: points,
@@ -421,15 +429,15 @@ export class ApiService {
     );
   }
 
-  getSearchHistory(userId: string): Observable<any> {
-    const historyRef = ref(this.db, `search_history/${userId}`);
-    return new Observable(observer => {
-      onValue(historyRef, (snapshot) => {
-        observer.next(snapshot.val());
-      }, (error) => {
-        observer.error(error);
-      });
-    });
-  }
+  // getSearchHistory(userId: string): Observable<any> {
+  //   const historyRef = ref(this.db, `search_history/${userId}`);
+  //   return new Observable(observer => {
+  //     onValue(historyRef, (snapshot) => {
+  //       observer.next(snapshot.val());
+  //     }, (error) => {
+  //       observer.error(error);
+  //     });
+  //   });
+  // }
 
 }

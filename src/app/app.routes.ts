@@ -110,7 +110,6 @@ export const routes: Routes = [
   {
     path: 'search-history',
     canActivate: [authGuard],
-    loadComponent: () => import('./pages/search-history/search-history').then(m => m.SearchHistoryPage)
+    loadComponent: () => import('./components/search-history/search-history').then(m => m.SearchHistoryPage)
   }
-
 ];

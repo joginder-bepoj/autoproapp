@@ -166,7 +166,6 @@
 }
 
 .dynamic-html {
-    min-height: calc(100vh - 158px);
     overflow-x: auto;
     /* Ensure tables pushing 100% width on very small screens don't break layout */
     -webkit-overflow-scrolling: touch;
