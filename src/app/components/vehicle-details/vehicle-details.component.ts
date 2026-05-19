@@ -309,4 +309,25 @@ export class VehicleDetailsComponent implements OnInit {
     console.log(`Viewing comments for ${tool}`);
     // Navigation to a comments page could go here
   }
+
+  addToCart(product: any, type: 'key' | 'remote' | 'part') {
+    let itemID = '';
+    if (type === 'key' || type === 'remote') {
+      if (product.products?.products_id) {
+        itemID = this.getFirstProductId(product.products.products_id);
+      }
+    } else if (type === 'part') {
+      itemID = product.itemID;
+    }
+
+    if (!itemID) {
+      this.utilService.showToast('Product ID not found', 'danger');
+      return;
+    }
+
+    this.utilService.addToCart({
+      itemID: itemID,
+      qtyOrder: 1
+    });
+  }
 }

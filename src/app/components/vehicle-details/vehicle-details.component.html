@@ -140,6 +140,10 @@
                 key.products.least_price | number:'1.2-2' }}</a>
             </div>
             <button class="vd-tool-btn" *ngIf="key.products?.products_id"
+              (click)="addToCart(key, 'key'); $event.stopPropagation();" style="margin-right: 8px;">
+              <ion-icon name="cart-outline"></ion-icon>
+            </button>
+            <button class="vd-tool-btn" *ngIf="key.products?.products_id"
               [routerLink]="['/product', getFirstProductId(key.products.products_id)]">
               <ion-icon name="build-outline"></ion-icon>
             </button>
@@ -165,8 +169,8 @@
                 item.products.least_price | number:'1.2-2' }}</a>
             </div>
             <button class="vd-add-btn" *ngIf="item.products?.products_id"
-              [routerLink]="['/product', getFirstProductId(item.products.products_id)]">
-              <ion-icon name="add-outline"></ion-icon>
+              (click)="addToCart(item, 'remote'); $event.stopPropagation();">
+              <ion-icon name="cart-outline"></ion-icon>
             </button>
           </div>
         </div>
@@ -359,7 +363,12 @@
               onerror="this.src='assets/images/no-image-available.png'" class="vd-part-img">
               <div class="vd-part-info">
                 <div class="vd-part-name">{{ part.name }}</div>
-                <div class="vd-part-price" *ngIf="part.price">${{ part.price | number:'1.2-2' }}</div>
+                <div class="d-flex align-items-center justify-content-between mt-2 mb-2">
+                  <div class="vd-part-price" *ngIf="part.price" style="margin: 0;">${{ part.price | number:'1.2-2' }}</div>
+                  <button class="vd-part-cart-btn" *ngIf="part.itemID" (click)="addToCart(part, 'part'); $event.stopPropagation();">
+                    <ion-icon name="cart-outline"></ion-icon>
+                  </button>
+                </div>
                 <div class="vd-part-stock" [class.in-stock]="part.inStock">
                   {{ part.inStock ? 'In Stock' : 'Check Availability' }}
                 </div>

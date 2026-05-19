@@ -646,6 +646,29 @@
                 margin-bottom: 8px;
             }
 
+            .vd-part-cart-btn {
+                width: 36px;
+                height: 36px;
+                border-radius: 50%;
+                background: #f1f5f9;
+                color: #475569;
+                border: none;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                cursor: pointer;
+                transition: all 0.2s;
+
+                &:hover {
+                    background: var(--main-bg-color);
+                    color: #fff;
+                }
+
+                ion-icon {
+                    font-size: 18px;
+                }
+            }
+
             .vd-part-stock {
                 font-size: 0.75rem;
                 font-weight: 700;

@@ -61,10 +61,14 @@ export class ApiService {
   private request(
     method: 'GET' | 'POST',
     endpoint: string,
-    data: any = null
+    data: any = null,
+    skipLoader: boolean = false
   ): Observable<any> {
 
-    const headers = this.constructAPIHeaders(method, endpoint);
+    let headers = this.constructAPIHeaders(method, endpoint);
+    if (skipLoader) {
+      headers = { ...headers, 'X-Skip-Loader': 'true' };
+    }
     const fullUrl = this.api_base_url + endpoint;
 
     // Native (Android / iOS)
@@ -368,12 +372,20 @@ export class ApiService {
   // CART APIs
   // =========================
 
-  getCartItems() {
-    return this.request('GET', 'cart');
+  getCartItems(skipLoader: boolean = false) {
+    return this.request('GET', 'cart', null, skipLoader);
   }
 
   addToCart(data: any) {
     return this.request('POST', 'cart/add', data);
+  }
+
+  updateCart(data: any, skipLoader: boolean = false) {
+    return this.request('POST', 'cart/update', data, skipLoader);
+  }
+
+  removeFromCart(data: any, skipLoader: boolean = false) {
+    return this.request('POST', 'cart/delete', data, skipLoader);
   }
 
   // =========================

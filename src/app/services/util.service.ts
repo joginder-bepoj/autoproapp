@@ -285,8 +285,61 @@ export class UtilService {
     });
   }
 
-  refreshCart() {
-    this.apiService.getCartItems().subscribe(
+  updateCartQty(product: any) {
+    if (!product) return;
+
+    if (product.qty <= 0) {
+      this.removeFromCart(product);
+      return;
+    }
+
+    const payload = {
+      "products": [
+        {
+          "itemID": product.itemID,
+          "qty": product.qty,
+        }
+      ]
+    }
+
+    this.apiService.updateCart(payload, true).subscribe({
+      next: (res: any) => {
+        this.showToast('Cart updated successfully', 'success');
+        this.refreshCart(true);
+      },
+      error: (err) => {
+        const message = this.parseErrorMessage(err);
+        this.showToast(message, 'danger');
+      }
+    });
+  }
+
+  removeFromCart(product: any) {
+    if (!product) return;
+
+    const payload = {
+      "products": [
+        {
+          "itemID": product.itemID,
+          "qty": 0,
+        }
+      ]
+    }
+
+    this.apiService.updateCart(payload, true).subscribe({
+      next: (res: any) => {
+        this.showToast('Product removed from cart', 'success');
+        this.refreshCart(true);
+      },
+      error: (err) => {
+        const message = this.parseErrorMessage(err);
+        this.showToast(message, 'danger');
+      }
+    });
+  }
+
+  refreshCart(skipLoader: boolean = false) {
+    this.apiService.getCartItems(skipLoader).subscribe(
       (cart: any) => {
         if (cart && cart?.data) {
           this.setCart(cart.data);

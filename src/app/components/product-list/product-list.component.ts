@@ -171,7 +171,10 @@ export class ProductListComponent implements OnInit {
   }
 
   addToCart(product: Product) {
-    console.log('Added to cart:', product.name, 'Qty:', product.qty);
+    this.utilService.addToCart({
+      itemID: product.itemID,
+      qtyOrder: product.qty || 1
+    });
   }
 
   incrementQty(product: Product) {

@@ -1,84 +1,84 @@
 <ion-content>
-<div class="cart-page-container container">
-  <!-- Breadcrumbs -->
-  <app-breadcrumbs></app-breadcrumbs>
+  <div class="cart-page-container container">
+    <!-- Breadcrumbs -->
+    <app-breadcrumbs></app-breadcrumbs>
 
-  <!-- Title Section -->
-  <header class="cart-header" *ngIf="!loading && items.length > 0">
-    <h1 class="cart-title">My Cart</h1>
-    <p class="cart-subtitle">Review your items and proceed to checkout ({{ items.length }} items)</p>
-  </header>
+    <!-- Title Section -->
+    <header class="cart-header" *ngIf="!loading && items.length > 0">
+      <h1 class="cart-title">My Cart</h1>
+      <p class="cart-subtitle">Review your items and proceed to checkout ({{ items.length }} items)</p>
+    </header>
 
-  <!-- Empty State -->
-  <div class="empty-state" *ngIf="!loading && items.length === 0">
-    <div class="empty-illustration">
-      <ion-icon name="cart-outline"></ion-icon>
+    <!-- Empty State -->
+    <div class="empty-state" *ngIf="!loading && items.length === 0">
+      <div class="empty-illustration">
+        <ion-icon name="cart-outline"></ion-icon>
+      </div>
+      <h2>Your cart is empty</h2>
+      <p>Looks like you haven't added anything to your cart yet. Browse our products to find the best deals!</p>
+      <ion-button routerLink="/product-list" class="shop-now-btn" mode="ios">
+        Browse Products
+      </ion-button>
     </div>
-    <h2>Your cart is empty</h2>
-    <p>Looks like you haven't added anything to your cart yet. Browse our products to find the best deals!</p>
-    <ion-button routerLink="/product-list" class="shop-now-btn" mode="ios">
-      Browse Products
-    </ion-button>
-  </div>
 
-  <!-- Cart Content -->
-  <div class="cart-content" *ngIf="!loading && items.length > 0">
-    <!-- Left Column: Items -->
-    <div class="cart-items-section">
-      <div class="cart-item-card" *ngFor="let item of items">
-        <div class="item-img" [routerLink]="['/product-details', item.itemID]">
-          <img [src]="getImageBaseUrl() + item.image" [alt]="item.name" onerror="this.src='assets/images/logo.png'">
-        </div>
-
-        <div class="item-details">
-          <div class="item-main-info">
-            <p class="item-sku">#{{ item.itemID }}</p>
-            <h3 class="item-name" [routerLink]="['/product-details', item.itemID]">{{ item.name }}</h3>
+    <!-- Cart Content -->
+    <div class="cart-content" *ngIf="!loading && items.length > 0">
+      <!-- Left Column: Items -->
+      <div class="cart-items-section">
+        <div class="cart-item-card" *ngFor="let item of items; trackBy: trackByItemId">
+          <div class="item-img" [routerLink]="['/product-details', item.itemID]">
+            <img [src]="getImageBaseUrl() + item.image" [alt]="item.name" onerror="this.src='assets/images/logo.png'">
           </div>
 
-          <div class="item-price-qty">
-            <div class="price-info">
-              <span class="unit-price">${{ item.price | number:'1.2-2' }}</span>
-              <span class="price-label">Unit Price</span>
+          <div class="item-details">
+            <div class="item-main-info">
+              <p class="item-sku">#{{ item.itemID }}</p>
+              <h3 class="item-name" [routerLink]="['/product-details', item.itemID]">{{ item.name }}</h3>
             </div>
 
-            <div class="qty-control">
-              <button class="qty-btn" (click)="decrementQty(item)" [disabled]="item.qty <= 1">
-                <ion-icon name="remove-outline"></ion-icon>
-              </button>
-              <span class="qty-val">{{ item.qty || 1 }}</span>
-              <button class="qty-btn" (click)="incrementQty(item)">
-                <ion-icon name="add-outline"></ion-icon>
-              </button>
+            <div class="item-price-qty">
+              <div class="price-info">
+                <span class="unit-price">${{ item.price | number:'1.2-2' }}</span>
+                <span class="price-label">Unit Price</span>
+              </div>
+
+              <div class="qty-control">
+                <button class="qty-btn" (click)="decrementQty(item)" [disabled]="item.qty < 1">
+                  <ion-icon name="remove-outline"></ion-icon>
+                </button>
+                <span class="qty-val">{{ item.qty || 1 }}</span>
+                <button class="qty-btn" (click)="incrementQty(item)">
+                  <ion-icon name="add-outline"></ion-icon>
+                </button>
+              </div>
+
+              <div class="subtotal-info">
+                <span class="item-subtotal">${{ (item.price * (item.qty || 1)) | number:'1.2-2' }}</span>
+                <span class="price-label">Total</span>
+              </div>
             </div>
 
-            <div class="subtotal-info">
-              <span class="item-subtotal">${{ (item.price * (item.qty || 1)) | number:'1.2-2' }}</span>
-              <span class="price-label">Total</span>
-            </div>
+            <button class="remove-btn" (click)="removeItem(item)">
+              <ion-icon name="trash-outline"></ion-icon>
+              <span>Remove Item</span>
+            </button>
           </div>
-
-          <button class="remove-btn" (click)="removeItem(item)">
-            <ion-icon name="trash-outline"></ion-icon>
-            <span>Remove Item</span>
-          </button>
         </div>
+
+        <!-- Back to Shop Link -->
+        <a routerLink="/product-list" class="back-link">
+          <ion-icon name="arrow-back-outline"></ion-icon>
+          Continue Shopping
+        </a>
       </div>
 
-      <!-- Back to Shop Link -->
-      <a routerLink="/product-list" class="back-link">
-        <ion-icon name="arrow-back-outline"></ion-icon>
-        Continue Shopping
-      </a>
-    </div>
+      <!-- Right Column: Summary -->
+      <div class="order-summary-section">
+        <div class="summary-card">
+          <h3 class="summary-title">Order Summary</h3>
 
-    <!-- Right Column: Summary -->
-    <div class="order-summary-section">
-      <div class="summary-card">
-        <h3 class="summary-title">Order Summary</h3>
-
-        <!-- Coupon/Code Section -->
-        <!-- <div class="promo-section">
+          <!-- Coupon/Code Section -->
+          <!-- <div class="promo-section">
           <div class="promo-input-group">
             <ion-icon name="pricetag-outline"></ion-icon>
             <input type="text" placeholder="Promo Code" class="promo-input">
@@ -86,12 +86,12 @@
           <button class="apply-btn">Apply</button>
         </div> -->
 
-        <div class="summary-rows">
-          <div class="summary-row">
-            <span>Subtotal</span>
-            <span class="val">${{ subtotal | number:'1.2-2' }}</span>
-          </div>
-          <div class="summary-row">
+          <div class="summary-rows">
+            <div class="summary-row">
+              <span>Subtotal</span>
+              <span class="val" *ngIf="cart">${{ (cart.subTotal || 0) | number:'1.2-2' }}</span>
+            </div>
+            <!-- <div class="summary-row">
             <span>Estimated Shipping</span>
             <span class="val green" *ngIf="shipping === 0">FREE</span>
             <span class="val" *ngIf="shipping > 0">${{ shipping | number:'1.2-2' }}</span>
@@ -104,27 +104,27 @@
           <div class="summary-row total-row">
             <span>Estimated Total</span>
             <span class="total-val">${{ total | number:'1.2-2' }}</span>
+          </div> -->
           </div>
+
+          <ion-button expand="block" class="checkout-btn" mode="ios">
+            Proceed to Checkout
+            <ion-icon name="chevron-forward-outline" slot="end"></ion-icon>
+          </ion-button>
+
+          <p class="secure-checkout">
+            <ion-icon name="lock-closed-outline"></ion-icon>
+            Secure & Encrypted Checkout
+          </p>
         </div>
 
-        <ion-button expand="block" class="checkout-btn" mode="ios">
-          Proceed to Checkout
-          <ion-icon name="chevron-forward-outline" slot="end"></ion-icon>
-        </ion-button>
-
-        <p class="secure-checkout">
-          <ion-icon name="lock-closed-outline"></ion-icon>
-          Secure & Encrypted Checkout
-        </p>
-      </div>
-
-      <!-- Trust Badges or Extra Info -->
-      <!-- <div class="trust-extra">
+        <!-- Trust Badges or Extra Info -->
+        <!-- <div class="trust-extra">
         <p>30-Day Money Back Guarantee</p>
         <p>Free Standard Shipping over $150</p>
       </div> -->
+      </div>
     </div>
   </div>
-</div>
-<app-footer></app-footer>
+  <app-footer></app-footer>
 </ion-content>

@@ -37,6 +37,15 @@ bootstrapApplication(AppComponent, {
       authInterceptor,
       (req, next) => {
         const utilService = inject(UtilService);
+        const skipLoader = req.headers.has('X-Skip-Loader') || req.url.includes('.json');
+        
+        if (skipLoader) {
+          const cleanReq = req.clone({
+            headers: req.headers.delete('X-Skip-Loader')
+          });
+          return next(cleanReq);
+        }
+
         utilService.showLoader();
         return next(req).pipe(finalize(() => utilService.hideLoader()));
       }

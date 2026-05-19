@@ -32,10 +32,7 @@ export class ShoppingCartComponent implements OnInit, OnDestroy {
   loading: boolean = false;
 
   // Totals
-  subtotal: number = 0;
-  tax: number = 0;
-  shipping: number = 0;
-  total: number = 0;
+  // subtotal: number = 0;
 
   breadcrumb: any[] = [
     { label: 'Shopping Cart', url: '/cart' }
@@ -64,7 +61,8 @@ export class ShoppingCartComponent implements OnInit, OnDestroy {
     this.cartSubscription = this.utilService.cart$.subscribe(cart => {
       this.cart = cart;
       this.items = cart?.products || []; // Adjust based on actual API structure
-      this.calculateTotals();
+      console.log(cart.subTotal)
+      // this.calculateTotals();
     });
 
     // Initial fetch if needed
@@ -97,36 +95,32 @@ export class ShoppingCartComponent implements OnInit, OnDestroy {
 
   calculateTotals() {
     // Assuming each item has price and qty
-    this.subtotal = this.items.reduce((acc, item) => acc + (item.price * (item.qty || 1)), 0);
-    this.tax = this.subtotal * 0.08; // Example 8% tax
-    this.shipping = this.subtotal > 0 ? 15 : 0; // Flat shipping
-    this.total = this.subtotal + this.tax + this.shipping;
+    // this.subtotal =
+    // this.tax = this.subtotal * 0.08; // Example 8% tax
+    // this.shipping = this.subtotal > 0 ? 15 : 0; // Flat shipping
+    // this.total = this.subtotal + this.tax + this.shipping;
   }
 
   incrementQty(item: any) {
-    // Optimistic UI update or API call?
-    // Since we don't have a direct "updateQty" API yet, we'll simulate logic
-    item.qty = (item.qty || 1) + 1;
-    this.calculateTotals();
-    // In a real app, you'd call this.apiService.updateCart(...)
+    item.qty++;
+    this.utilService.updateCartQty(item);
   }
 
   decrementQty(item: any) {
-    if (item.qty > 1) {
-      item.qty--;
-      this.calculateTotals();
-    }
+    item.qty--;
+    this.utilService.updateCartQty(item);
   }
 
   removeItem(item: any) {
-    // Filter locally for now
     this.items = this.items.filter(i => i.itemID !== item.itemID);
-    this.calculateTotals();
-    // Update the service so header badge updates
-    this.utilService.setCart({ ...this.cart, products: this.items });
+    this.utilService.removeFromCart(item);
   }
 
   getImageBaseUrl() {
     return this.utilService.getImgBaseUrl();
+  }
+
+  trackByItemId(index: number, item: any): string {
+    return item.itemID;
   }
 }
