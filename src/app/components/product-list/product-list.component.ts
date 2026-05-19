@@ -1,11 +1,11 @@
 import { FooterComponent } from 'src/app/shared/footer/footer.component';
-import { Component, OnInit, CUSTOM_ELEMENTS_SCHEMA, inject } from '@angular/core';
+import { Component, OnInit, CUSTOM_ELEMENTS_SCHEMA, inject, ViewChild } from '@angular/core';
 import { CommonModule, DecimalPipe } from '@angular/common';
-import { IonicModule } from '@ionic/angular';
+import { IonicModule, IonContent } from '@ionic/angular';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { addIcons } from 'ionicons';
 import { BreadcrumbsComponent } from '../../shared/breadcrumbs/breadcrumbs.component';
-import { addOutline, removeOutline, cartOutline, heartOutline, optionsOutline, chevronForwardOutline, alertCircleOutline, searchOutline } from 'ionicons/icons';
+import { addOutline, removeOutline, cartOutline, heartOutline, optionsOutline, chevronForwardOutline, alertCircleOutline, searchOutline, chevronDownOutline, chevronBackOutline } from 'ionicons/icons';
 import { ApiService } from '../../services/api-service';
 import { combineLatest, finalize } from 'rxjs';
 import { UtilService } from 'src/app/services/util.service';
@@ -30,6 +30,8 @@ interface Product {
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class ProductListComponent implements OnInit {
+  @ViewChild(IonContent, { static: false }) content!: IonContent;
+
   searchQuery: string = '';
   products: Product[] = [];
   loading: boolean = false;
@@ -41,6 +43,9 @@ export class ProductListComponent implements OnInit {
   isCategoryPage: boolean = false;
   categoryId: string = '';
 
+  // Pagination properties
+  currentPage: number = 0;
+  displayResult: number = 60;
 
   private apiService = inject(ApiService);
   private route = inject(ActivatedRoute);
@@ -48,7 +53,7 @@ export class ProductListComponent implements OnInit {
 
   constructor(private router: Router) {
     this.baseUrl = this.utilService.getImgBaseUrl();
-    addIcons({ addOutline, removeOutline, cartOutline, heartOutline, optionsOutline, chevronForwardOutline, alertCircleOutline, searchOutline });
+    addIcons({ addOutline, removeOutline, cartOutline, heartOutline, optionsOutline, chevronForwardOutline, alertCircleOutline, searchOutline, chevronDownOutline, chevronBackOutline });
   }
 
   ngOnInit() {
@@ -73,35 +78,96 @@ export class ProductListComponent implements OnInit {
       this.breadcrumb = [
         { label: 'Product Category', url: '/product-category' },
       ];
-      this.fetchCategoryProducts(); // use categoryId
+      this.fetchCategoryProducts(0); // use categoryId, page 0
     } else if (this.searchQuery) {
       // SEARCH PAGE
       this.isCategoryPage = false;
 
-      this.fetchProducts(); // use searchQuery
+      this.fetchProducts(0); // use searchQuery, page 0
     } else {
       // DEFAULT CASE (optional)
       this.isCategoryPage = false;
     }
   }
 
-  fetchProducts() {
+  fetchProducts(page: number = 0) {
+    this.currentPage = page;
     this.utilService.showLoader();
     this.error = null;
 
-    this.apiService.searchProducts(this.searchQuery)
+    this.apiService.searchProducts(this.searchQuery, page)
       .pipe(finalize(() => this.utilService.hideLoader()))
-      .subscribe(
-        (res: any) => {
-          this.products = res?.data?.products;
-          this.totalResults = res?.data?.totalResults;
+      .subscribe({
+        next: (res: any) => {
+          this.products = res?.data?.products || [];
+          this.totalResults = res?.data?.totalResults || 0;
+          this.displayResult = res?.data?.displayResult || 60;
           console.log(this.products, 'i am the products');
         },
-        (err: any) => {
+        error: (err: any) => {
           this.error = 'Failed to load products. Please try again.';
           console.error('Search error:', err);
         }
-      );
+      });
+  }
+
+  fetchCategoryProducts(page: number = 0) {
+    this.currentPage = page;
+    this.utilService.showLoader();
+    this.error = null;
+
+    this.apiService.getProductsByCategory(this.categoryId, page)
+      .pipe(finalize(() => this.utilService.hideLoader()))
+      .subscribe({
+        next: (res: any) => {
+          this.products = res?.data?.products || [];
+          this.totalResults = res?.data?.totalResults || 0;
+          this.displayResult = res?.data?.displayResult || 60;
+          console.log(this.products, 'i am the products');
+        },
+        error: (err: any) => {
+          this.error = 'Failed to load products. Please try again.';
+          console.error('Search error:', err);
+        }
+      });
+  }
+
+  get totalPages(): number {
+    return Math.ceil(this.totalResults / this.displayResult) || 1;
+  }
+
+  get visiblePages(): number[] {
+    const totalPages = this.totalPages;
+    const current = this.currentPage;
+    const maxVisible = 5;
+
+    let start = Math.max(0, current - Math.floor(maxVisible / 2));
+    let end = Math.min(totalPages - 1, start + maxVisible - 1);
+
+    if (end - start + 1 < maxVisible) {
+      start = Math.max(0, end - maxVisible + 1);
+    }
+
+    const pages = [];
+    for (let i = start; i <= end; i++) {
+      pages.push(i);
+    }
+    return pages;
+  }
+
+  get isLastPageHidden(): boolean {
+    return this.totalPages > 1 && !this.visiblePages.includes(this.totalPages - 1);
+  }
+
+  goToPage(page: number) {
+    if (page < 0 || page >= this.totalPages) return;
+    if (this.isCategoryPage) {
+      this.fetchCategoryProducts(page);
+    } else {
+      this.fetchProducts(page);
+    }
+    // Smooth scroll to top of page when changing page
+    this.content?.scrollToTop(400);
   }
 
   addToCart(product: Product) {
@@ -130,24 +196,8 @@ export class ProductListComponent implements OnInit {
     this.router.navigate([this.searchQuery, 'product-details', id]);
   }
 
-  fetchCategoryProducts() {
-    this.utilService.showLoader();
-    this.error = null;
-
-    this.apiService.getProductsByCategory(this.categoryId)
-      .pipe(finalize(() => this.utilService.hideLoader()))
-      .subscribe(
-        (res: any) => {
-          this.products = res?.data?.products;
-          this.totalResults = res?.data?.totalResults;
-          console.log(this.products, 'i am the products');
-        },
-        (err: any) => {
-          this.error = 'Failed to load products. Please try again.';
-          console.error('Search error:', err);
-        }
-      );
+  trackByProductId(index: number, product: Product): string {
+    return product.itemID;
   }
-
 }
 

@@ -12,10 +12,8 @@
     RewriteCond %{HTTP:Time} ^(.*)
     RewriteRule .* - [E=HTTP_TIME:%1]
  
-    # 🚀 FIXED API PROXY (handles /V1 and V1)
     RewriteRule ^/?V1/(.*)$ proxy.php?path=$1 [QSA,L]
  
-    # ❌ DO NOT TOUCH API CALLS
     RewriteCond %{REQUEST_URI} !^/autoproapp/www/V1/
  
     # 🌐 ANGULAR SPA ROUTING

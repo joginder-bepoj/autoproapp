@@ -22,7 +22,7 @@ ion-content {
   overflow: hidden;
   background-image:
     linear-gradient(rgba(var(--main-bg-color-rgb), 1), rgba(var(--main-bg-color-rgb), 0.6)),
-    url("/assets/images/main-bg.png");
+    url("../../../assets/images/main-bg.png");
   background-size: cover;
   background-position: center;
   padding-right: 80px;

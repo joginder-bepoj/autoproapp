@@ -340,8 +340,12 @@ export class ApiService {
   // PRODUCT APIs
   // =========================
 
-  searchProducts(searchTerm: string) {
-    return this.request('GET', 'product-search/' + searchTerm);
+  searchProducts(searchTerm: string, page?: number) {
+    let endpoint = 'product-search/' + searchTerm;
+    if (page !== undefined && page !== null) {
+      endpoint += '?page=' + page;
+    }
+    return this.request('GET', endpoint);
   }
 
   getProductDetail(itemID: number) {
@@ -352,8 +356,12 @@ export class ApiService {
     return this.request('GET', 'categories');
   }
 
-  getProductsByCategory(id: string) {
-    return this.request('GET', 'categories/' + id);
+  getProductsByCategory(id: string, page?: number) {
+    let endpoint = 'categories/' + id;
+    if (page !== undefined && page !== null) {
+      endpoint += '?page=' + page;
+    }
+    return this.request('GET', endpoint);
   }
 
   // =========================

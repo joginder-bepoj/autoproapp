@@ -23,7 +23,7 @@
 
   <!-- Product Grid -->
   <div class="product-grid" *ngIf="!loading && !error && products.length > 0">
-    <div class="product-card" *ngFor="let product of products">
+    <div class="product-card" *ngFor="let product of products; trackBy: trackByProductId">
       <!-- <div class="card-overlay-top">
         <span class="status-tag" [ngClass]="{'out-of-stock': product.status === 'Out of Stock'}">
           {{ product.status }}
@@ -63,6 +63,31 @@
         </div>
       </div>
     </div>
+  </div>
+
+  <!-- Numerical Pagination -->
+  <div class="pagination-container" *ngIf="!loading && !error && totalPages > 1">
+    <button class="pag-btn prev-btn" [disabled]="currentPage === 0" (click)="goToPage(currentPage - 1)">
+      <ion-icon name="chevron-back-outline"></ion-icon>
+    </button>
+
+    <ng-container *ngFor="let page of visiblePages">
+      <button class="pag-btn page-num" [class.active]="currentPage === page" (click)="goToPage(page)">
+        {{ page + 1 }}
+      </button>
+    </ng-container>
+
+    <!-- Show Last Page with Ellipsis if not already visible -->
+    <ng-container *ngIf="isLastPageHidden">
+      <span class="pagination-ellipsis">...</span>
+      <button class="pag-btn page-num" (click)="goToPage(totalPages - 1)">
+        {{ totalPages }}
+      </button>
+    </ng-container>
+
+    <button class="pag-btn next-btn" [disabled]="currentPage === totalPages - 1" (click)="goToPage(currentPage + 1)">
+      <ion-icon name="chevron-forward-outline"></ion-icon>
+    </button>
   </div>
 
   <!-- Empty State -->

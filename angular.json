@@ -33,7 +33,9 @@
                 "glob": "**/*",
                 "input": "src/assets",
                 "output": "assets"
-              }
+              },
+              "src/proxy.php",
+              "src/.htaccess"
             ],
             "styles": [
               "src/global.scss",
