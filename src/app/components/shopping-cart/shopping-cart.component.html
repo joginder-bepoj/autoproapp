@@ -25,7 +25,7 @@
     <div class="cart-content" *ngIf="!loading && items.length > 0">
       <!-- Left Column: Items -->
       <div class="cart-items-section">
-        <div class="cart-item-card" *ngFor="let item of items; trackBy: trackByItemId">
+        <div class="cart-item-card" *ngFor="let item of items">
           <div class="item-img" [routerLink]="['/product-details', item.itemID]">
             <img [src]="getImageBaseUrl() + item.image" [alt]="item.name" onerror="this.src='assets/images/logo.png'">
           </div>
@@ -43,10 +43,10 @@
               </div>
 
               <div class="qty-control">
-                <button class="qty-btn" (click)="decrementQty(item)" [disabled]="item.qty < 1">
+                <button class="qty-btn" (click)="decrementQty(item)" [disabled]="item.qty <= 1">
                   <ion-icon name="remove-outline"></ion-icon>
                 </button>
-                <span class="qty-val">{{ item.qty || 1 }}</span>
+                <span class="qty-val clickable-qty">{{ item.qty || 1 }}</span>
                 <button class="qty-btn" (click)="incrementQty(item)">
                   <ion-icon name="add-outline"></ion-icon>
                 </button>
@@ -66,7 +66,7 @@
         </div>
 
         <!-- Back to Shop Link -->
-        <a routerLink="/product-list" class="back-link">
+        <a routerLink="/home" class="back-link">
           <ion-icon name="arrow-back-outline"></ion-icon>
           Continue Shopping
         </a>

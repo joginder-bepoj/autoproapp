@@ -261,35 +261,63 @@ export class UtilService {
 
   // ─── Cart ──────────────────────────────────────────────────────────────────
 
-  addToCart(product: any) {
-    if (!product) return;
-
-    const payload = {
-      "products": [
-        {
-          "itemID": product.itemID,
-          "qty": product.qtyOrder,
+  checkResponseForErrors(res: any): string | null {
+    const dataArray = Array.isArray(res) ? res : (Array.isArray(res?.data) ? res.data : null);
+    if (dataArray) {
+      for (const item of dataArray) {
+        if (item?.result === 'ERROR' && item?.errors) {
+          return item.errors.message || 'An error occurred while updating the cart item';
         }
-      ]
-    }
-
-    this.apiService.addToCart(payload).subscribe({
-      next: (res: any) => {
-        this.showToast('Product added to cart successfully', 'success');
-        this.refreshCart();
-      },
-      error: (err) => {
-        const message = this.parseErrorMessage(err);
-        this.showToast(message, 'danger');
       }
-    });
+    }
+    return null;
   }
 
-  updateCartQty(product: any) {
+  addToCart(product: any, onError?: (err: any) => void) {
+    if (!product) return;
+
+    const cart = this.getCart();
+    const existingItem = cart?.products?.find((item: any) => item.itemID === product.itemID);
+
+    if (existingItem) {
+      const combinedQty = (existingItem.qty || 0) + (product.qtyOrder || 1);
+      this.updateCartQty({ ...existingItem, qty: combinedQty }, onError);
+
+    } else {
+      const payload = {
+        "products": [
+          {
+            "itemID": product.itemID,
+            "qty": product.qtyOrder,
+          }
+        ]
+      };
+
+      this.apiService.addToCart(payload).subscribe({
+        next: (res: any) => {
+          const errorMsg = this.checkResponseForErrors(res);
+          if (errorMsg) {
+            this.showToast(errorMsg, 'danger');
+            if (onError) onError(errorMsg);
+          } else {
+            this.showToast('Product added to cart successfully', 'success');
+          }
+          this.refreshCart();
+        },
+        error: (err) => {
+          const message = this.parseErrorMessage(err);
+          this.showToast(message, 'danger');
+          if (onError) onError(message);
+        }
+      });
+    }
+  }
+
+  updateCartQty(product: any, onError?: (err: any) => void) {
     if (!product) return;
 
     if (product.qty <= 0) {
-      this.removeFromCart(product);
+      this.removeFromCart(product, onError);
       return;
     }
 
@@ -304,17 +332,24 @@ export class UtilService {
 
     this.apiService.updateCart(payload, true).subscribe({
       next: (res: any) => {
-        this.showToast('Cart updated successfully', 'success');
+        const errorMsg = this.checkResponseForErrors(res);
+        if (errorMsg) {
+          this.showToast(errorMsg, 'danger');
+          if (onError) onError(errorMsg);
+        } else {
+          this.showToast('Cart updated successfully', 'success');
+        }
         this.refreshCart(true);
       },
       error: (err) => {
         const message = this.parseErrorMessage(err);
         this.showToast(message, 'danger');
+        if (onError) onError(message);
       }
     });
   }
 
-  removeFromCart(product: any) {
+  removeFromCart(product: any, onError?: (err: any) => void) {
     if (!product) return;
 
     const payload = {
@@ -328,12 +363,19 @@ export class UtilService {
 
     this.apiService.updateCart(payload, true).subscribe({
       next: (res: any) => {
-        this.showToast('Product removed from cart', 'success');
+        const errorMsg = this.checkResponseForErrors(res);
+        if (errorMsg) {
+          this.showToast(errorMsg, 'danger');
+          if (onError) onError(errorMsg);
+        } else {
+          this.showToast('Product removed from cart', 'success');
+        }
         this.refreshCart(true);
       },
       error: (err) => {
         const message = this.parseErrorMessage(err);
         this.showToast(message, 'danger');
+        if (onError) onError(message);
       }
     });
   }

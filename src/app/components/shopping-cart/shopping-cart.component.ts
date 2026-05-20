@@ -3,7 +3,8 @@ import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 import { RouterModule } from '@angular/router';
-import { Subscription } from 'rxjs';
+import { Subscription, Subject } from 'rxjs';
+import { debounceTime } from 'rxjs/operators';
 import { UtilService } from '../../services/util.service';
 import { ApiService } from '../../services/api-service';
 import { addIcons } from 'ionicons';
@@ -31,14 +32,12 @@ export class ShoppingCartComponent implements OnInit, OnDestroy {
   items: any[] = [];
   loading: boolean = false;
 
-  // Totals
-  // subtotal: number = 0;
+  pendingUpdates = new Set<number>();
+  private cartUpdateSubject = new Subject<{ item: any, qty: number }>();
 
   breadcrumb: any[] = [
     { label: 'Shopping Cart', url: '/cart' }
   ];
-
-
 
   private utilService = inject(UtilService);
   private apiService = inject(ApiService);
@@ -59,13 +58,30 @@ export class ShoppingCartComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.cartSubscription = this.utilService.cart$.subscribe(cart => {
+      if (!cart) return;
       this.cart = cart;
-      this.items = cart?.products || []; // Adjust based on actual API structure
-      console.log(cart.subTotal)
-      // this.calculateTotals();
-    });
+      const newItems = cart.products || [];
+      this.items = newItems.map((newItem: any) => {
+        const existingLocal = this.items.find(i => i.itemID === newItem.itemID);
+        if (existingLocal && this.pendingUpdates.has(newItem.itemID)) {
+          if (newItem.qty === existingLocal.qty) {
+            this.pendingUpdates.delete(newItem.itemID);
+            return newItem;
+          } else {
+            return { ...newItem, qty: existingLocal.qty };
+          }
+        }
+        return newItem;
+      });
 
-    // Initial fetch if needed
+      // this.recalculateLocally();
+    });
+    this.cartUpdateSubject.pipe(
+      debounceTime(500)
+    ).subscribe(({ item, qty }) => {
+      this.utilService.updateCartQty({ ...item, qty });
+      this.pendingUpdates.delete(item.itemID);
+    });
     if (!this.cart) {
       this.fetchCart();
     }
@@ -93,22 +109,21 @@ export class ShoppingCartComponent implements OnInit, OnDestroy {
     });
   }
 
-  calculateTotals() {
-    // Assuming each item has price and qty
-    // this.subtotal =
-    // this.tax = this.subtotal * 0.08; // Example 8% tax
-    // this.shipping = this.subtotal > 0 ? 15 : 0; // Flat shipping
-    // this.total = this.subtotal + this.tax + this.shipping;
-  }
 
   incrementQty(item: any) {
-    item.qty++;
-    this.utilService.updateCartQty(item);
+    item.qty = (item.qty || 1) + 1;
+    this.pendingUpdates.add(item.itemID);
+    this.cartUpdateSubject.next({ item, qty: item.qty });
   }
 
   decrementQty(item: any) {
-    item.qty--;
-    this.utilService.updateCartQty(item);
+    if ((item.qty || 1) <= 1) {
+      this.removeItem(item);
+      return;
+    }
+    item.qty = (item.qty || 1) - 1;
+    this.pendingUpdates.add(item.itemID);
+    this.cartUpdateSubject.next({ item, qty: item.qty });
   }
 
   removeItem(item: any) {
@@ -120,7 +135,4 @@ export class ShoppingCartComponent implements OnInit, OnDestroy {
     return this.utilService.getImgBaseUrl();
   }
 
-  trackByItemId(index: number, item: any): string {
-    return item.itemID;
-  }
 }

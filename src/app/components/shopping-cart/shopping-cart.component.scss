@@ -80,7 +80,18 @@
     }
   }
 
-  // Left Column: Item List
+  .cart-items-section {
+    @media (max-width: 991px) {
+      order: 1;
+    }
+  }
+
+  .order-summary-section {
+    @media (max-width: 991px) {
+      order: 0;
+    }
+  }
+
   .cart-items-section {
     display: flex;
     flex-direction: column;
@@ -226,6 +237,18 @@
               font-weight: 700;
               font-size: 14px;
               color: #1e293b;
+
+              &.clickable-qty {
+                cursor: pointer;
+                padding: 4px 0;
+                transition: all 0.2s ease-in-out;
+
+                &:hover {
+                  background: #f1f5f9;
+                  color: var(--main-bg-color);
+                  border-radius: 4px;
+                }
+              }
             }
           }
         }
@@ -269,11 +292,7 @@
     }
   }
 
-  // Right Column: Summary
   .order-summary-section {
-    position: sticky;
-    top: 110px;
-
     .summary-card {
       background: #ffffff;
       border: 1px solid #f1f5f9;
