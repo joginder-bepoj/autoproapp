@@ -111,5 +111,10 @@ export const routes: Routes = [
     path: 'search-history',
     canActivate: [authGuard],
     loadComponent: () => import('./components/search-history/search-history').then(m => m.SearchHistoryPage)
+  },
+  {
+    path: 'key-blank-cross-ref',
+    canActivate: [authGuard],
+    loadComponent: () => import('./components/key-blank-cross-ref/key-blank-cross-ref.component').then((m) => m.KeyBlankCrossRefComponent),
   }
 ];

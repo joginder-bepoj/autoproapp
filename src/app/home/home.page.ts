@@ -55,7 +55,7 @@ export class HomePage {
 
   tools = [
     { title: 'KEY CODES\nPIN CODES', icon: 'speedometer-outline', url: '/pin-codes' },
-    { title: 'KEY BLANK\nCROSS-REF', icon: 'key-outline' },
+    { title: 'KEY BLANK\nCROSS-REF', icon: 'key-outline', url: '/key-blank-cross-ref' },
     { title: 'LOCKSMITH\nREFERENCES', icon: 'book-outline', url: '/locksmith-references' },
     { title: 'TOOLS &\nREFERENCES', icon: 'construct-outline', url: '/tool-references' },
     { title: 'ARTICLES\n& TUTORIALS', icon: 'document-text-outline', url: '/Articles-Tutorials' },
@@ -102,7 +102,9 @@ export class HomePage {
 
   navigateTo(url: string | undefined) {
     if (url) {
-      if (url.startsWith('/search-history')) {
+      // Direct routes that don't need the /pages prefix
+      const directRoutes = ['/search-history', '/key-blank-cross-ref', '/nissan-bcm-to-pin', '/nissan-bcm-to-pin-20-digit'];
+      if (directRoutes.some(r => url.startsWith(r))) {
         this.router.navigate([url]);
       } else {
         this.router.navigate(['/pages' + url]);
