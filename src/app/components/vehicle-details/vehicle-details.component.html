@@ -41,12 +41,12 @@
             <ng-container *ngIf="vehicle.vehicle_image && vehicle.vehicle_image.length; else noImages">
               <div class="vd-slide" *ngFor="let img of vehicle.vehicle_image; let i = index"
                 [class.active]="currentImageIndex === i">
-                <img [src]="img.image" alt="Vehicle Image {{i + 1}}" onerror="this.src='assets/images/no-image-available.png'">
+                <img [src]="img.image" alt="Vehicle Image {{i + 1}}" onerror="this.src='assets/images/no-image-available.jpg'">
               </div>
             </ng-container>
             <ng-template #noImages>
               <div class="vd-slide active">
-                <img src="assets/images/no-image-available.png" alt="No Vehicle Image Available">
+                <img src="assets/images/no-image-available.jpg" alt="No Vehicle Image Available">
               </div>
             </ng-template>
           </div>
@@ -132,7 +132,7 @@
           <div class="vd-item-card" *ngFor="let key of mechanicalKeys">
             <div class="vd-item-type">Mechanical Key</div>
             <img *ngIf="key.image" [src]="imgBaseUrl + key.image"
-              onerror="this.src='assets/images/no-image-available.png'" class="vd-item-img">
+              onerror="this.src='assets/images/no-image-available.jpg'" class="vd-item-img">
             <div class="vd-item-info">
               <div class="vd-item-name">{{ key.value }}</div>
               <a *ngIf="key.products?.products_id"
@@ -159,7 +159,7 @@
           <div class="vd-item-card" *ngFor="let item of remotes">
             <div class="vd-item-type">{{ item.type }}</div>
             <img *ngIf="item.products?.imagePath" [src]="imgBaseUrl + item.products.imagePath" alt="{{ item.name }}"
-              onerror="this.src='assets/images/no-image-available.png'" class="vd-item-img">
+              onerror="this.src='assets/images/no-image-available.jpg'" class="vd-item-img">
             <div class="vd-item-info">
               <div class="vd-item-name">{{ item.name }}</div>
               <div class="vd-remote-meta" *ngIf="item.fcc_id">FCC: {{ item.fcc_id }}</div>
@@ -269,7 +269,7 @@
           <div class="vd-item-card" *ngFor="let key of transponderKeys">
             <div class="vd-item-type">{{ key.value || key.chip_key_name }}</div>
             <img *ngIf="key.products?.imagePath" [src]="imgBaseUrl + key.products.imagePath" alt="{{ key.value }}"
-              onerror="this.src='/assets/images/no-image-available.png'" class="vd-item-img">
+              onerror="this.src='/assets/images/no-image-available.jpg'" class="vd-item-img">
             <div class="vd-item-info">
               <div class="vd-item-name">{{ key.value || 'Transponder Key' }}</div>
               <a *ngIf="key.products?.products_id"
@@ -359,8 +359,8 @@
           <div class="vd-parts-grid">
             <div class="vd-part-card" *ngFor="let part of vehicleParts"
               [routerLink]="part.itemID ? ['/product', part.itemID] : null">
-            <img [src]="part.image || 'assets/images/no-image-available.png'" [alt]="part.name"
-              onerror="this.src='assets/images/no-image-available.png'" class="vd-part-img">
+            <img [src]="part.image || 'assets/images/no-image-available.jpg'" [alt]="part.name"
+              onerror="this.src='assets/images/no-image-available.jpg'" class="vd-part-img">
               <div class="vd-part-info">
                 <div class="vd-part-name">{{ part.name }}</div>
                 <div class="d-flex align-items-center justify-content-between mt-2 mb-2">

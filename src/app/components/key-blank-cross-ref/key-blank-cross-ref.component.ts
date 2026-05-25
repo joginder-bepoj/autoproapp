@@ -35,13 +35,13 @@ export class KeyBlankCrossRefComponent implements OnInit {
 
   keyName: string = '';
   exactMatchOnly: boolean = false;
-  isLoading: boolean = false;
+  // isLoading: boolean = false;
   hasSearched: boolean = false;
 
   searchResults: SearchResultItem[] = [];
   selectedResult: SearchResultItem | null = null;
   detailProducts: any[] = [];
-  isLoadingProducts: boolean = false;
+  // isLoadingProducts: boolean = false;
   detailImageError: boolean = false;
 
   private allKeyBlanks: any[] = [];
@@ -73,7 +73,7 @@ export class KeyBlankCrossRefComponent implements OnInit {
   }
 
   loadKeyBlanks() {
-    this.isLoading = true;
+    this.utilService.showLoader();
     this.loadError = null;
     this.apiService.getKeyBlanks().subscribe({
       next: (res: any) => {
@@ -85,12 +85,12 @@ export class KeyBlankCrossRefComponent implements OnInit {
         } else {
           this.allKeyBlanks = [];
         }
-        this.isLoading = false;
+        this.utilService.hideLoader();
         this.isDataLoaded = true;
       },
       error: (err: any) => {
         console.error('Error fetching key blanks:', err);
-        this.isLoading = false;
+        this.utilService.hideLoader();
         this.loadError = 'Failed to load key blank database. Please check your internet connection and try again.';
       }
     });
@@ -110,7 +110,7 @@ export class KeyBlankCrossRefComponent implements OnInit {
     const query = this.keyName.trim().toUpperCase();
     if (!query || !this.isDataLoaded) return;
 
-    this.isLoading = true;
+    this.utilService.showLoader();
     this.hasSearched = false;
     this.selectedResult = null;
     this.detailProducts = [];
@@ -166,7 +166,7 @@ export class KeyBlankCrossRefComponent implements OnInit {
     }
 
     this.searchResults = results;
-    this.isLoading = false;
+    this.utilService.hideLoader();
     this.hasSearched = true;
   }
 
@@ -178,7 +178,7 @@ export class KeyBlankCrossRefComponent implements OnInit {
   }
 
   loadProductsForDetail(productsIdStr: string) {
-    this.isLoadingProducts = false;
+    this.utilService.showLoader();
     if (!productsIdStr || productsIdStr.trim() === '') return;
 
     const ids = productsIdStr
@@ -188,7 +188,7 @@ export class KeyBlankCrossRefComponent implements OnInit {
 
     if (ids.length === 0) return;
 
-    this.isLoadingProducts = true;
+    this.utilService.hideLoader();
 
     const requests = ids.map((id: number) =>
       this.apiService.getProductDetail(id).pipe(
@@ -200,7 +200,7 @@ export class KeyBlankCrossRefComponent implements OnInit {
       this.detailProducts = results
         .filter((r: any) => r && r.data)
         .map((r: any) => ({ ...r.data, qtyOrder: 1 }));
-      this.isLoadingProducts = false;
+      this.utilService.hideLoader();
     });
   }
 

@@ -19,7 +19,7 @@ export class HeaderComponent implements OnInit {
 
   navItems = [
     { label: 'Home', route: '/home', icon: 'home-outline' },
-    { label: 'Settings', route: '/home', icon: 'settings-outline' },
+    { label: 'Settings', route: '/account-settings', icon: 'settings-outline' },
     { label: 'History', route: '/search-history', icon: 'time-outline' },
     { label: 'Cart', route: '/cart', icon: 'cart-outline' },
   ];

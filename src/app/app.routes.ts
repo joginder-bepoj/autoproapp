@@ -116,5 +116,20 @@ export const routes: Routes = [
     path: 'key-blank-cross-ref',
     canActivate: [authGuard],
     loadComponent: () => import('./components/key-blank-cross-ref/key-blank-cross-ref.component').then((m) => m.KeyBlankCrossRefComponent),
-  }
+  },
+  {
+    path: 'account-settings',
+    canActivate: [authGuard],
+    loadComponent: () => import('./components/acc-settings/acc-settings.component').then((m) => m.AccSettingsComponent),
+  },
+  {
+    path: 'order-history/:id',
+    canActivate: [authGuard],
+    loadComponent: () => import('./components/order-history-details/order-history-details.component').then((m) => m.OrderHistoryDetailsComponent),
+  },
+  {
+    path: 'order-history',
+    canActivate: [authGuard],
+    loadComponent: () => import('./components/order-history/order-history.component').then((m) => m.OrderHistoryComponent),
+  },
 ];

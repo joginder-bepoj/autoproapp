@@ -1,0 +1,67 @@
+<ion-content>
+  <div class="page-container order-history-page">
+    <div class="main-container container">
+      <app-breadcrumbs></app-breadcrumbs>
+
+      <div class="page-header">
+        <div class="title-wrap">
+          <div class="title-icon">
+            <ion-icon name="receipt-outline"></ion-icon>
+          </div>
+          <div>
+            <h1 class="page-title">Order History</h1>
+            <p class="page-subtitle">View your past orders and their status.</p>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="isLoading" class="order-list">
+        <div class="skeleton-card" *ngFor="let _ of [1,2,3,4,5]">
+          <div class="skeleton-row" *ngFor="let __ of [1,2,3,4,5]">
+            <ion-skeleton-text animated style="width: 40%"></ion-skeleton-text>
+            <ion-skeleton-text animated style="width: 45%"></ion-skeleton-text>
+          </div>
+        </div>
+      </div>
+
+      <div class="empty-state" *ngIf="!isLoading && orders.length === 0">
+        <div class="empty-icon-wrapper">
+          <ion-icon name="receipt-outline"></ion-icon>
+        </div>
+        <h2>No Orders Yet</h2>
+        <p>When you place orders, they’ll show up here.</p>
+      </div>
+
+      <ion-list lines="none" class="order-list" *ngIf="!isLoading && orders.length > 0">
+        <ion-item class="order-card" detail="false" button *ngFor="let order of orders" (click)="openOrder(order)">
+          <div class="order-grid">
+            <div class="kv">
+              <span class="k">{{ order.orderDateLabel }}</span>
+              <span class="v">{{ order.orderDate || '-' }}</span>
+            </div>
+            <div class="kv">
+              <span class="k">{{ order.orderNumberLabel }}</span>
+              <span class="v strong">{{ order.orderNumber || '-' }}</span>
+            </div>
+            <div class="kv">
+              <span class="k">{{ order.orderTotalLabel }}</span>
+              <span class="v">{{ order.orderTotal || '-' }}</span>
+            </div>
+            <div class="kv">
+              <span class="k">{{ order.orderStatusLabel }}</span>
+              <span class="v">{{ order.orderStatus || '-' }}</span>
+            </div>
+            <div class="kv">
+              <span class="k">{{ order.trackingLabel }}</span>
+              <span class="v muted">{{ order.tracking || 'None' }}</span>
+            </div>
+          </div>
+
+          <ion-icon name="chevron-forward-outline" slot="end" class="arrow-icon"></ion-icon>
+        </ion-item>
+      </ion-list>
+    </div>
+  </div>
+
+  <app-footer></app-footer>
+</ion-content>

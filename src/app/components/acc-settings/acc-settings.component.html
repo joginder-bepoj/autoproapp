@@ -1,0 +1,18 @@
+<ion-content>
+  <div class="page-container account-settings-page">
+    <div class="main-container container">
+      <app-breadcrumbs></app-breadcrumbs>
+
+      <div class="settings-list-card">
+        <a class="settings-item" *ngFor="let item of menuItems" [routerLink]="item.route">
+          <div class="item-left">
+            <ion-icon [name]="item.icon"></ion-icon>
+            <span>{{ item.label }}</span>
+          </div>
+          <ion-icon name="chevron-forward-outline" class="item-arrow"></ion-icon>
+        </a>
+      </div>
+    </div>
+  </div>
+  <app-footer></app-footer>
+</ion-content>

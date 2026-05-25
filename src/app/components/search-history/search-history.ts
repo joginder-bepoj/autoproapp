@@ -43,10 +43,10 @@ export class SearchHistoryPage implements OnInit, OnDestroy {
   }
 
   loadHistory(userIdHex: string) {
-    this.isLoading = true;
+    this.utilService.showLoader()
     this.apiService.vehicleSearchHistory(userIdHex).subscribe({
       next: (res: any) => {
-        this.isLoading = false;
+        this.utilService.hideLoader();
         if (res) {
           this.history = Object.values(res).sort((a: any, b: any) => b.time - a.time);
         } else {
@@ -54,7 +54,7 @@ export class SearchHistoryPage implements OnInit, OnDestroy {
         }
       },
       error: (err) => {
-        this.isLoading = false;
+        this.utilService.hideLoader();
         console.error('Error fetching search history:', err);
       }
     });

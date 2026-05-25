@@ -1,0 +1,151 @@
+<ion-content>
+  <div class="page-container order-history-details-page">
+    <div class="main-container container">
+      <app-breadcrumbs></app-breadcrumbs>
+
+      <div class="page-header">
+        <div class="header-left">
+          <ion-button fill="clear" class="back-btn" (click)="goBack()">
+            <ion-icon name="arrow-back-outline" slot="icon-only"></ion-icon>
+          </ion-button>
+
+          <div class="title-wrap">
+            <div>
+              <h1 class="page-title">Order Details</h1>
+              <p class="page-subtitle">Order #{{ orderId }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="isLoading" class="skeleton-wrap">
+        <div class="skeleton-card">
+          <div class="skeleton-row" *ngFor="let _ of [1,2,3,4,5,6]">
+            <ion-skeleton-text animated style="width: 42%"></ion-skeleton-text>
+            <ion-skeleton-text animated style="width: 46%"></ion-skeleton-text>
+          </div>
+        </div>
+        <div class="skeleton-card">
+          <div class="skeleton-row" *ngFor="let _ of [1,2,3]">
+            <ion-skeleton-text animated style="width: 70%"></ion-skeleton-text>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="!isLoading && !order" class="empty-state">
+        <div class="empty-icon-wrapper">
+          <ion-icon name="receipt-outline"></ion-icon>
+        </div>
+        <h2>Order Not Found</h2>
+        <p>Please try again later.</p>
+        <ion-button (click)="goBack()" expand="block" shape="round" class="btn-primary">
+          Back to Order History
+        </ion-button>
+      </div>
+
+      <div *ngIf="!isLoading && order" class="content-wrap">
+        <div class="section-title">Summary</div>
+        <div class="card hero-card">
+          <div class="kv">
+            <span class="k">Order Date</span>
+            <span class="v">{{ order?.orderDate || order?.date || '-' }}</span>
+          </div>
+          <div class="kv">
+            <span class="k">Order #</span>
+            <span class="v strong">{{ order?.orderId || order?.id || orderId }}</span>
+          </div>
+          <div class="kv">
+            <span class="k">Order Total</span>
+            <span class="v">{{ order?.otTotal || order?.total || formatMoney(order?.order_total) || '-' }}</span>
+          </div>
+          <div class="kv">
+            <span class="k">Order Status</span>
+            <span class="v">
+              <span class="status-pill"
+                [class.is-canceled]="(order?.orderStatus || '').toLowerCase().includes('cancel')">
+                {{ order?.orderStatus || order?.status || '-' }}
+              </span>
+            </span>
+          </div>
+          <div class="kv">
+            <span class="k">Tracking</span>
+            <span class="v muted">{{ order?.tracking || order?.trackingNumber || 'None' }}</span>
+          </div>
+        </div>
+
+        <div class="info-grid">
+          <div class="card info-card">
+            <div class="card-title">Shipped To</div>
+            <div class="card-body">{{ deliveryAddressText || '-' }}</div>
+          </div>
+          <div class="card info-card">
+            <div class="card-title">Billing Address</div>
+            <div class="card-body">{{ billingAddressText || '-' }}</div>
+          </div>
+          <div class="card info-card">
+            <div class="card-title">Shipping Method</div>
+            <div class="card-body">{{ order?.shippingMethod || '-' }}</div>
+          </div>
+          <div class="card info-card">
+            <div class="card-title">Payment Method</div>
+            <div class="card-body">{{ order?.paymentMethod || '-' }}</div>
+          </div>
+        </div>
+
+        <div class="section-bar" *ngIf="items.length > 0">Items Purchased</div>
+        <ion-list lines="none" class="items-list" *ngIf="items.length > 0">
+          <ion-item class="item-card" detail="false" *ngFor="let item of items">
+            <ion-label>
+              <div class="item-top">
+                <div class="item-name">{{ item.name || 'Item' }}</div>
+                <div class="item-total">{{ item.total || item.price }}</div>
+              </div>
+              <div class="item-meta">
+                <span *ngIf="item.sku">#{{ item.sku }}</span>
+                <span *ngIf="item.modelName">{{ item.modelName }}</span>
+                <span *ngIf="item.qty">Qty: {{ item.qty }}</span>
+                <span *ngIf="item.price">Price: {{ item.price }}</span>
+              </div>
+            </ion-label>
+          </ion-item>
+        </ion-list>
+
+        <div class="totals-wrap" *ngIf="order?.otSubtotal || order?.otShipping || order?.otTotal">
+          <div class="totals-card">
+            <div class="totals-row" *ngIf="order?.itemsNum !== undefined && order?.itemsNum !== null">
+              <div class="left">Items ({{ order?.itemsNum }})</div>
+              <div class="right">{{ order?.otSubtotal || '-' }}</div>
+            </div>
+            <div class="totals-row"
+              *ngIf="order?.otSubtotal && (order?.itemsNum === undefined || order?.itemsNum === null)">
+              <div class="left">Subtotal</div>
+              <div class="right">{{ order?.otSubtotal }}</div>
+            </div>
+            <div class="totals-row" *ngIf="order?.otShipping">
+              <div class="left">Shipping</div>
+              <div class="right">{{ order?.otShipping }}</div>
+            </div>
+            <div class="totals-divider"></div>
+            <div class="totals-row total" *ngIf="order?.otTotal">
+              <div class="left">Order Total</div>
+              <div class="right">{{ order?.otTotal }}</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-title" *ngIf="comments.length > 0">Order Comments</div>
+        <div class="card" *ngIf="comments.length > 0">
+          <div class="comment" *ngFor="let c of comments">
+            <div class="comment-top">
+              <div class="comment-status">{{ c.status }}</div>
+              <div class="comment-date">{{ c.commentDate }}</div>
+            </div>
+            <div class="comment-text">{{ c.comment }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <app-footer></app-footer>
+</ion-content>

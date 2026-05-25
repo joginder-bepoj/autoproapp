@@ -148,6 +148,14 @@ export class ApiService {
     return this.request('GET', 'customer/question');
   }
 
+  getOrderHistory() {
+    return this.request('GET', 'customer/order-history');
+  }
+
+  getOrderHistoryDetails(orderId: string) {
+    return this.request('GET', 'customer/order-history/' + orderId);
+  }
+
   createCustomer(data: any) {
     return this.request('POST', 'customer/create', data);
   }
@@ -368,7 +376,6 @@ export class ApiService {
     }
     return this.request('GET', endpoint);
   }
-
   // =========================
   // CART APIs
   // =========================
