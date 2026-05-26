@@ -33,6 +33,11 @@ export const routes: Routes = [
     loadComponent: () => import('./components/change-password/change-password.component').then((m) => m.ChangePasswordComponent),
   },
   {
+    path: 'shipping-address',
+    canActivate: [authGuard],
+    loadComponent: () => import('./components/shipping-address/shipping-address.component').then((m) => m.ShippingAddressComponent),
+  },
+  {
     path: 'feedback',
     canActivate: [authGuard],
     loadComponent: () => import('./shared/feedback/feedback.component').then((m) => m.FeedbackComponent),

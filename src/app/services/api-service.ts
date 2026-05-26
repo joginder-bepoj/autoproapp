@@ -160,6 +160,10 @@ export class ApiService {
     return this.request('POST', 'customer/create', data);
   }
 
+  updateCustomerInfo(data: any) {
+    return this.request('POST', 'customer/info/edit', data);
+  }
+
   updateCustomerPoints(points: number, reason: string) {
     const data = {
       points: points,

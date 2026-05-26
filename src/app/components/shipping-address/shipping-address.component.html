@@ -1,0 +1,53 @@
+<ion-content>
+  <div class="page-container">
+    <div class="settings-container container">
+      <div class="settings-card">
+        <div class="section-header align-items-center">
+          <div class="icon-wrapper">
+            <ion-icon name="location-outline"></ion-icon>
+          </div>
+          <div class="header-text">
+            <h2 class="title">Shipping Address</h2>
+            <p class="subtitle">Saved addresses for shipping.</p>
+          </div>
+        </div>
+
+        <div class="addresses-list" *ngIf="addresses.length > 0; else empty">
+          <div class="address-card" *ngFor="let a of addresses; trackBy: trackByAddressId">
+            <div class="address-top">
+              <div class="address-title">
+                <div class="company">{{ a.company || 'Shipping Address' }}</div>
+                <div class="default-badge" *ngIf="a.isDefault">Default</div>
+              </div>
+            </div>
+
+            <div class="address-lines">
+              <div class="line" *ngIf="a.addressFirstLine">{{ a.addressFirstLine }}</div>
+              <div class="line muted" *ngIf="a.addressSecondLine">{{ a.addressSecondLine }}</div>
+              <div class="line" *ngIf="a.city || a.state || a.postalCode">
+                {{ a.city }}<span *ngIf="a.city && a.state">, </span>{{ a.state }}
+                <span *ngIf="a.postalCode"> {{ a.postalCode }}</span>
+              </div>
+              <div class="line muted" *ngIf="a.country">{{ a.country | uppercase }}</div>
+            </div>
+          </div>
+        </div>
+
+        <ng-template #empty>
+          <div class="empty-state">
+            <p>No addresses found for your account.</p>
+          </div>
+        </ng-template>
+
+        <div class="action-row mt-auto justify-content-end">
+          <ion-button class="btn btn-secondary me-2" fill="clear" (click)="cancel()">
+            <ion-icon slot="start" name="close-outline"></ion-icon>
+            Back
+          </ion-button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <app-footer></app-footer>
+</ion-content>

@@ -27,7 +27,7 @@ export class AccSettingsComponent {
   readonly menuItems = [
     { label: 'Order History', icon: 'bag-handle-outline', route: '/order-history' },
     { label: 'Contact Info & Password', icon: 'lock-closed-outline', route: '/change-password' },
-    { label: 'Shipping Address', icon: 'location-outline', route: '/profile' },
+    { label: 'Shipping Address', icon: 'location-outline', route: '/shipping-address' },
     { label: 'Credit Cards', icon: 'card-outline', route: '/profile' },
     { label: 'Communications Preferences', icon: 'notifications-outline', route: '/feedback' },
     { label: 'Machines & Tools Setup', icon: 'construct-outline', route: '/home' },
