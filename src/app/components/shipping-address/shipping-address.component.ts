@@ -3,15 +3,18 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { IonButton, IonContent, IonIcon } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { locationOutline, saveOutline, closeOutline } from 'ionicons/icons';
+import { locationOutline, saveOutline, closeOutline, chevronForwardOutline } from 'ionicons/icons';
 import { ApiService } from 'src/app/services/api-service';
 import { UtilService } from 'src/app/services/util.service';
 import { FooterComponent } from 'src/app/shared/footer/footer.component';
+import { BreadcrumbsComponent } from 'src/app/shared/breadcrumbs/breadcrumbs.component';
 
 type CountryCode = 'usa' | 'canada' | string;
 
 interface ShippingAddress {
   id?: string | number;
+  firstName?: string;
+  lastName?: string;
   company?: string;
   addressFirstLine?: string;
   addressSecondLine?: string;
@@ -19,6 +22,7 @@ interface ShippingAddress {
   state?: string;
   postalCode?: string;
   country?: CountryCode;
+  phoneNumber?: string;
   isDefault?: boolean;
 }
 
@@ -32,18 +36,20 @@ interface ShippingAddress {
     IonContent,
     IonIcon,
     IonButton,
-    FooterComponent
+    FooterComponent,
+    BreadcrumbsComponent
   ]
 })
 export class ShippingAddressComponent implements OnInit {
   addresses: ShippingAddress[] = [];
+  selectedAddressId: string | number | null = null;
 
   constructor(
     private apiService: ApiService,
     private utilService: UtilService,
     private router: Router
   ) {
-    addIcons({ locationOutline, saveOutline, closeOutline });
+    addIcons({ locationOutline, saveOutline, closeOutline, chevronForwardOutline });
   }
 
   ngOnInit(): void {
@@ -73,16 +79,23 @@ export class ShippingAddressComponent implements OnInit {
     const list = profile?.addresses;
     if (Array.isArray(list) && list.length > 0) {
       this.addresses = list.map((a: any, idx: number) => ({
-        id: a?.id ?? a?.addressId ?? idx,
+        id: a?.id ?? a?.addressId ?? a?.addressID ?? a?.address_id ?? idx,
+        firstName: a?.firstName ?? a?.firstname ?? a?.FirstName,
+        lastName: a?.lastName ?? a?.lastname ?? a?.LastName,
         company: a?.company ?? a?.Company,
-        addressFirstLine: a?.addressFirstLine ?? a?.address1 ?? a?.Address1,
-        addressSecondLine: a?.addressSecondLine ?? a?.address2 ?? a?.Address2,
+        addressFirstLine:
+          a?.addressFirstLine ?? a?.address1 ?? a?.Address1 ?? a?.street ?? a?.Street,
+        addressSecondLine:
+          a?.addressSecondLine ?? a?.address2 ?? a?.Address2 ?? a?.suburb ?? a?.Suburb,
         city: a?.city ?? a?.City,
-        state: a?.state ?? a?.State,
+        state: a?.state ?? a?.stateCode ?? a?.State ?? a?.StateCode,
         postalCode: a?.postalCode ?? a?.zip ?? a?.Zip,
-        country: a?.country ?? a?.Country,
+        country: a?.country ?? a?.countryCode ?? a?.Country ?? a?.CountryCode,
+        phoneNumber: a?.phoneNumber ?? a?.phone ?? a?.PhoneNumber,
         isDefault: !!(a?.isDefault ?? a?.default ?? a?.is_default)
       }));
+      this.selectedAddressId =
+        (this.addresses.find((x) => x.isDefault)?.id ?? this.addresses[0]?.id ?? null);
       return;
     }
 
@@ -107,6 +120,7 @@ export class ShippingAddressComponent implements OnInit {
       !!fallback.postalCode;
 
     this.addresses = hasAny ? [fallback] : [];
+    this.selectedAddressId = this.addresses[0]?.id ?? null;
   }
 
   cancel() {
@@ -114,4 +128,21 @@ export class ShippingAddressComponent implements OnInit {
   }
 
   trackByAddressId = (_: number, item: ShippingAddress) => item.id ?? item.addressFirstLine ?? _;
+
+  getFullName(a: ShippingAddress): string {
+    return `${a.firstName ?? ''} ${a.lastName ?? ''}`.trim();
+  }
+
+  selectAddress(a: ShippingAddress) {
+    this.selectedAddressId = a.id ?? null;
+  }
+
+  addNewAddress() {
+    this.utilService.showToast('Add address coming soon', 'primary');
+  }
+
+  editAddress(a: ShippingAddress) {
+    const label = a.company || this.getFullName(a) || 'this address';
+    this.utilService.showToast(`Edit ${label} coming soon`, 'primary');
+  }
 }

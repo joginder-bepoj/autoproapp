@@ -1,0 +1,61 @@
+<ion-content>
+  <div class="page-container">
+    <div class="settings-container container">
+      <div class="settings-card">
+        <div class="section-header align-items-center">
+          <div class="icon-wrapper">
+            <ion-icon name="card-outline"></ion-icon>
+          </div>
+          <div class="header-text">
+            <h2 class="title">Credit Cards</h2>
+            <p class="subtitle">Manage your saved payment methods.</p>
+          </div>
+        </div>
+
+        <button type="button" class="add-row" (click)="addNewCard()">
+          <span class="add-text">Add A New Card</span>
+          <ion-icon name="chevron-forward-outline"></ion-icon>
+        </button>
+
+        <div class="card-list" *ngIf="cards.length > 0; else empty">
+          <div class="card-row" *ngFor="let c of cards; trackBy: trackByCardId">
+            <div class="cols">
+              <div class="left">
+                <div class="brand">{{ c.brand || 'Card' }}</div>
+                <div class="masked" *ngIf="c.maskedNumber">{{ c.maskedNumber }}</div>
+                <div class="masked" *ngIf="!c.maskedNumber && c.last4">XXXXXXXXXXXX{{ c.last4 }}</div>
+                <div class="default" *ngIf="c.isDefault">(DEFAULT CREDIT CARD)</div>
+                <div class="exp" *ngIf="c.expDisplay">Expiration date: {{ c.expDisplay }}</div>
+              </div>
+
+              <div class="right">
+                <div class="name" *ngIf="getFullName(c)">{{ getFullName(c) }}</div>
+                <div class="line" *ngIf="c.city">{{ c.city }}</div>
+                <div class="line" *ngIf="c.addressFirstLine">{{ c.addressFirstLine }}</div>
+                <div class="line" *ngIf="c.addressSecondLine">{{ c.addressSecondLine }}</div>
+                <div class="line" *ngIf="c.city || c.state || c.postalCode">
+                  {{ c.city }}<span *ngIf="c.city && c.state">, </span>{{ c.state }}
+                  <span *ngIf="c.postalCode"> {{ c.postalCode }}</span>
+                </div>
+                <div class="line" *ngIf="c.phoneNumber">Phone: {{ c.phoneNumber }}</div>
+              </div>
+            </div>
+
+            <div class="actions">
+              <button type="button" class="delete-btn" (click)="deleteCard(c)">DELETE</button>
+              <button type="button" class="default-btn" (click)="makeDefault(c)">Default</button>
+            </div>
+          </div>
+        </div>
+
+        <ng-template #empty>
+          <div class="empty-state">
+            <p>No saved cards yet.</p>
+          </div>
+        </ng-template>
+      </div>
+    </div>
+  </div>
+
+  <app-footer></app-footer>
+</ion-content>

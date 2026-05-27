@@ -1,6 +1,7 @@
 <ion-content>
   <div class="page-container">
     <div class="settings-container container">
+      <app-breadcrumbs></app-breadcrumbs>
       <div class="settings-card">
         <div class="section-header align-items-center">
           <div class="icon-wrapper">
@@ -12,23 +13,33 @@
           </div>
         </div>
 
-        <div class="addresses-list" *ngIf="addresses.length > 0; else empty">
-          <div class="address-card" *ngFor="let a of addresses; trackBy: trackByAddressId">
-            <div class="address-top">
-              <div class="address-title">
-                <div class="company">{{ a.company || 'Shipping Address' }}</div>
-                <div class="default-badge" *ngIf="a.isDefault">Default</div>
-              </div>
+        <button type="button" class="add-row" (click)="addNewAddress()">
+          <span class="add-text">Add A New Address</span>
+          <ion-icon name="chevron-forward-outline"></ion-icon>
+        </button>
+
+        <div class="address-list" *ngIf="addresses.length > 0; else empty">
+          <div class="address-row" *ngFor="let a of addresses; trackBy: trackByAddressId" (click)="selectAddress(a)">
+            <div class="radio-col">
+              <span class="radio" [class.checked]="selectedAddressId === a.id" aria-hidden="true"></span>
             </div>
 
-            <div class="address-lines">
+            <div class="content-col">
+              <div class="city">{{ a.city || a.addressFirstLine || 'Address' }}</div>
+              <div class="company" *ngIf="a.company">{{ a.company }}</div>
+              <div class="name" *ngIf="getFullName(a)">{{ getFullName(a) }}</div>
               <div class="line" *ngIf="a.addressFirstLine">{{ a.addressFirstLine }}</div>
-              <div class="line muted" *ngIf="a.addressSecondLine">{{ a.addressSecondLine }}</div>
+              <div class="line" *ngIf="a.addressSecondLine">{{ a.addressSecondLine }}</div>
               <div class="line" *ngIf="a.city || a.state || a.postalCode">
                 {{ a.city }}<span *ngIf="a.city && a.state">, </span>{{ a.state }}
                 <span *ngIf="a.postalCode"> {{ a.postalCode }}</span>
               </div>
-              <div class="line muted" *ngIf="a.country">{{ a.country | uppercase }}</div>
+              <div class="line" *ngIf="a.phoneNumber">Phone: {{ a.phoneNumber }}</div>
+
+              <div class="row-actions">
+                <button type="button" class="edit-btn" (click)="editAddress(a); $event.stopPropagation()">EDIT</button>
+                <span class="default-badge" *ngIf="a.isDefault">Default</span>
+              </div>
             </div>
           </div>
         </div>
@@ -39,12 +50,12 @@
           </div>
         </ng-template>
 
-        <div class="action-row mt-auto justify-content-end">
+        <!-- <div class="action-row mt-auto justify-content-end">
           <ion-button class="btn btn-secondary me-2" fill="clear" (click)="cancel()">
             <ion-icon slot="start" name="close-outline"></ion-icon>
             Back
           </ion-button>
-        </div>
+        </div> -->
       </div>
     </div>
   </div>

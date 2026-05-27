@@ -1,0 +1,68 @@
+<ion-content>
+  <div class="page-container">
+    <div class="settings-container container">
+      <div class="settings-card">
+        <div class="section-header align-items-center">
+          <div class="icon-wrapper">
+            <ion-icon name="card-outline"></ion-icon>
+          </div>
+          <div class="header-text">
+            <h2 class="title">Add Credit Card</h2>
+            <p class="subtitle">Enter your card details.</p>
+          </div>
+        </div>
+
+        <div class="form-wrapper">
+          <div class="field">
+            <ion-label class="label">Name on card</ion-label>
+            <ion-input [(ngModel)]="nameOnCard" placeholder="Full name" inputmode="text"></ion-input>
+          </div>
+
+          <div class="field">
+            <ion-label class="label">Card number</ion-label>
+            <ion-input [(ngModel)]="cardNumber" placeholder="1234 5678 9012 3456" inputmode="numeric"></ion-input>
+          </div>
+
+          <div class="grid-2">
+            <div class="field">
+              <ion-label class="label">Expiry month</ion-label>
+              <ion-input [(ngModel)]="expMonth" placeholder="MM" inputmode="numeric"></ion-input>
+            </div>
+
+            <div class="field">
+              <ion-label class="label">Expiry year</ion-label>
+              <ion-input [(ngModel)]="expYear" placeholder="YYYY" inputmode="numeric"></ion-input>
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <div class="field">
+              <ion-label class="label">CVV</ion-label>
+              <ion-input [(ngModel)]="cvv" placeholder="123" inputmode="numeric"></ion-input>
+            </div>
+
+            <div class="field">
+              <ion-label class="label">Billing ZIP (optional)</ion-label>
+              <ion-input [(ngModel)]="billingZip" placeholder="ZIP" inputmode="numeric"></ion-input>
+            </div>
+          </div>
+        </div>
+
+        <div class="action-row mt-auto justify-content-end">
+          <ion-button class="btn btn-secondary me-2" fill="clear" (click)="cancel()">
+            <ion-icon slot="start" name="close-outline"></ion-icon>
+            Cancel
+          </ion-button>
+
+          <ion-button class="btn btn-primary" (click)="save()">
+            <ion-icon slot="start" name="save-outline"></ion-icon>
+            Save
+          </ion-button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <app-footer></app-footer>
+</ion-content>
+
