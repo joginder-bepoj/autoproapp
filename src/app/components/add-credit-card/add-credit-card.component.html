@@ -1,6 +1,7 @@
 <ion-content>
   <div class="page-container">
     <div class="settings-container container">
+      <app-breadcrumbs></app-breadcrumbs>
       <div class="settings-card">
         <div class="section-header align-items-center">
           <div class="icon-wrapper">
@@ -13,26 +14,16 @@
         </div>
 
         <div class="form-wrapper">
-          <div class="field">
-            <ion-label class="label">Name on card</ion-label>
-            <ion-input [(ngModel)]="nameOnCard" placeholder="Full name" inputmode="text"></ion-input>
-          </div>
 
           <div class="field">
             <ion-label class="label">Card number</ion-label>
-            <ion-input [(ngModel)]="cardNumber" placeholder="1234 5678 9012 3456" inputmode="numeric"></ion-input>
+            <ion-input [(ngModel)]="cardNumber" (ionInput)="formatCardNumber($event)" placeholder="1234 5678 9012 3456"
+              inputmode="numeric"></ion-input>
           </div>
 
-          <div class="grid-2">
-            <div class="field">
-              <ion-label class="label">Expiry month</ion-label>
-              <ion-input [(ngModel)]="expMonth" placeholder="MM" inputmode="numeric"></ion-input>
-            </div>
-
-            <div class="field">
-              <ion-label class="label">Expiry year</ion-label>
-              <ion-input [(ngModel)]="expYear" placeholder="YYYY" inputmode="numeric"></ion-input>
-            </div>
+          <div class="field">
+            <ion-label class="label">Expiry date</ion-label>
+            <ion-input [(ngModel)]="expiryDate" placeholder="MM / YYYY" inputmode="numeric"></ion-input>
           </div>
 
           <div class="grid-2">
@@ -40,21 +31,47 @@
               <ion-label class="label">CVV</ion-label>
               <ion-input [(ngModel)]="cvv" placeholder="123" inputmode="numeric"></ion-input>
             </div>
+          </div>
+        </div>
 
-            <div class="field">
-              <ion-label class="label">Billing ZIP (optional)</ion-label>
-              <ion-input [(ngModel)]="billingZip" placeholder="ZIP" inputmode="numeric"></ion-input>
+        <!-- Billing Address Section -->
+        <div class="billing-section" *ngIf="addresses.length > 0">
+          <div class="billing-header">Billing Address</div>
+          <div class="address-list">
+            <div class="address-row" *ngFor="let addr of addresses" (click)="selectAddress(addr)"
+              [class.selected]="selectedAddressId === addr.id">
+              <div class="radio-wrapper">
+                <div class="custom-radio" [class.active]="selectedAddressId === addr.id">
+                  <div class="inner-dot" *ngIf="selectedAddressId === addr.id"></div>
+                </div>
+              </div>
+              <div class="address-details">
+                <div class="address-label">{{ (addr.city || 'Address') | uppercase }}</div>
+                <div *ngIf="addr.company" class="address-line">{{ addr.company }}</div>
+                <div class="address-line">{{ addr.firstName }} {{ addr.lastName }}</div>
+                <div *ngIf="addr.addressFirstLine" class="address-line">{{ addr.addressFirstLine }}</div>
+                <div *ngIf="addr.addressSecondLine" class="address-line">{{ addr.addressSecondLine }}</div>
+                <div class="address-line">{{ addr.city }}<span *ngIf="addr.city && addr.state">,</span>{{ addr.state }}
+                  {{ addr.postalCode }}</div>
+                <div class="address-line">Phone: {{ addr.phoneNumber || '' }}</div>
+              </div>
             </div>
           </div>
         </div>
 
+        <!-- Add New Address -->
+        <div class="add-address-row" (click)="addNewAddress()">
+          <span>Add A New Address</span>
+          <ion-icon name="chevron-forward-outline"></ion-icon>
+        </div>
+
         <div class="action-row mt-auto justify-content-end">
-          <ion-button class="btn btn-secondary me-2" fill="clear" (click)="cancel()">
+          <ion-button class="btn text-white me-2" fill="clear" (click)="cancel()">
             <ion-icon slot="start" name="close-outline"></ion-icon>
             Cancel
           </ion-button>
 
-          <ion-button class="btn btn-primary" (click)="save()">
+          <ion-button class="btn text-white" (click)="save()">
             <ion-icon slot="start" name="save-outline"></ion-icon>
             Save
           </ion-button>
@@ -65,4 +82,3 @@
 
   <app-footer></app-footer>
 </ion-content>
-
