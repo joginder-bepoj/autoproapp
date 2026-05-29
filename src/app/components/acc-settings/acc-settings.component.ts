@@ -29,8 +29,8 @@ export class AccSettingsComponent {
     { label: 'Contact Info & Password', icon: 'lock-closed-outline', route: '/change-password' },
     { label: 'Shipping Address', icon: 'location-outline', route: '/shipping-address' },
     { label: 'Credit Cards', icon: 'card-outline', route: '/credit-cards' },
-    { label: 'Communications Preferences', icon: 'notifications-outline', route: '/feedback' },
-    { label: 'Machines & Tools Setup', icon: 'construct-outline', route: '/home' },
+    { label: 'Communications Preferences', icon: 'notifications-outline', route: '/communication-preferences' },
+    { label: 'Machines & Tools Setup', icon: 'construct-outline', route: '/machine-tools-setup' },
   ];
 
   constructor() {

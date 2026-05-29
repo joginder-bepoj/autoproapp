@@ -29,7 +29,7 @@
 
         <!-- Message -->
         <div class="input-group">
-          <label>Message</label>
+          <label>Feedback</label>
           <div class="textarea-row">
             <ion-icon name="document-text-outline" class="textarea-icon"></ion-icon>
             <ion-textarea [(ngModel)]="message" placeholder="Describe your feedback in detail..." [rows]="5"
@@ -47,8 +47,8 @@
             (dragleave)="isDragOver = false" (drop)="onDrop($event)" (click)="fileInput.click()">
             <ion-icon name="cloud-upload-outline" class="upload-icon"></ion-icon>
             <p class="drop-text">Drag & drop files here, or <span class="browse-link">browse</span></p>
-            <p class="drop-hint">PNG, JPG, PDF up to 10 MB each (max 3 files)</p>
-            <input #fileInput type="file" multiple accept="image/*,application/pdf" style="display:none"
+            <p class="drop-hint">Images, PDFs, and documents up to 10 MB each (max 3 files)</p>
+            <input #fileInput type="file" multiple style="display:none"
               (change)="onFileSelected($event)" />
           </div>
 

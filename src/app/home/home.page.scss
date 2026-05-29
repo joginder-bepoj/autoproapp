@@ -26,12 +26,10 @@
       .hero-overlay {
         position: absolute;
         inset: 0;
-        background: linear-gradient(
-          180deg,
-          rgba(10, 13, 20, 0.92) 0%,
-          rgba(10, 13, 20, 0.3) 45%,
-          rgba(10, 13, 20, 0.75) 100%
-        );
+        background: linear-gradient(180deg,
+            rgba(10, 13, 20, 0.92) 0%,
+            rgba(10, 13, 20, 0.3) 45%,
+            rgba(10, 13, 20, 0.75) 100%);
         z-index: 1;
       }
     }
@@ -397,11 +395,12 @@
       cursor: pointer;
       box-shadow: none;
 
+
       @media (max-width: 768px) {
         padding: 24px 18px;
       }
 
-      &:hover {
+      &:hover:not(.disabled) {
         transform: translateY(-3px);
         box-shadow: var(--shadow-md, 0 4px 16px rgba(0, 0, 0, 0.08));
         border-color: transparent;
@@ -429,7 +428,7 @@
         }
       }
 
-      &:hover .tool-icon-wrapper {
+      &:hover:not(.disabled) .tool-icon-wrapper {
         background: rgba(var(--main-bg-color-rgb), 0.12);
       }
 
@@ -450,6 +449,39 @@
         opacity: 0;
         transform: translateX(-8px);
         transition: all 0.25s;
+      }
+
+      .tool-disabled-badge {
+        margin-top: 12px;
+        padding: 5px 10px;
+        border-radius: var(--radius-full, 9999px);
+        background: #eef2f6;
+        color: #64748b;
+        font-size: 11px;
+        font-weight: 700;
+        line-height: 1;
+        text-transform: uppercase;
+      }
+    }
+
+    .tool-card.disabled {
+      background: #f8fafc;
+      border-color: #e5e7eb;
+      box-shadow: none;
+      opacity: 0.72;
+
+      .tool-icon-wrapper {
+        background: #eef2f6;
+      }
+
+      .tool-icon,
+      .tool-label,
+      .tool-arrow {
+        color: #94a3b8;
+      }
+
+      .tool-arrow {
+        display: none;
       }
     }
   }

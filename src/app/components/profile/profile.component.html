@@ -40,13 +40,13 @@
               </div>
             </div>
             <div class="left-col">
-              <label>Contact Phone</label>
+              <label>Display Name</label>
             </div>
             <div class="right-col">
               <div class="input-wrapper">
-                <ion-input type="text" [value]="userProfile?.phoneNumber"></ion-input>
+                <ion-input type="text" [(ngModel)]="displayName" placeholder="Enter display name"></ion-input>
               </div>
-              <ion-button class="update-btn">
+              <ion-button class="update-btn" (click)="updateDisplayName()" [disabled]="isUpdatingDisplayName">
                 <ion-icon slot="start" name="sync-outline"></ion-icon>
                 Update
               </ion-button>

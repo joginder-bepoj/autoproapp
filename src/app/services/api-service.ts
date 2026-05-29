@@ -5,6 +5,7 @@ import { environment } from 'src/environments/environment';
 import { Capacitor, CapacitorHttp } from '@capacitor/core';
 import * as CryptoJS from 'crypto-js';
 import { Database, ref, onValue, update, get, set, push, serverTimestamp, remove, query, limitToLast } from '@angular/fire/database';
+import { Storage, ref as storageRef, uploadBytes, getDownloadURL } from '@angular/fire/storage';
 
 @Injectable({
   providedIn: 'root',
@@ -17,7 +18,7 @@ export class ApiService {
 
   private api_base_url = environment.api_base_url;
 
-  constructor(private http: HttpClient, private db: Database) { }
+  constructor(private http: HttpClient, private db: Database, private storage: Storage) { }
 
   // =========================
   // HMAC GENERATOR
@@ -170,7 +171,7 @@ export class ApiService {
 
   addCustomerCreditCard(data: any) {
     return this.request('POST', 'customer/credit-card/add', data);
-  } 
+  }
 
   updateCustomerPoints(points: number, reason: string) {
     const data = {
@@ -341,8 +342,24 @@ export class ApiService {
     return from(set(contrRef, true));
   }
 
-  getMachineToolSettings(userId: string): Observable<any> {
-    const settingsRef = ref(this.db, `users/${userId}/settings/machineTools`);
+  uploadFeedbackAttachment(userId: string, file: File): Observable<string> {
+    const safeName = file.name.replace(/[^\w.\-]+/g, '-');
+    const fileRef = storageRef(this.storage, `feedback/${userId}/${Date.now()}-${safeName}`);
+    const metadata = file.type ? { contentType: file.type } : undefined;
+    return from(uploadBytes(fileRef, file, metadata).then(() => getDownloadURL(fileRef)));
+  }
+
+  sendFeedbackToFirebase(feedbackData: Record<string, any>): Observable<string> {
+    const feedbackRef = push(ref(this.db, 'feedbacks'));
+    return from(set(feedbackRef, feedbackData).then(() => feedbackRef.key || ''));
+  }
+
+  private getMachineToolsPath(userID: string): string {
+    return `users/${userID}/settings/machineTools`;
+  }
+
+  getMachineToolSettings(userID: string): Observable<any> {
+    const settingsRef = ref(this.db, this.getMachineToolsPath(userID));
     return new Observable(observer => {
       onValue(settingsRef, (snapshot) => {
         observer.next(snapshot.val());
@@ -352,13 +369,33 @@ export class ApiService {
     });
   }
 
-  changeMachineToolSetting(userId: string, groupName: string, childName: string, show: boolean) {
-    const settingRef = ref(this.db, `users/${userId}/settings/machineTools/${groupName}/${childName}`);
+  saveMachineToolSetting(userID: string, groupName: string, childName: string, show: boolean) {
+    const settingRef = ref(this.db, `${this.getMachineToolsPath(userID)}/${groupName}/${childName}`);
     if (show) {
       return from(remove(settingRef));
     } else {
       return from(set(settingRef, false));
     }
+  }
+
+  changeMachineToolSetting(userID: string, groupName: string, childName: string, show: boolean) {
+    return this.saveMachineToolSetting(userID, groupName, childName, show);
+  }
+
+  getCommunicationPreferences(userID: string): Observable<any> {
+    const settingsRef = ref(this.db, `users/${userID}/settings/communicationPreferences`);
+    return new Observable(observer => {
+      onValue(settingsRef, (snapshot) => {
+        observer.next(snapshot.val());
+      }, (error) => {
+        observer.error(error);
+      });
+    });
+  }
+
+  saveCommunicationPreferences(userID: string, subscribeMarketingEmails: boolean) {
+    const settingsRef = ref(this.db, `users/${userID}/settings/communicationPreferences`);
+    return from(set(settingsRef, { subscribeMarketingEmails }));
   }
 
   // =========================

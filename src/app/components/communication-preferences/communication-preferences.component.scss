@@ -1,0 +1,244 @@
+.communication-preferences-page {
+  background: #f4f6f8;
+  padding-bottom: 28px;
+}
+
+.communication-preferences-container {
+  width: 100%;
+}
+
+.setup-header {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 18px;
+  margin: 12px 0 22px;
+  padding: 24px;
+  border-radius: var(--radius-lg);
+  background: #ffffff;
+  border: 1px solid #f0f2f5;
+  box-shadow: 0 4px 10px 6px rgba(0, 0, 0, 0.03);
+  position: relative;
+  overflow: hidden;
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: auto 0 0 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--main-bg-color), rgba(0, 133, 190, 0.2));
+  }
+}
+
+.back-button {
+  width: 44px;
+  height: 44px;
+  border: 0;
+  border-radius: 12px;
+  background: #ffffff;
+  color: var(--main-bg-color);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow-xs);
+  flex-shrink: 0;
+
+  ion-icon {
+    font-size: 22px;
+  }
+}
+
+.header-copy {
+  min-width: 0;
+
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--main-bg-color);
+    font-size: 0.82rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+
+    ion-icon {
+      font-size: 18px;
+    }
+  }
+
+  h1 {
+    margin: 0;
+    color: var(--dark-text-color);
+    font-size: clamp(1.65rem, 2.2vw, 2.2rem);
+    font-weight: 800;
+    line-height: 1.15;
+  }
+
+  p {
+    margin: 8px 0 0;
+    max-width: 660px;
+    color: var(--text-secondary);
+    font-size: 0.98rem;
+    line-height: 1.55;
+  }
+}
+
+.preference-panel {
+  padding: 24px;
+  border-radius: var(--radius-lg);
+  background: #ffffff;
+  border: 1px solid #f0f2f5;
+  box-shadow: 0 4px 10px 6px rgba(0, 0, 0, 0.02);
+}
+
+.preference-copy {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 16px;
+  align-items: start;
+
+  h2 {
+    margin: 0;
+    color: var(--dark-text-color);
+    font-size: 1.2rem;
+    font-weight: 800;
+  }
+
+  p {
+    margin: 8px 0 0;
+    color: var(--text-secondary);
+    // color: var(--dark-text-color);
+    // font-size: clamp(1.05rem, 2vw, 1.45rem);
+    // line-height: 1.45;
+  }
+}
+
+.preference-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  background: rgba(var(--main-bg-color-rgb), 0.1);
+  color: var(--main-bg-color);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  ion-icon {
+    font-size: 24px;
+  }
+}
+
+.preference-toggle {
+  min-height: 64px;
+  margin: 22px 0 0 0px;
+  padding: 12px 16px;
+  border: 1px solid #edf1f5;
+  border-radius: 14px;
+  background: #fbfdff;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  cursor: pointer;
+
+  span {
+    color: var(--dark-text-color);
+    font-size: 1rem;
+    font-weight: 750;
+  }
+
+  ion-toggle {
+    --track-background: #d9e3ea;
+    --track-background-checked: rgba(var(--main-bg-color-rgb), 0.32);
+    --handle-background: #ffffff;
+    --handle-background-checked: var(--main-bg-color);
+    --handle-box-shadow: 0 2px 8px rgba(15, 23, 42, 0.22);
+    flex-shrink: 0;
+  }
+}
+
+.privacy-note {
+  margin: 22px 0 0 0;
+  color: var(--text-secondary);
+  font-size: 1rem;
+  line-height: 1.55;
+}
+
+.save-bar {
+  position: sticky;
+  bottom: 0;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 22px;
+  padding: 14px;
+  border: 1px solid #eef2f6;
+  border-radius: var(--radius-lg);
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+  backdrop-filter: blur(8px);
+
+  ion-button {
+    min-width: 172px;
+    height: 46px;
+  }
+}
+
+.save-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--text-secondary);
+  font-weight: 700;
+  min-width: 0;
+
+  ion-icon {
+    color: var(--main-bg-color);
+    font-size: 20px;
+    flex-shrink: 0;
+  }
+}
+
+@media (max-width: 768px) {
+
+  .setup-header,
+  .preference-panel {
+    padding: 18px;
+  }
+
+  .preference-toggle,
+  .privacy-note {
+    margin-left: 0;
+  }
+
+  .save-bar {
+    left: 16px;
+    right: 16px;
+    flex-direction: column;
+    align-items: stretch;
+
+    ion-button {
+      width: 100%;
+    }
+  }
+}
+
+@media (max-width: 420px) {
+
+  .setup-header,
+  .preference-copy {
+    grid-template-columns: 1fr;
+  }
+
+  .back-button {
+    justify-self: start;
+  }
+
+  .preference-toggle {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}

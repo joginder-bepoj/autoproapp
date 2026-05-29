@@ -23,6 +23,10 @@ import {
   documentOutline,
   imageOutline,
 } from 'ionicons/icons';
+import { Router } from '@angular/router';
+import { forkJoin, of, switchMap, take } from 'rxjs';
+import { ApiService } from 'src/app/services/api-service';
+import { UtilService } from 'src/app/services/util.service';
 
 export interface FeedbackCategory {
   label: string;
@@ -58,7 +62,11 @@ export class FeedbackComponent implements OnInit {
     { label: 'Compliment', value: 'compliment', icon: 'thumbs-up-outline' },
   ];
 
-  constructor() {
+  constructor(
+    private apiService: ApiService,
+    private utilService: UtilService,
+    private router: Router
+  ) {
     addIcons({
       chatbubbleEllipsesOutline,
       createOutline,
@@ -147,16 +155,91 @@ export class FeedbackComponent implements OnInit {
 
   /* ── Submit ── */
   submitFeedback() {
-    if (!this.subject.trim() || !this.message.trim()) { return; }
+    if (!this.message.trim()) {
+      this.utilService.showToast('Feedback is required.', 'danger');
+      return;
+    }
 
     this.isSubmitting = true;
+    this.utilService.showLoader();
 
-    // Simulate API call – replace with real service call
-    setTimeout(() => {
-      this.isSubmitting = false;
-      this.isSubmitted = true;
-      this.resetFormFields();
-    }, 1500);
+    this.ensureProfile()
+      .pipe(
+        switchMap((profile: any) => {
+          if (!profile) throw new Error('Please log in again to send feedback.');
+
+          const userId = this.getUserId(profile);
+          const uploads$ = this.attachments.length
+            ? forkJoin(this.attachments.map((file) => this.apiService.uploadFeedbackAttachment(userId, file)))
+            : of([]);
+
+          return uploads$.pipe(
+            switchMap((downloadURLs) => {
+              const feedbackData: Record<string, any> = {
+                subject: this.subject.trim(),
+                feedback: this.message.trim(),
+                email: profile.email || profile.emailId || '',
+                firstName: profile.firstName || '',
+                lastName: profile.lastName || '',
+                userid: userId,
+                time: this.formatFeedbackTime(new Date()),
+              };
+
+              if (this.selectedCategory) feedbackData['category'] = this.selectedCategory;
+              if (this.rating) feedbackData['rating'] = this.rating;
+              if (downloadURLs.length) feedbackData['attachments'] = downloadURLs;
+
+              return this.apiService.sendFeedbackToFirebase(feedbackData).pipe(
+                switchMap((feedbackKey) => {
+                  if (!feedbackKey) return of(feedbackKey);
+                  return this.apiService
+                    .addContribution(userId, 'feedbacks', feedbackKey)
+                    .pipe(switchMap(() => of(feedbackKey)));
+                })
+              );
+            })
+          );
+        }),
+        take(1)
+      )
+      .subscribe({
+        next: () => {
+          this.isSubmitting = false;
+          this.isSubmitted = true;
+          this.utilService.hideLoader();
+          this.utilService.showToast('Feedback sent successfully.', 'success');
+          this.resetFormFields();
+          this.router.navigate(['/account-settings']);
+        },
+        error: (err: any) => {
+          this.isSubmitting = false;
+          this.utilService.hideLoader();
+          const message = err?.message || this.utilService.parseErrorMessage(err);
+          this.utilService.showToast(message || 'Failed to send feedback.', 'danger');
+        },
+      });
+  }
+
+  private ensureProfile() {
+    const profile = this.utilService.getUserProfile();
+    if (profile) return of(profile);
+
+    return this.apiService.getCustomerProfile().pipe(
+      switchMap((res: any) => {
+        const loadedProfile = res?.data ?? res;
+        if (loadedProfile) this.utilService.setUserProfile(loadedProfile);
+        return of(loadedProfile);
+      })
+    );
+  }
+
+  private getUserId(profile: any): string {
+    return String(profile?.customerID ?? profile?.customerId ?? profile?.id ?? '');
+  }
+
+  private formatFeedbackTime(date: Date): string {
+    const pad = (value: number) => value.toString().padStart(2, '0');
+    return `${pad(date.getDate())}-${pad(date.getMonth() + 1)}-${date.getFullYear()} ${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`;
   }
 
   resetForm() {

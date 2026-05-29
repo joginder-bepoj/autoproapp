@@ -96,6 +96,30 @@ body {
   font-family: var(--ion-font-family);
 }
 
+ion-content::part(scroll) {
+  scrollbar-gutter: stable;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(15, 23, 42, 0.35) transparent;
+}
+
+ion-content::part(scroll)::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+ion-content::part(scroll)::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+ion-content::part(scroll)::-webkit-scrollbar-thumb {
+  background: rgba(15, 23, 42, 0.35);
+  border-radius: 999px;
+}
+
+ion-content::part(scroll)::-webkit-scrollbar-thumb:hover {
+  background: rgba(15, 23, 42, 0.52);
+}
+
 /* Input styling for Poppins alignment */
 input,
 textarea,

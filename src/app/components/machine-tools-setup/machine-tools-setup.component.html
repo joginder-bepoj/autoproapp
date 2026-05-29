@@ -1,0 +1,69 @@
+<ion-content>
+  <div class="page-container machine-tools-page">
+    <div class="machine-tools-container container">
+      <app-breadcrumbs [breadcrumb]="breadcrumb"></app-breadcrumbs>
+
+      <section class="setup-header">
+        <button class="back-button" type="button" (click)="back()" aria-label="Back to account settings">
+          <ion-icon name="arrow-back-outline"></ion-icon>
+        </button>
+
+        <div class="header-copy">
+          <div class="eyebrow">
+            <ion-icon name="construct-outline"></ion-icon>
+            Account Preferences
+          </div>
+          <h1>Machines & Tools Setup</h1>
+          <p>
+            Choose which decoders, cutters, and programmers should appear in AutoProAPP.
+          </p>
+        </div>
+
+        <div class="summary-panel">
+          <span class="summary-number">{{ enabledCount }}</span>
+          <span class="summary-label">of {{ totalCount }} visible</span>
+        </div>
+      </section>
+
+      <div class="tools-layout">
+        <section class="group-panel" *ngFor="let group of groups; trackBy: trackByGroup">
+          <div class="group-header">
+            <div>
+              <h2>{{ group.name }}</h2>
+              <p>{{ group.children.length }} options</p>
+            </div>
+
+            <div class="group-actions" aria-label="Group visibility actions">
+              <button type="button" (click)="setGroupVisibility(group, true)">All</button>
+              <button type="button" (click)="setGroupVisibility(group, false)">None</button>
+            </div>
+          </div>
+
+          <div class="tool-list">
+            <label class="tool-row" *ngFor="let child of group.children; trackBy: trackByChild">
+              <span class="tool-name">{{ child.name }}</span>
+              <ion-toggle
+                [(ngModel)]="child.show"
+                [attr.aria-label]="'Show ' + child.name"
+              ></ion-toggle>
+            </label>
+          </div>
+        </section>
+      </div>
+
+      <div class="save-bar">
+        <div class="save-status">
+          <ion-icon [name]="hasChanges ? 'sparkles-outline' : 'checkmark-outline'"></ion-icon>
+          <span>{{ hasChanges ? 'Unsaved changes' : 'Everything is up to date' }}</span>
+        </div>
+
+        <ion-button (click)="saveChanges()" [disabled]="isSaving || !hasChanges">
+          <ion-icon name="save-outline" slot="start"></ion-icon>
+          Save Changes
+        </ion-button>
+      </div>
+    </div>
+  </div>
+
+  <app-footer></app-footer>
+</ion-content>

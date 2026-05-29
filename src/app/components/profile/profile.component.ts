@@ -1,6 +1,7 @@
 import { FooterComponent } from 'src/app/shared/footer/footer.component';
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { IonIcon, IonButton, IonInput, IonContent } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { calendarOutline, syncOutline, phonePortraitOutline, trashOutline, addOutline, shieldCheckmarkOutline, starOutline, ribbonOutline, pieChartOutline, carOutline, pencilOutline, keyOutline, bulbOutline, chatboxEllipsesOutline, bagHandleOutline, cartOutline, clipboardOutline, medalOutline, carSportOutline, mailOutline, logOutOutline } from 'ionicons/icons';
@@ -15,7 +16,7 @@ import { ApiService } from 'src/app/services/api-service';
   templateUrl: './profile.component.html',
   styleUrls: ['./profile.component.scss'],
   standalone: true,
-  imports: [CommonModule, IonIcon, IonButton, IonInput, IonContent, BreadcrumbsComponent, FooterComponent]
+  imports: [CommonModule, FormsModule, IonIcon, IonButton, IonInput, IonContent, BreadcrumbsComponent, FooterComponent]
 })
 export class ProfileComponent implements OnInit {
 
@@ -25,6 +26,8 @@ export class ProfileComponent implements OnInit {
   logins: any[] = [];
   activeDevices: any[] = [];
   userLoginsInfo: any = { count: 0, firstLogin: 0 };
+  displayName = '';
+  isUpdatingDisplayName = false;
 
   constructor(
     private router: Router,
@@ -102,6 +105,7 @@ export class ProfileComponent implements OnInit {
     this.userSubscription = this.utilService.currentUser$.subscribe((user: any) => {
       if (user) {
         this.userProfile = user;
+        this.displayName = this.getProfileDisplayName(user);
         this.apiService.getCustomerContributions(this.userProfile?.customerID).subscribe((data: any) => {
           console.log('Customer Contributions Raw Data:', data);
           if (data) {
@@ -141,10 +145,13 @@ export class ProfileComponent implements OnInit {
     this.utilService.currentUser$.subscribe((user: any) => {
       if (user) {
         this.userProfile = user;
+        this.displayName = this.getProfileDisplayName(user);
       } else {
         this.apiService.getCustomerProfile().subscribe((data: any) => {
-          this.userProfile = data;
-          this.utilService.setUserProfile(data);
+          const profile = data?.data ?? data;
+          this.userProfile = profile;
+          this.displayName = this.getProfileDisplayName(profile);
+          this.utilService.setUserProfile(profile);
         });
       }
     });
@@ -157,6 +164,63 @@ export class ProfileComponent implements OnInit {
 
   logout() {
     this.utilService.logout();
+  }
+
+  updateDisplayName() {
+    const displayName = this.displayName.trim();
+    if (!displayName) {
+      this.utilService.showToast('Display name is required.', 'danger');
+      return;
+    }
+
+    const nameParts = displayName.split(/\s+/);
+    if (nameParts.length < 2) {
+      this.utilService.showToast('Please input full name.', 'danger');
+      return;
+    }
+
+    const firstName = nameParts[0];
+    const lastName = displayName.substring(displayName.indexOf(' ') + 1).trim();
+
+    this.isUpdatingDisplayName = true;
+    this.utilService.showLoader();
+    this.apiService.updateCustomerInfo({ firstName, lastName }).subscribe({
+      next: (res: any) => {
+        const data = res?.data ?? res;
+        const result = (data?.result || data?.Result || '').toString().toLowerCase();
+        if (result && result !== 'ok') {
+          this.isUpdatingDisplayName = false;
+          this.utilService.hideLoader();
+          this.utilService.showToast(data?.message || 'Failed to update display name.', 'danger');
+          return;
+        }
+
+        this.apiService.getCustomerProfile().subscribe({
+          next: (profileRes: any) => {
+            const profile = profileRes?.data ?? profileRes;
+            if (profile) {
+              this.userProfile = profile;
+              this.displayName = this.getProfileDisplayName(profile);
+              this.utilService.setUserProfile(profile);
+            }
+            this.isUpdatingDisplayName = false;
+            this.utilService.hideLoader();
+            this.utilService.showToast('Display name updated.', 'success');
+          },
+          error: () => {
+            this.isUpdatingDisplayName = false;
+            this.utilService.hideLoader();
+            this.utilService.showToast('Display name updated.', 'success');
+          }
+        });
+      },
+      error: (err: any) => {
+        this.isUpdatingDisplayName = false;
+        this.utilService.hideLoader();
+        const message = this.utilService.parseErrorMessage(err);
+        this.utilService.showToast(message || 'Failed to update display name.', 'danger');
+      }
+    });
   }
 
   removeDevice(device: any) {
@@ -174,6 +238,14 @@ export class ProfileComponent implements OnInit {
         console.error('Removal error:', err);
       }
     });
+  }
+
+  private getProfileDisplayName(profile: any): string {
+    return (
+      profile?.displayName ||
+      profile?.userName ||
+      `${profile?.firstName || ''} ${profile?.lastName || ''}`.trim()
+    );
   }
 
 }

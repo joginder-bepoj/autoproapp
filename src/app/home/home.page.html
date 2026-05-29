@@ -1,110 +1,117 @@
 <ion-content>
-<div class="home-content">
+  <div class="home-content">
 
-  <!-- ── Premium Hero Section ────────────────────────────────────────── -->
-  <div class="hero-section">
-    <div class="hero-bg-wrapper">
-      <div class="hero-overlay"></div>
-      <img src="assets/images/aks-hero-bg.jpg" alt="Hero background" class="hero-bg-img">
-    </div>
+    <!-- ── Premium Hero Section ────────────────────────────────────────── -->
+    <div class="hero-section">
+      <div class="hero-bg-wrapper">
+        <div class="hero-overlay"></div>
+        <img src="assets/images/aks-hero-bg.jpg" alt="Hero background" class="hero-bg-img">
+      </div>
 
-    <div class="container hero-container">
-      <div class="hero-main-content">
-        <!-- <span class="hero-eyebrow">Automotive Locksmith Platform</span> -->
-        <h1 class="hero-main-title">Professional Automotive <br> Key Solutions</h1>
-        <p class="hero-top-text">Your all-in-one platform for vehicle key data, specialized locksmith tools, and
-          real-time VIN decoding.</p>
+      <div class="container hero-container">
+        <div class="hero-main-content">
+          <!-- <span class="hero-eyebrow">Automotive Locksmith Platform</span> -->
+          <h1 class="hero-main-title">Professional Automotive <br> Key Solutions</h1>
+          <p class="hero-top-text">Your all-in-one platform for vehicle key data, specialized locksmith tools, and
+            real-time VIN decoding.</p>
 
-        <!-- Search Tabs -->
-        <!-- <div class="search-tabs">
+          <!-- Search Tabs -->
+          <!-- <div class="search-tabs">
           <button class="tab-btn active">Key Blanks</button>
           <button class="tab-btn">Remotes</button>
           <button class="tab-btn">Tools</button>
         </div> -->
 
-        <!-- Floating Search Widget -->
-        <div class="hero-search-card">
-          <div class="search-field" (click)="openCategoryPage()">
-            <ion-icon name="car-outline" class="field-icon"></ion-icon>
-            <span class="field-label">Select vehicle make</span>
-            <ion-icon name="chevron-down-outline" class="field-icon ms-auto"></ion-icon>
-          </div>
-          <div class="field-divider"></div>
-          <div class="search-field">
-            <ion-icon name="search-outline" class="field-icon"></ion-icon>
-            <input type="text" placeholder="Type your search..." class="inner-input" [(ngModel)]="vehicleSearchQuery"
-              (keyup.enter)="onVehicleSearch()">
-          </div>
-          <button class="btn-search" (click)="onVehicleSearch()">
-            Search
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="main-container container">
-    <!-- Existing Quick Search Cards preservation -->
-    <div class="quick-search-row">
-      <!-- Card 1: Vehicle Search -->
-      <div class="quick-card">
-        <ion-icon name="car-outline" class="q-card-icon"></ion-icon>
-        <h3 class="q-title">Vehicle Model Search</h3>
-        <div class="q-input-row">
-          <ion-input placeholder="Type modal name..." [(ngModel)]="modelSearchQuery"
-            (keyup.enter)="onModelSearch()"></ion-input>
-          <button class="inner-search-btn" (click)="onModelSearch()">Search</button>
-        </div>
-      </div>
-
-      <!-- Card 2: Key Supply Search -->
-      <div class="quick-card">
-        <ion-icon name="key-outline" class="q-card-icon"></ion-icon>
-        <h3 class="q-title">Key Supply Search</h3>
-        <div class="q-input-row" (click)="openProductCategoryPage()">
-          <span class="placeholder-text">Select product category</span>
-          <ion-icon name="chevron-forward-outline" class="ms-auto me-2 text-muted"></ion-icon>
-        </div>
-      </div>
-
-      <!-- Card 3: VIN Search -->
-      <div class="quick-card">
-        <ion-icon name="barcode-outline" class="q-card-icon"></ion-icon>
-        <h3 class="q-title">VIN Search</h3>
-        <div class="q-input-row">
-          <ion-input placeholder="Enter VIN..." [(ngModel)]="vinSearchQuery" (keyup.enter)="onVinSearch()"></ion-input>
-          <div class="action-btns d-flex">
-            <button class="inner-search-btn me-2" (click)="onVinSearch()">Search</button>
-            <button class="icon-camera-btn">
-              <ion-icon name="camera-outline"></ion-icon>
+          <!-- Floating Search Widget -->
+          <div class="hero-search-card">
+            <div class="search-field" (click)="openCategoryPage()">
+              <ion-icon name="car-outline" class="field-icon"></ion-icon>
+              <span class="field-label">Select vehicle make</span>
+              <ion-icon name="chevron-down-outline" class="field-icon ms-auto"></ion-icon>
+            </div>
+            <div class="field-divider"></div>
+            <div class="search-field">
+              <ion-icon name="search-outline" class="field-icon"></ion-icon>
+              <input type="text" placeholder="Type your search..." class="inner-input" [(ngModel)]="vehicleSearchQuery"
+                (keyup.enter)="onVehicleSearch()">
+            </div>
+            <button class="btn-search" (click)="onVehicleSearch()">
+              Search
             </button>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Tools & Resources Section -->
-    <div class="section-container">
-      <div class="section-header">
-        <h2 class="section-heading">Tools & Resources</h2>
-        <p class="section-subtext">Explore our comprehensive set of tools and references.</p>
+    <div class="main-container container">
+      <!-- Existing Quick Search Cards preservation -->
+      <div class="quick-search-row">
+        <!-- Card 1: Vehicle Search -->
+        <div class="quick-card">
+          <ion-icon name="car-outline" class="q-card-icon"></ion-icon>
+          <h3 class="q-title">Vehicle Model Search</h3>
+          <div class="q-input-row">
+            <ion-input placeholder="Type modal name..." [(ngModel)]="modelSearchQuery"
+              (keyup.enter)="onModelSearch()"></ion-input>
+            <button class="inner-search-btn" (click)="onModelSearch()">Search</button>
+          </div>
+        </div>
+
+        <!-- Card 2: Key Supply Search -->
+        <div class="quick-card">
+          <ion-icon name="key-outline" class="q-card-icon"></ion-icon>
+          <h3 class="q-title">Key Supply Search</h3>
+          <div class="q-input-row" (click)="openProductCategoryPage()">
+            <span class="placeholder-text">Select product category</span>
+            <ion-icon name="chevron-forward-outline" class="ms-auto me-2 text-muted"></ion-icon>
+          </div>
+        </div>
+
+        <!-- Card 3: VIN Search -->
+        <div class="quick-card">
+          <ion-icon name="barcode-outline" class="q-card-icon"></ion-icon>
+          <h3 class="q-title">VIN Search</h3>
+          <div class="q-input-row">
+            <ion-input placeholder="Enter VIN..." [(ngModel)]="vinSearchQuery"
+              (keyup.enter)="onVinSearch()"></ion-input>
+            <div class="action-btns d-flex">
+              <button class="inner-search-btn me-2" (click)="onVinSearch()">Search</button>
+              <button class="icon-camera-btn">
+                <ion-icon name="camera-outline"></ion-icon>
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
 
-      <ion-grid class="tools-grid">
-        <ion-row>
-          <ion-col size="12" size-md="4" *ngFor="let tool of tools">
-            <div class="tool-card" (click)="navigateTo(tool.url)">
-              <div class="tool-icon-wrapper">
-                <ion-icon [name]="tool.icon" class="tool-icon"></ion-icon>
+      <!-- Tools & Resources Section -->
+      <div class="section-container">
+        <div class="section-header">
+          <h2 class="section-heading">Tools & Resources</h2>
+          <p class="section-subtext">Explore our comprehensive set of tools and references.</p>
+        </div>
+
+        <ion-grid class="tools-grid">
+          <ion-row>
+            <ion-col size="12" size-md="4" *ngFor="let tool of tools">
+              <div
+                class="tool-card"
+                [ngClass]="{'disabled': !tool.url}"
+                [attr.aria-disabled]="!tool.url"
+                (click)="navigateTo(tool.url)"
+              >
+                <div class="tool-icon-wrapper">
+                  <ion-icon [name]="tool.icon" class="tool-icon"></ion-icon>
+                </div>
+                <div class="tool-label" [innerHTML]="tool.title"></div>
+                <span class="tool-disabled-badge" *ngIf="!tool.url">Coming soon</span>
+                <div class="tool-arrow"><ion-icon name="arrow-forward-outline"></ion-icon></div>
               </div>
-              <div class="tool-label" [innerHTML]="tool.title"></div>
-              <div class="tool-arrow"><ion-icon name="arrow-forward-outline"></ion-icon></div>
-            </div>
-          </ion-col>
-        </ion-row>
-      </ion-grid>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+      </div>
     </div>
   </div>
-</div>
-<app-footer></app-footer>
+  <app-footer></app-footer>
 </ion-content>

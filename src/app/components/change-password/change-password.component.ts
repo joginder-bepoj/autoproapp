@@ -36,9 +36,11 @@ export class ChangePasswordComponent implements OnInit {
   email = '';
   phoneNumber = '';
 
+  currentPassword = '';
   newPassword = '';
   confirmPassword = '';
 
+  showCurrent = false;
   showNew = false;
   showConfirm = false;
 
@@ -133,11 +135,16 @@ export class ChangePasswordComponent implements OnInit {
       return;
     }
 
+    const current = this.currentPassword;
     const newpwd = this.newPassword;
     const confirm = this.confirmPassword;
 
-    const anyPwdFilled = !!(newpwd || confirm);
+    const anyPwdFilled = !!(current || newpwd || confirm);
     if (anyPwdFilled) {
+      if (!current) {
+        this.utilService.showToast('Current password is required.', 'danger');
+        return;
+      }
       if (!newpwd) {
         this.utilService.showToast('New password is required.', 'danger');
         return;
@@ -160,6 +167,7 @@ export class ChangePasswordComponent implements OnInit {
     };
 
     if (anyPwdFilled) {
+      payload.currentPassword = current;
       payload.password = newpwd;
     }
 

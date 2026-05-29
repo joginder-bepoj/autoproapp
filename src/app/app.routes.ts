@@ -138,6 +138,16 @@ export const routes: Routes = [
     loadComponent: () => import('./components/acc-settings/acc-settings.component').then((m) => m.AccSettingsComponent),
   },
   {
+    path: 'machine-tools-setup',
+    canActivate: [authGuard],
+    loadComponent: () => import('./components/machine-tools-setup/machine-tools-setup.component').then((m) => m.MachineToolsSetupComponent),
+  },
+  {
+    path: 'communication-preferences',
+    canActivate: [authGuard],
+    loadComponent: () => import('./components/communication-preferences/communication-preferences.component').then((m) => m.CommunicationPreferencesComponent),
+  },
+  {
     path: 'order-history/:id',
     canActivate: [authGuard],
     loadComponent: () => import('./components/order-history-details/order-history-details.component').then((m) => m.OrderHistoryDetailsComponent),
