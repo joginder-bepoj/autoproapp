@@ -11,6 +11,7 @@ import {
   cardOutline,
   notificationsOutline,
   constructOutline,
+  chatbubbleEllipsesOutline,
 } from 'ionicons/icons';
 import { FooterComponent } from 'src/app/shared/footer/footer.component';
 import { BreadcrumbsComponent } from 'src/app/shared/breadcrumbs/breadcrumbs.component';
@@ -31,6 +32,7 @@ export class AccSettingsComponent {
     { label: 'Credit Cards', icon: 'card-outline', route: '/credit-cards' },
     { label: 'Communications Preferences', icon: 'notifications-outline', route: '/communication-preferences' },
     { label: 'Machines & Tools Setup', icon: 'construct-outline', route: '/machine-tools-setup' },
+    { label: 'Send Feedback', icon: 'chatbubble-ellipses-outline', route: '/feedback' },
   ];
 
   constructor() {
@@ -42,6 +44,7 @@ export class AccSettingsComponent {
       cardOutline,
       notificationsOutline,
       constructOutline,
+      chatbubbleEllipsesOutline,
     });
   }
 

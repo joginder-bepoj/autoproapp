@@ -4,7 +4,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonIcon, IonButton, IonInput, IonContent } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { calendarOutline, syncOutline, phonePortraitOutline, trashOutline, addOutline, shieldCheckmarkOutline, starOutline, ribbonOutline, pieChartOutline, carOutline, pencilOutline, keyOutline, bulbOutline, chatboxEllipsesOutline, bagHandleOutline, cartOutline, clipboardOutline, medalOutline, carSportOutline, mailOutline, logOutOutline } from 'ionicons/icons';
+import { calendarOutline, syncOutline, phonePortraitOutline, trashOutline, addOutline, shieldCheckmarkOutline, starOutline, ribbonOutline, pieChartOutline, carOutline, pencilOutline, keyOutline, bulbOutline, chatboxEllipsesOutline, chatbubbleEllipsesOutline, bagHandleOutline, cartOutline, clipboardOutline, medalOutline, carSportOutline, mailOutline, logOutOutline } from 'ionicons/icons';
 import { Router } from '@angular/router';
 import { BreadcrumbsComponent } from '../../shared/breadcrumbs/breadcrumbs.component';
 import { UtilService } from '../../services/util.service';
@@ -34,7 +34,7 @@ export class ProfileComponent implements OnInit {
     private utilService: UtilService,
     private apiService: ApiService
   ) {
-    addIcons({ calendarOutline, syncOutline, phonePortraitOutline, trashOutline, addOutline, shieldCheckmarkOutline, starOutline, ribbonOutline, pieChartOutline, carOutline, pencilOutline, keyOutline, bulbOutline, chatboxEllipsesOutline, bagHandleOutline, cartOutline, clipboardOutline, medalOutline, carSportOutline, mailOutline, logOutOutline });
+    addIcons({ calendarOutline, syncOutline, phonePortraitOutline, trashOutline, addOutline, shieldCheckmarkOutline, starOutline, ribbonOutline, pieChartOutline, carOutline, pencilOutline, keyOutline, bulbOutline, chatboxEllipsesOutline, chatbubbleEllipsesOutline, bagHandleOutline, cartOutline, clipboardOutline, medalOutline, carSportOutline, mailOutline, logOutOutline });
     this.userProfile = this.utilService.currentUser$;
   }
 
@@ -160,6 +160,10 @@ export class ProfileComponent implements OnInit {
 
   changePassword() {
     this.router.navigate(['/change-password']);
+  }
+
+  sendFeedback() {
+    this.router.navigate(['/feedback']);
   }
 
   logout() {

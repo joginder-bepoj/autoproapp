@@ -1,0 +1,191 @@
+<ion-content>
+  <div class="checkout-page container">
+    <app-breadcrumbs></app-breadcrumbs>
+
+    <header class="checkout-header">
+      <div>
+        <h1>Checkout</h1>
+        <p>Confirm shipping, payment, and order details.</p>
+      </div>
+      <ion-button fill="outline" routerLink="/cart">
+        <ion-icon slot="start" name="cart-outline"></ion-icon>
+        Cart
+      </ion-button>
+    </header>
+
+    <div class="checkout-steps">
+      <button class="step-button" type="button" *ngFor="let step of steps; let i = index"
+        [class.active]="activeStep === step.key" [class.complete]="i < stepIndex" [disabled]="!canOpenStep(step.key)"
+        (click)="setStep(step.key)">
+        <span class="step-icon">
+          <ion-icon [name]="i < stepIndex ? 'checkmark-circle-outline' : step.icon"></ion-icon>
+        </span>
+        <span>{{ step.label }}</span>
+      </button>
+    </div>
+
+    <div class="checkout-layout" *ngIf="items.length > 0; else emptyCart">
+      <main class="checkout-main">
+        <section class="checkout-panel" *ngIf="activeStep === 'shipping'">
+          <div class="panel-header">
+            <h2>Shipping Address</h2>
+            <button type="button" class="text-action" (click)="addAddress()">Add Address</button>
+          </div>
+
+          <div class="choice-list" *ngIf="addresses.length > 0; else noAddress">
+            <label class="choice-card" *ngFor="let address of addresses; trackBy: trackById">
+              <input type="radio" name="shippingAddress" [value]="address.id" [(ngModel)]="selectedAddressId">
+              <span class="choice-body">
+                <strong>{{ address.name }}</strong>
+                <span *ngIf="address.company">{{ address.company }}</span>
+                <span>{{ address.addressFirstLine }}</span>
+                <span *ngIf="address.addressSecondLine">{{ address.addressSecondLine }}</span>
+                <span>{{ address.city }} {{ address.state }} {{ address.postalCode }}</span>
+                <span *ngIf="address.phoneNumber">{{ address.phoneNumber }}</span>
+              </span>
+            </label>
+          </div>
+
+          <ng-template #noAddress>
+            <div class="empty-panel">
+              <p>No shipping address found.</p>
+              <ion-button (click)="addAddress()">Add Shipping Address</ion-button>
+            </div>
+          </ng-template>
+        </section>
+
+        <section class="checkout-panel" *ngIf="activeStep === 'payment'">
+          <div class="panel-header">
+            <h2>Payment Method</h2>
+            <button type="button" class="text-action" (click)="addCard()">Add Card</button>
+          </div>
+
+          <div class="choice-list" *ngIf="cards.length > 0; else noCard">
+            <label class="choice-card" *ngFor="let card of cards; trackBy: trackById">
+              <input type="radio" name="paymentCard" [value]="card.id" [(ngModel)]="selectedCardId">
+              <span class="choice-body">
+                <strong>{{ card.brand || 'Saved Card' }}</strong>
+                <span>Ending in {{ card.last4 || '----' }}</span>
+                <span *ngIf="card.expDisplay">Expires {{ card.expDisplay }}</span>
+              </span>
+            </label>
+          </div>
+
+          <ng-template #noCard>
+            <div class="empty-panel">
+              <p>No saved payment method found.</p>
+              <ion-button (click)="addCard()">Add Payment Method</ion-button>
+            </div>
+          </ng-template>
+        </section>
+
+        <section class="checkout-panel" *ngIf="activeStep === 'review'">
+          <div class="panel-header">
+            <h2>Review Order</h2>
+          </div>
+
+          <div class="review-grid">
+            <div class="review-box">
+              <span class="review-label">Ship To</span>
+              <strong>{{ selectedAddress?.name }}</strong>
+              <p>{{ selectedAddress?.addressFirstLine }}</p>
+              <p>{{ selectedAddress?.city }} {{ selectedAddress?.state }} {{ selectedAddress?.postalCode }}</p>
+              <button type="button" class="text-action" (click)="setStep('shipping')">Change</button>
+            </div>
+
+            <div class="review-box">
+              <span class="review-label">Payment</span>
+              <strong>{{ selectedCard?.brand || 'Saved Card' }}</strong>
+              <p>Ending in {{ selectedCard?.last4 || '----' }}</p>
+              <button type="button" class="text-action" (click)="setStep('payment')">Change</button>
+            </div>
+          </div>
+
+          <div class="order-items">
+            <div class="order-item" *ngFor="let item of items; trackBy: trackByItemId">
+              <img [src]="getImageBaseUrl() + item.image" [alt]="item.name" onerror="this.src='assets/images/logo.png'">
+              <div>
+                <strong>{{ item.name }}</strong>
+                <span>#{{ item.itemID }} - Qty {{ item.qty || 1 }}</span>
+              </div>
+              <b>${{ (item.price * (item.qty || 1)) | number:'1.2-2' }}</b>
+            </div>
+          </div>
+
+          <div class="checkout-options">
+            <label class="input-block">
+              <span>Order Comments</span>
+              <textarea [(ngModel)]="orderComments" rows="3" placeholder="Add notes for this order"></textarea>
+            </label>
+
+            <label class="sms-option">
+              <input type="checkbox" [(ngModel)]="notifyBySms">
+              <span>Send order tracking SMS</span>
+            </label>
+
+            <label class="input-block" *ngIf="notifyBySms">
+              <span>Mobile Number</span>
+              <input type="tel" [(ngModel)]="mobileNumber" placeholder="Mobile number">
+            </label>
+          </div>
+        </section>
+
+        <div class="step-actions">
+          <ion-button fill="outline" [disabled]="activeStep === 'shipping'" (click)="previousStep()">
+            <ion-icon slot="start" name="chevron-back-outline"></ion-icon>
+            Back
+          </ion-button>
+
+          <ion-button *ngIf="activeStep !== 'review'" (click)="nextStep()">
+            Continue
+            <ion-icon slot="end" name="chevron-forward-outline"></ion-icon>
+          </ion-button>
+
+          <ion-button *ngIf="activeStep === 'review'" (click)="placeOrder()" [disabled]="isPlacingOrder">
+            {{ isPlacingOrder ? 'Placing Order...' : 'Place Order' }}
+            <ion-icon slot="end" name="lock-closed-outline"></ion-icon>
+          </ion-button>
+        </div>
+      </main>
+
+      <aside class="summary-panel">
+        <h2>Order Summary</h2>
+        <div class="summary-row">
+          <span>Items</span>
+          <strong>{{ items.length }}</strong>
+        </div>
+        <div class="summary-row">
+          <span>Subtotal</span>
+          <strong>${{ (invoice?.subTotal ?? cart?.subTotal ?? 0) | number:'1.2-2' }}</strong>
+        </div>
+        <div class="summary-row muted">
+          <span>Shipping</span>
+          <strong>{{ invoice?.shipping !== undefined ? ('$' + (invoice.shipping | number:'1.2-2')) : 'Calculated later'
+            }}</strong>
+        </div>
+        <div class="summary-row muted" *ngIf="invoice?.coupon?.couponDisco || invoice?.couponDiscount">
+          <span>Coupon</span>
+          <strong>-${{ (invoice?.coupon?.couponDisco ?? invoice?.couponDiscount ?? 0) | number:'1.2-2' }}</strong>
+        </div>
+        <div class="summary-row muted" *ngIf="invoice?.tax !== undefined">
+          <span>Tax</span>
+          <strong>${{ (invoice?.tax || 0) | number:'1.2-2' }}</strong>
+        </div>
+        <div class="summary-total">
+          <span>Total</span>
+          <strong>${{ (invoice?.total ?? cart?.subTotal ?? 0) | number:'1.2-2' }}</strong>
+        </div>
+      </aside>
+    </div>
+
+    <ng-template #emptyCart>
+      <div class="empty-cart">
+        <ion-icon name="cart-outline"></ion-icon>
+        <h2>Your cart is empty</h2>
+        <ion-button routerLink="/home">Continue Shopping</ion-button>
+      </div>
+    </ng-template>
+  </div>
+
+  <app-footer></app-footer>
+</ion-content>

@@ -7,6 +7,7 @@ import { BreadcrumbsComponent } from 'src/app/shared/breadcrumbs/breadcrumbs.com
 import { IonIcon, IonContent } from "@ionic/angular/standalone";
 import { CommonModule, TitleCasePipe, DecimalPipe, DatePipe, NgIf } from '@angular/common';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
+import { FormsModule } from '@angular/forms';
 import { addIcons } from 'ionicons';
 import {
   chevronForwardOutline,
@@ -20,7 +21,8 @@ import {
   heartOutline,
   removeOutline,
   cartOutline,
-  chevronBackOutline
+  chevronBackOutline,
+  closeOutline
 } from 'ionicons/icons';
 
 @Component({
@@ -38,7 +40,8 @@ import {
     DecimalPipe,
     DatePipe,
     NgIf,
-    FooterComponent
+    FooterComponent,
+    FormsModule
   ]
 })
 export class VehicleDetailsComponent implements OnInit {
@@ -61,6 +64,20 @@ export class VehicleDetailsComponent implements OnInit {
   available_cuts: number[] = [];
   keyCuttingData: Record<string, any> | null = null;
   keyProgrammingData: Record<string, any> | null = null;
+  keyProgrammingRating: Record<string, any> | null = null;
+  isCommentsModalOpen: boolean = false;
+  selectedTool: string = '';
+  isAddCommentModalOpen: boolean = false;
+  addCommentTool: string = '';
+  addCommentResult: boolean = true;
+  selectedKeyType: string = 'Standard Transponder';
+  commentText: string = '';
+  keyTypes: string[] = [
+    'Standard Transponder',
+    'Remote (no chip)',
+    'Remote Head Key',
+    'Smart Key(Prox)'
+  ];
 
   breadcrumb: any[] = [
     { label: 'Vehicle Search', url: '/category' },
@@ -85,7 +102,8 @@ export class VehicleDetailsComponent implements OnInit {
       heartOutline,
       removeOutline,
       cartOutline,
-      chevronBackOutline
+      chevronBackOutline,
+      closeOutline
     });
     this.imgBaseUrl = this.utilService.getImgBaseUrl();
   }
@@ -129,6 +147,18 @@ export class VehicleDetailsComponent implements OnInit {
         this.utilService.hideLoader();
       }
     });
+
+    this.apiService.getVehicleKeyProgrammingRating(id).subscribe({
+      next: (res: any) => {
+        console.log(res)
+        if (res) {
+          this.keyProgrammingRating = res;
+        }
+      },
+      error: () => {
+        this.keyProgrammingRating = null;
+      }
+    })
   }
 
   cutsArray(length: number): number[] {
@@ -302,12 +332,83 @@ export class VehicleDetailsComponent implements OnInit {
 
   reportProgrammingResult(tool: string, worked: boolean) {
     console.log(`Reporting ${worked ? 'Success' : 'Failure'} for ${tool}`);
-    this.utilService.showToast(`Thank you for your report on ${tool}!`, worked ? 'success' : 'danger');
+    this.addCommentTool = tool;
+    this.addCommentResult = worked;
+    this.selectedKeyType = 'Standard Transponder';
+    this.commentText = '';
+    this.isAddCommentModalOpen = true;
+  }
+
+  closeAddCommentModal() {
+    this.isAddCommentModalOpen = false;
+  }
+
+  submitRating(skipComment: boolean = false) {
+    const userProfile = this.utilService.getUserProfile();
+    const userID = userProfile?.customerID || userProfile?.userID || '16883';
+    const userName = userProfile ? `${userProfile.firstName || ''} ${userProfile.lastName || ''}`.trim() : 'Sirima Rivera';
+    
+    const ratingData = {
+      comment: skipComment ? '' : this.commentText,
+      keyType: this.selectedKeyType,
+      programmer: this.addCommentTool,
+      result: this.addCommentResult ? 'working' : 'not_working',
+      time: Date.now(),
+      userID: userID.toString(),
+      userName: userName,
+      vehicleID: this.route.snapshot.paramMap.get('id') || ''
+    };
+
+    this.utilService.showLoader();
+    this.apiService.addVehicleKeyProgrammingRating(ratingData.vehicleID, ratingData).subscribe({
+      next: () => {
+        this.utilService.hideLoader();
+        this.utilService.showToast('Thank you for your report!', 'success');
+        this.closeAddCommentModal();
+        // Refresh ratings
+        const id = this.route.snapshot.paramMap.get('id') || '';
+        if (id) {
+          this.fetchVehicle(id);
+        }
+      },
+      error: (err) => {
+        this.utilService.hideLoader();
+        this.utilService.showToast('Failed to submit report. Please try again.', 'danger');
+        console.error(err);
+      }
+    });
   }
 
   viewToolComments(tool: string) {
     console.log(`Viewing comments for ${tool}`);
-    // Navigation to a comments page could go here
+    this.selectedTool = tool;
+    this.isCommentsModalOpen = true;
+  }
+
+  closeCommentsModal() {
+    this.isCommentsModalOpen = false;
+    this.selectedTool = '';
+  }
+
+  getCommentsCount(tool: string): number {
+    if (!this.keyProgrammingRating?.[tool]) return 0;
+    return Object.values(this.keyProgrammingRating[tool]).filter((item: any) => item?.comment && item.comment.trim() !== '').length;
+  }
+
+  getSelectedToolComments(): any[] {
+    if (!this.selectedTool || !this.keyProgrammingRating?.[this.selectedTool]) return [];
+    return Object.values(this.keyProgrammingRating[this.selectedTool])
+      .filter((item: any) => item?.comment && item.comment.trim() !== '')
+      .sort((a: any, b: any) => (b.time || 0) - (a.time || 0));
+  }
+
+  getVehicleYearsRange(): string {
+    if (!this.vehicle?.years || !this.vehicle.years.length) return '';
+    const years = this.vehicle.years.map((y: any) => parseInt(y.year)).filter((y: any) => !isNaN(y));
+    if (!years.length) return '';
+    const minYear = Math.min(...years);
+    const maxYear = Math.max(...years);
+    return minYear === maxYear ? `${minYear}` : `${minYear}-${maxYear}`;
   }
 
   addToCart(product: any, type: 'key' | 'remote' | 'part') {
@@ -330,4 +431,23 @@ export class VehicleDetailsComponent implements OnInit {
       qtyOrder: 1
     });
   }
+
+  getWorkingScore(tool: string) {
+    let totalWorking = Object.values(this.keyProgrammingRating?.[tool] || {}).filter((item: any) => item?.result === 'working')
+    return totalWorking.length;
+  }
+
+  getNotWorkingScore(tool: string) {
+    let totalNotWorking = Object.values(this.keyProgrammingRating?.[tool] || {}).filter((item: any) => item?.result === 'not_working' || !item?.result)
+    return totalNotWorking.length;
+  }
+
+  getSuccessRate(tool: string) {
+    const values = Object.values(this.keyProgrammingRating?.[tool] || {});
+    if (!values.length) return '0%';
+    let totalSuccessRate = values.filter((item: any) => item?.result === 'working')
+    return ((totalSuccessRate.length / values.length) * 100).toFixed(0) + '%';
+  }
+
+
 }

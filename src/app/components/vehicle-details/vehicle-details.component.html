@@ -1,267 +1,272 @@
 <ion-content>
-<div class="vd-container container">
-  <!-- Breadcrumb -->
-  <app-breadcrumbs [breadcrumb]="breadcrumb"></app-breadcrumbs>
+  <div class="vd-container container">
+    <!-- Breadcrumb -->
+    <app-breadcrumbs [breadcrumb]="breadcrumb"></app-breadcrumbs>
 
-  <ng-container *ngIf="vehicle">
+    <ng-container *ngIf="vehicle">
 
-    <!-- Vehicle Title Bar -->
-    <div class="vd-title-bar">
-      <div class="vd-title-info">
-        <h1 class="vd-name">{{selectedMake + ' ' + selectedModel + ' ' + activeYear?.year | titlecase}}</h1>
-        <div class="vd-year-badge" *ngIf="activeYear">{{ activeYear?.year }}</div>
+      <!-- Vehicle Title Bar -->
+      <div class="vd-title-bar">
+        <div class="vd-title-info">
+          <h1 class="vd-name">{{selectedMake + ' ' + selectedModel + ' ' + activeYear?.year | titlecase}}</h1>
+          <div class="vd-year-badge" *ngIf="activeYear">{{ activeYear?.year }}</div>
+        </div>
+        <!-- Year selector -->
+        <div class="vd-year-selector" *ngIf="vehicle.years && vehicle.years.length > 1">
+          <select class="year-select" (change)="onYearChange($event)">
+            <option *ngFor="let y of vehicle.years" [value]="y.vehicleID"
+              [selected]="y.vehicleID === activeYear?.vehicleID">
+              {{ y.year }}
+            </option>
+          </select>
+        </div>
       </div>
-      <!-- Year selector -->
-      <div class="vd-year-selector" *ngIf="vehicle.years && vehicle.years.length > 1">
-        <select class="year-select" (change)="onYearChange($event)">
-          <option *ngFor="let y of vehicle.years" [value]="y.vehicleID"
-            [selected]="y.vehicleID === activeYear?.vehicleID">
-            {{ y.year }}
-          </option>
-        </select>
+
+      <!-- Tab Nav -->
+      <div class="vd-tabs">
+        <button class="vd-tab me-3" [class.active]="activeTab === 'overview'"
+          (click)="setTab('overview')">Overview</button>
+        <button class="vd-tab me-3" [class.active]="activeTab === 'keymaking'"
+          (click)="setTab('keymaking')">Keymaking</button>
+        <button class="vd-tab me-3" [class.active]="activeTab === 'tips'" (click)="setTab('tips')">Tips &
+          Tricks</button>
+        <button class="vd-tab me-3" [class.active]="activeTab === 'parts'" (click)="setTab('parts')">Parts</button>
       </div>
-    </div>
 
-    <!-- Tab Nav -->
-    <div class="vd-tabs">
-      <button class="vd-tab me-3" [class.active]="activeTab === 'overview'"
-        (click)="setTab('overview')">Overview</button>
-      <button class="vd-tab me-3" [class.active]="activeTab === 'keymaking'"
-        (click)="setTab('keymaking')">Keymaking</button>
-      <button class="vd-tab me-3" [class.active]="activeTab === 'tips'" (click)="setTab('tips')">Tips & Tricks</button>
-      <button class="vd-tab me-3" [class.active]="activeTab === 'parts'" (click)="setTab('parts')">Parts</button>
-    </div>
+      <!-- ─── TAB: OVERVIEW ─── -->
+      <div class="vd-tab-panel" *ngIf="activeTab === 'overview'">
+        <!-- Vehicle Overview Section -->
+        <div class="overview-section">
+          <div class="vd-carousel-container">
+            <div class="vd-carousel-viewport">
+              <ng-container *ngIf="vehicle.vehicle_image && vehicle.vehicle_image.length; else noImages">
+                <div class="vd-slide" *ngFor="let img of vehicle.vehicle_image; let i = index"
+                  [class.active]="currentImageIndex === i">
+                  <img [src]="img.image" alt="Vehicle Image {{i + 1}}"
+                    onerror="this.src='assets/images/no-image-available.jpg'">
+                </div>
+              </ng-container>
+              <ng-template #noImages>
+                <div class="vd-slide active">
+                  <img src="assets/images/no-image-available.jpg" alt="No Vehicle Image Available">
+                </div>
+              </ng-template>
+            </div>
 
-    <!-- ─── TAB: OVERVIEW ─── -->
-    <div class="vd-tab-panel" *ngIf="activeTab === 'overview'">
-      <!-- Vehicle Overview Section -->
-      <div class="overview-section">
-        <div class="vd-carousel-container">
-          <div class="vd-carousel-viewport">
-            <ng-container *ngIf="vehicle.vehicle_image && vehicle.vehicle_image.length; else noImages">
-              <div class="vd-slide" *ngFor="let img of vehicle.vehicle_image; let i = index"
-                [class.active]="currentImageIndex === i">
-                <img [src]="img.image" alt="Vehicle Image {{i + 1}}" onerror="this.src='assets/images/no-image-available.jpg'">
+            <!-- Navigation Arrows (only if more than 1 image) -->
+            <ng-container *ngIf="vehicle.vehicle_image?.length > 1">
+              <button class="carousel-nav-btn prev" (click)="prevImage()">
+                <ion-icon name="chevron-back-outline"></ion-icon>
+              </button>
+              <button class="carousel-nav-btn next" (click)="nextImage()">
+                <ion-icon name="chevron-forward-outline"></ion-icon>
+              </button>
+
+              <!-- Pagination Dots -->
+              <div class="carousel-dots">
+                <span *ngFor="let dot of vehicle.vehicle_image; let i = index" class="dot"
+                  [class.active]="currentImageIndex === i" (click)="setCurrentImage(i)"></span>
               </div>
             </ng-container>
-            <ng-template #noImages>
-              <div class="vd-slide active">
-                <img src="assets/images/no-image-available.jpg" alt="No Vehicle Image Available">
-              </div>
-            </ng-template>
           </div>
 
-          <!-- Navigation Arrows (only if more than 1 image) -->
-          <ng-container *ngIf="vehicle.vehicle_image?.length > 1">
-            <button class="carousel-nav-btn prev" (click)="prevImage()">
-              <ion-icon name="chevron-back-outline"></ion-icon>
-            </button>
-            <button class="carousel-nav-btn next" (click)="nextImage()">
-              <ion-icon name="chevron-forward-outline"></ion-icon>
-            </button>
-
-            <!-- Pagination Dots -->
-            <div class="carousel-dots">
-              <span *ngFor="let dot of vehicle.vehicle_image; let i = index" class="dot"
-                [class.active]="currentImageIndex === i" (click)="setCurrentImage(i)"></span>
+          <div class="basic-info">
+            <h3 class="section-subtitle">The Basics</h3>
+            <div class="basic-info-grid">
+              @for (item of vehicle.vehicle_info?.the_basics; track $index) {
+              <div class="basic-info-group" [class.border-top]="$index > 0">
+                <div class="basic-info-item" *ngFor="let entries of item | keyvalue">
+                  <span class="info-label">{{ entries.key }}</span>
+                  <span class="info-value">{{ entries.value }}</span>
+                </div>
+              </div>
+              }
             </div>
-          </ng-container>
+          </div>
         </div>
 
-        <div class="basic-info">
-          <h3 class="section-subtitle">The Basics</h3>
-          <div class="basic-info-grid">
-            @for (item of vehicle.vehicle_info?.the_basics; track $index) {
-            <div class="basic-info-group" [class.border-top]="$index > 0">
-              <div class="basic-info-item" *ngFor="let entries of item | keyvalue">
-                <span class="info-label">{{ entries.key }}</span>
-                <span class="info-value">{{ entries.value }}</span>
-              </div>
-            </div>
-            }
-          </div>
-        </div>
-      </div>
 
 
+        <!-- Tumbler Grid -->
+        <div class="vd-flex-row">
+          <h3 class="section-subtitle d-lg-none">TUMBLER LOCATIONS</h3>
+          <div class="vd-tumbler-section" *ngIf="tumblerRows.length">
+            <h3 class="section-subtitle d-none d-lg-block">TUMBLER LOCATIONS</h3>
 
-      <!-- Tumbler Grid -->
-      <div class="vd-flex-row">
-        <h3 class="section-subtitle d-lg-none">TUMBLER LOCATIONS</h3>
-        <div class="vd-tumbler-section" *ngIf="tumblerRows.length">
-          <h3 class="section-subtitle d-none d-lg-block">TUMBLER LOCATIONS</h3>
-
-          <div class="tumbler-header-row">
-            <div class="tumbler-label-col"></div>
-            <div class="tumbler-grid-header">
-              <div class="tumbler-nums">
-                <span *ngFor="let n of available_cuts ">{{ n }}</span>
-              </div>
-            </div>
-          </div>
-
-          <div class="tumbler-body">
-            <div class="tumbler-row" *ngFor="let row of tumblerRows; let i = index">
-              <div class="tumbler-label">{{ row.label }}</div>
-              <div class="tumbler-cells" [class.less-width]="i % 2 !== 0">
-                <div class="tumbler-cell" *ngFor="let item of row.values" [class.active]="item === 'true'">
+            <div class="tumbler-header-row">
+              <div class="tumbler-label-col"></div>
+              <div class="tumbler-grid-header">
+                <div class="tumbler-nums">
+                  <span *ngFor="let n of available_cuts ">{{ n }}</span>
                 </div>
               </div>
             </div>
-          </div>
-        </div>
-        <!-- Decoder Info Section -->
-        <div class="decoder-info" *ngIf="this.vehicle.vehicle_info?.decode_with">
-          <h3 class="section-subtitle basic-info">Decoder Tooling</h3>
-          <div class="basic-info-grid">
-            <div class="basic-info-group mt-3">
-              <div class="basic-info-item" *ngFor="let item of vehicle.vehicle_info?.decode_with | keyvalue">
-                <span class="info-label">{{ normalizeKey(item.key)}}</span>
 
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="vd-section-block" *ngIf="mechanicalKeys.length">
-        <div class="vd-section-header">
-          <h2 class="vd-section-heading">The Keys</h2>
-        </div>
-        <div class="vd-item-list">
-          <div class="vd-item-card" *ngFor="let key of mechanicalKeys">
-            <div class="vd-item-type">Mechanical Key</div>
-            <img *ngIf="key.image" [src]="imgBaseUrl + key.image"
-              onerror="this.src='assets/images/no-image-available.jpg'" class="vd-item-img">
-            <div class="vd-item-info">
-              <div class="vd-item-name">{{ key.value }}</div>
-              <a *ngIf="key.products?.products_id"
-                [routerLink]="['/product', getFirstProductId(key.products.products_id)]" class="vd-item-price">${{
-                key.products.least_price | number:'1.2-2' }}</a>
-            </div>
-            <button class="vd-tool-btn" *ngIf="key.products?.products_id"
-              (click)="addToCart(key, 'key'); $event.stopPropagation();" style="margin-right: 8px;">
-              <ion-icon name="cart-outline"></ion-icon>
-            </button>
-            <button class="vd-tool-btn" *ngIf="key.products?.products_id"
-              [routerLink]="['/product', getFirstProductId(key.products.products_id)]">
-              <ion-icon name="build-outline"></ion-icon>
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <div class="vd-section-block">
-        <div class="vd-section-header">
-          <h2 class="vd-section-heading">The Remotes</h2>
-        </div>
-        <div class="vd-item-list" *ngIf="remotes.length">
-          <div class="vd-item-card" *ngFor="let item of remotes">
-            <div class="vd-item-type">{{ item.type }}</div>
-            <img *ngIf="item.products?.imagePath" [src]="imgBaseUrl + item.products.imagePath" alt="{{ item.name }}"
-              onerror="this.src='assets/images/no-image-available.jpg'" class="vd-item-img">
-            <div class="vd-item-info">
-              <div class="vd-item-name">{{ item.name }}</div>
-              <div class="vd-remote-meta" *ngIf="item.fcc_id">FCC: {{ item.fcc_id }}</div>
-              <div class="vd-remote-meta" *ngIf="item.frequency">{{ item.frequency }}</div>
-              <a *ngIf="item.products?.products_id"
-                [routerLink]="['/product', getFirstProductId(item.products.products_id)]" class="vd-item-price">${{
-                item.products.least_price | number:'1.2-2' }}</a>
-            </div>
-            <button class="vd-add-btn" *ngIf="item.products?.products_id"
-              (click)="addToCart(item, 'remote'); $event.stopPropagation();">
-              <ion-icon name="cart-outline"></ion-icon>
-            </button>
-          </div>
-        </div>
-        <span class="info-label" *ngIf="!remotes.length">No Remotes Found</span>
-      </div>
-
-      <!-- OBD Location -->
-      <div class="vd-info-card" *ngIf="vehicle.vehicle_info?.OBD_Location?.OBD_Location_Text">
-        <h3 class="vd-section-title">OBD Location</h3>
-        <div class="obd-content">
-          <img *ngIf="vehicle.vehicle_info.OBD_Location.OBD_Location_Image"
-            [src]="vehicle.vehicle_info.OBD_Location.OBD_Location_Image" alt="OBD Location" class="obd-image"
-            onerror="this.style.display='none'">
-          <p class="obd-text">{{ vehicle.vehicle_info.OBD_Location.OBD_Location_Text }}</p>
-        </div>
-      </div>
-
-      <!-- Key Cuttings -->
-      <div class="vd-section-block" *ngIf="keyCuttingData">
-        <div class="vd-section-header">
-          <h2 class="vd-section-heading">Key Cutting Info</h2>
-        </div>
-        <div class="key-cutting-grid">
-          <div class="key-cutting-card" *ngFor="let machine of getEntries(keyCuttingData)">
-            <div class="block-header">
-              <span class="block-name">{{ normalizeKey(machine.key) | uppercase }}</span>
-            </div>
-            <div class="block-details">
-              <div class="basic-info-item" *ngFor="let detail of getEntries(machine.value)">
-                <span class="info-label">{{ normalizeKey(detail.key) }}</span>
-                <span class="info-value">{{ getDisplayValue(detail.value) }}</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Key Programming -->
-      <div class="vd-section-block" *ngIf="keyProgrammingData">
-        <div class="vd-section-header">
-          <h2 class="vd-section-heading">Key Programming Info</h2>
-        </div>
-        <div class="vd-info-list">
-          <div class="info-group" *ngFor="let prog of getEntries(keyProgrammingData); let last = last">
-            <div class="info-block side-by-side">
-              <div class="block-top-row">
-                <div class="name-col">
-                  <span class="block-name">{{ normalizeKey(prog.key) | uppercase }}</span>
-                </div>
-                <div class="details-col">
-                  <div class="basic-info-item small-detail" *ngFor="let detail of getFilteredEntries(prog.value)">
-                    <span class="info-label">{{ normalizeKey(detail.key) | uppercase }}</span>
-                    <span class="info-value">{{ getDisplayValue(detail.value) }}</span>
+            <div class="tumbler-body">
+              <div class="tumbler-row" *ngFor="let row of tumblerRows; let i = index">
+                <div class="tumbler-label">{{ row.label }}</div>
+                <div class="tumbler-cells" [class.less-width]="i % 2 !== 0">
+                  <div class="tumbler-cell" *ngFor="let item of row.values" [class.active]="item === 'true'">
                   </div>
                 </div>
               </div>
+            </div>
+          </div>
+          <!-- Decoder Info Section -->
+          <div class="decoder-info" *ngIf="this.vehicle.vehicle_info?.decode_with">
+            <h3 class="section-subtitle basic-info">Decoder Tooling</h3>
+            <div class="basic-info-grid">
+              <div class="basic-info-group mt-3">
+                <div class="basic-info-item" *ngFor="let item of vehicle.vehicle_info?.decode_with | keyvalue">
+                  <span class="info-label">{{ normalizeKey(item.key)}}</span>
 
-              <!-- Community Report Box -->
-              <div class="vd-report-box">
-                <p class="report-desc">
-                  Over the last 90 days, the following reports have been received by other
-                  <strong>{{ normalizeKey(prog.key) }}</strong> users on the
-                  <strong>{{ getVehicleName() }}</strong>:
-                </p>
-                <div class="report-stats">
-                  Working: <span class="stat-num">0</span> |
-                  Not Working: <span class="stat-num">0</span> |
-                  Success Rate: <span class="stat-num">N/A</span>
                 </div>
-                <div class="report-actions">
-                  <button class="report-btn" (click)="reportProgrammingResult(prog.key, true)">IT WORKED FOR ME</button>
-                  <button class="report-btn" (click)="reportProgrammingResult(prog.key, false)">IT DIDN'T WORK FOR ME</button>
-                </div>
-                <a class="view-comments" (click)="viewToolComments(prog.key)">View Comments (0)</a>
               </div>
             </div>
-            <hr class="vd-separator" *ngIf="!last">
           </div>
         </div>
+
+        <div class="vd-section-block" *ngIf="mechanicalKeys.length">
+          <div class="vd-section-header">
+            <h2 class="vd-section-heading">The Keys</h2>
+          </div>
+          <div class="vd-item-list">
+            <div class="vd-item-card" *ngFor="let key of mechanicalKeys">
+              <div class="vd-item-type">Mechanical Key</div>
+              <img *ngIf="key.image" [src]="imgBaseUrl + key.image"
+                onerror="this.src='assets/images/no-image-available.jpg'" class="vd-item-img">
+              <div class="vd-item-info">
+                <div class="vd-item-name">{{ key.value }}</div>
+                <a *ngIf="key.products?.products_id"
+                  [routerLink]="['/product', getFirstProductId(key.products.products_id)]" class="vd-item-price">${{
+                  key.products.least_price | number:'1.2-2' }}</a>
+              </div>
+              <button class="vd-tool-btn" *ngIf="key.products?.products_id"
+                (click)="addToCart(key, 'key'); $event.stopPropagation();" style="margin-right: 8px;">
+                <ion-icon name="cart-outline"></ion-icon>
+              </button>
+              <button class="vd-tool-btn" *ngIf="key.products?.products_id"
+                [routerLink]="['/product', getFirstProductId(key.products.products_id)]">
+                <ion-icon name="build-outline"></ion-icon>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="vd-section-block">
+          <div class="vd-section-header">
+            <h2 class="vd-section-heading">The Remotes</h2>
+          </div>
+          <div class="vd-item-list" *ngIf="remotes.length">
+            <div class="vd-item-card" *ngFor="let item of remotes">
+              <div class="vd-item-type">{{ item.type }}</div>
+              <img *ngIf="item.products?.imagePath" [src]="imgBaseUrl + item.products.imagePath" alt="{{ item.name }}"
+                onerror="this.src='assets/images/no-image-available.jpg'" class="vd-item-img">
+              <div class="vd-item-info">
+                <div class="vd-item-name">{{ item.name }}</div>
+                <div class="vd-remote-meta" *ngIf="item.fcc_id">FCC: {{ item.fcc_id }}</div>
+                <div class="vd-remote-meta" *ngIf="item.frequency">{{ item.frequency }}</div>
+                <a *ngIf="item.products?.products_id"
+                  [routerLink]="['/product', getFirstProductId(item.products.products_id)]" class="vd-item-price">${{
+                  item.products.least_price | number:'1.2-2' }}</a>
+              </div>
+              <button class="vd-add-btn" *ngIf="item.products?.products_id"
+                (click)="addToCart(item, 'remote'); $event.stopPropagation();">
+                <ion-icon name="cart-outline"></ion-icon>
+              </button>
+            </div>
+          </div>
+          <span class="info-label" *ngIf="!remotes.length">No Remotes Found</span>
+        </div>
+
+        <!-- OBD Location -->
+        <div class="vd-info-card" *ngIf="vehicle.vehicle_info?.OBD_Location?.OBD_Location_Text">
+          <h3 class="vd-section-title">OBD Location</h3>
+          <div class="obd-content">
+            <img *ngIf="vehicle.vehicle_info.OBD_Location.OBD_Location_Image"
+              [src]="vehicle.vehicle_info.OBD_Location.OBD_Location_Image" alt="OBD Location" class="obd-image"
+              onerror="this.style.display='none'">
+            <p class="obd-text">{{ vehicle.vehicle_info.OBD_Location.OBD_Location_Text }}</p>
+          </div>
+        </div>
+
+        <!-- Key Cuttings -->
+        <div class="vd-section-block" *ngIf="keyCuttingData">
+          <div class="vd-section-header">
+            <h2 class="vd-section-heading">Key Cutting Info</h2>
+          </div>
+          <div class="key-cutting-grid">
+            <div class="key-cutting-card" *ngFor="let machine of getEntries(keyCuttingData)">
+              <div class="block-header">
+                <span class="block-name">{{ normalizeKey(machine.key) | uppercase }}</span>
+              </div>
+              <div class="block-details">
+                <div class="basic-info-item" *ngFor="let detail of getEntries(machine.value)">
+                  <span class="info-label">{{ normalizeKey(detail.key) }}</span>
+                  <span class="info-value">{{ getDisplayValue(detail.value) }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Key Programming -->
+        <div class="vd-section-block" *ngIf="keyProgrammingData">
+          <div class="vd-section-header">
+            <h2 class="vd-section-heading">Key Programming Info</h2>
+          </div>
+          <div class="vd-info-list">
+            <div class="info-group" *ngFor="let prog of getEntries(keyProgrammingData); let last = last">
+              <div class="info-block side-by-side">
+                <div class="block-top-row">
+                  <div class="name-col">
+                    <span class="block-name">{{ normalizeKey(prog.key) | uppercase }}</span>
+                  </div>
+                  <div class="details-col">
+                    <div class="basic-info-item small-detail" *ngFor="let detail of getFilteredEntries(prog.value)">
+                      <span class="info-label">{{ normalizeKey(detail.key) | uppercase }}</span>
+                      <span class="info-value">{{ getDisplayValue(detail.value) }}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Community Report Box -->
+                <div class="vd-report-box">
+                  <p class="report-desc">
+                    Over the last 90 days, the following reports have been received by other
+                    <strong>{{ normalizeKey(prog.key) }}</strong> users on the
+                    <strong>{{ getVehicleName() }}</strong>:
+                  </p>
+                  <div class="report-stats">
+                    Working: <span class="stat-num">{{ getWorkingScore(prog.key) }}</span> |
+                    Not Working: <span class="stat-num">{{ getNotWorkingScore(prog.key) }}</span> |
+                    Success Rate: <span class="stat-num">{{ getSuccessRate(prog.key) }}</span>
+                  </div>
+                  <div class="report-actions">
+                    <button class="report-btn" (click)="reportProgrammingResult(prog.key, true)">IT WORKED FOR
+                      ME</button>
+                    <button class="report-btn" (click)="reportProgrammingResult(prog.key, false)">IT DIDN'T WORK FOR
+                      ME</button>
+                  </div>
+                  <a class="view-comments" (click)="viewToolComments(prog.key)">View Comments ({{
+                    getCommentsCount(prog.key) }})</a>
+                </div>
+              </div>
+              <hr class="vd-separator" *ngIf="!last">
+            </div>
+          </div>
+        </div>
+
       </div>
 
-    </div>
+      <!-- ─── TAB: KEYMAKING ─── -->
+      <div class="vd-tab-panel" *ngIf="activeTab === 'keymaking'">
 
-    <!-- ─── TAB: KEYMAKING ─── -->
-    <div class="vd-tab-panel" *ngIf="activeTab === 'keymaking'">
-
-      <!-- Mechanical Keys -->
+        <!-- Mechanical Keys -->
 
 
-      <!-- Transponder Keys -->
-      <!-- <div class="vd-section-block" *ngIf="transponderKeys.length">
+        <!-- Transponder Keys -->
+        <!-- <div class="vd-section-block" *ngIf="transponderKeys.length">
         <div class="vd-section-header">
           <h2 class="vd-section-heading">Transponder Keys</h2>
         </div>
@@ -284,115 +289,219 @@
         </div>
       </div> -->
 
-      <!-- Keymaking Methods -->
-      <div class="vd-section-block" *ngIf="keymakingMethods.length; else noKeymaking">
-        <div class="vd-section-header">
-          <h2 class="vd-section-heading">Key Making Methods</h2>
-        </div>
-        <div class="vd-method-list">
-          <div class="vd-method-card" *ngFor="let m of keymakingMethods">
-            <div class="vd-method-header">
-              <ion-icon name="key-outline"></ion-icon>
-              <h3>{{ m.title }}</h3>
-            </div>
-            <p class="vd-method-body">{{ m.content }}</p>
-            <div class="vd-method-meta" *ngIf="m.date">{{ m.date | date:'mediumDate' }}</div>
+        <!-- Keymaking Methods -->
+        <div class="vd-section-block" *ngIf="keymakingMethods.length; else noKeymaking">
+          <div class="vd-section-header">
+            <h2 class="vd-section-heading">Key Making Methods</h2>
           </div>
+          <div class="vd-method-list">
+            <div class="vd-method-card" *ngFor="let m of keymakingMethods">
+              <div class="vd-method-header">
+                <ion-icon name="key-outline"></ion-icon>
+                <h3>{{ m.title }}</h3>
+              </div>
+              <p class="vd-method-body">{{ m.content }}</p>
+              <div class="vd-method-meta" *ngIf="m.date">{{ m.date | date:'mediumDate' }}</div>
+            </div>
+          </div>
+        </div>
+
+        <ng-template #noKeymaking>
+          <div class="vd-empty-state">
+            <ion-icon name="key-outline"></ion-icon>
+            <p>No key making methods found for this vehicle.</p>
+          </div>
+        </ng-template>
+
+      </div>
+
+      <!-- ─── TAB: TIPS & TRICKS ─── -->
+      <div class="vd-tab-panel" *ngIf="activeTab === 'tips'">
+
+
+        <!-- Tips by Category -->
+        <ng-container *ngIf="tipCategories && tipCategories.length > 0; else noTips">
+          <ng-container *ngFor="let category of tipCategories">
+            <div class="vd-section-block" *ngIf="getTipsByCategory(category).length">
+              <div class="vd-section-header">
+                <h2 class="vd-section-heading">{{ category }}</h2>
+              </div>
+              <div class="vd-method-list">
+                <div class="vd-method-card" *ngFor="let tip of getTipsByCategory(category)">
+                  <div class="vd-method-header">
+                    <ion-icon [name]="getCategoryIcon(category)"></ion-icon>
+                    <h3>{{ tip.title }}</h3>
+                  </div>
+                  <p class="vd-method-body" *ngIf="tip.methodDescription">{{ tip.methodDescription }}</p>
+                  <!-- YouTube embed -->
+                  <div class="vd-video-wrap" *ngIf="tip.video">
+                    <iframe [src]="getSafeUrl(tip.video)" frameborder="0" allowfullscreen loading="lazy"></iframe>
+                  </div>
+                  <div class="vd-method-meta" *ngIf="tip.date">{{ tip.date | date:'mediumDate' }}</div>
+                </div>
+              </div>
+            </div>
+          </ng-container>
+        </ng-container>
+
+        <ng-template #noTips>
+          <div class="vd-empty-state">
+            <ion-icon name="alert-circle-outline"></ion-icon>
+            <p>No tips or tricks found for this vehicle.</p>
+          </div>
+        </ng-template>
+
+      </div>
+
+      <!-- ─── TAB: PARTS ─── -->
+      <div class="vd-tab-panel" *ngIf="activeTab === 'parts'">
+        <div class="vd-section-block">
+          <div class="vd-section-header">
+            <h2 class="vd-section-heading">Vehicle Parts</h2>
+          </div>
+
+          <ng-container *ngIf="vehicleParts && vehicleParts.length && vehicleParts[0].name; else noParts">
+            <div class="vd-parts-grid">
+              <div class="vd-part-card" *ngFor="let part of vehicleParts"
+                [routerLink]="part.itemID ? ['/product', part.itemID] : null">
+                <img [src]="part.image || 'assets/images/no-image-available.jpg'" [alt]="part.name"
+                  onerror="this.src='assets/images/no-image-available.jpg'" class="vd-part-img">
+                <div class="vd-part-info">
+                  <div class="vd-part-name">{{ part.name }}</div>
+                  <div class="d-flex align-items-center justify-content-between mt-2 mb-2">
+                    <div class="vd-part-price" *ngIf="part.price" style="margin: 0;">${{ part.price | number:'1.2-2' }}
+                    </div>
+                    <button class="vd-part-cart-btn" *ngIf="part.itemID"
+                      (click)="addToCart(part, 'part'); $event.stopPropagation();">
+                      <ion-icon name="cart-outline"></ion-icon>
+                    </button>
+                  </div>
+                  <div class="vd-part-stock" [class.in-stock]="part.inStock">
+                    {{ part.inStock ? 'In Stock' : 'Check Availability' }}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </ng-container>
+          <ng-template #noParts>
+            <div class="vd-empty-state">
+              <ion-icon name="construct-outline"></ion-icon>
+              <p>No parts listed for this vehicle.</p>
+            </div>
+          </ng-template>
         </div>
       </div>
-      
-      <ng-template #noKeymaking>
-        <div class="vd-empty-state">
-          <ion-icon name="key-outline"></ion-icon>
-          <p>No key making methods found for this vehicle.</p>
-        </div>
-      </ng-template>
 
+    </ng-container>
+
+    <!-- Empty state -->
+    <div class="vd-empty-state" *ngIf="!vehicle">
+      <ion-icon name="car-outline"></ion-icon>
+      <p>No vehicle data available.</p>
     </div>
 
-    <!-- ─── TAB: TIPS & TRICKS ─── -->
-    <div class="vd-tab-panel" *ngIf="activeTab === 'tips'">
+  </div>
+  <app-footer></app-footer>
 
-
-      <!-- Tips by Category -->
-      <ng-container *ngIf="tipCategories && tipCategories.length > 0; else noTips">
-        <ng-container *ngFor="let category of tipCategories">
-          <div class="vd-section-block" *ngIf="getTipsByCategory(category).length">
-            <div class="vd-section-header">
-              <h2 class="vd-section-heading">{{ category }}</h2>
-            </div>
-            <div class="vd-method-list">
-              <div class="vd-method-card" *ngFor="let tip of getTipsByCategory(category)">
-                <div class="vd-method-header">
-                  <ion-icon [name]="getCategoryIcon(category)"></ion-icon>
-                  <h3>{{ tip.title }}</h3>
-                </div>
-                <p class="vd-method-body" *ngIf="tip.methodDescription">{{ tip.methodDescription }}</p>
-                <!-- YouTube embed -->
-                <div class="vd-video-wrap" *ngIf="tip.video">
-                  <iframe [src]="getSafeUrl(tip.video)" frameborder="0" allowfullscreen loading="lazy"></iframe>
-                </div>
-                <div class="vd-method-meta" *ngIf="tip.date">{{ tip.date | date:'mediumDate' }}</div>
-              </div>
-            </div>
-          </div>
-        </ng-container>
-      </ng-container>
-
-      <ng-template #noTips>
-        <div class="vd-empty-state">
-          <ion-icon name="alert-circle-outline"></ion-icon>
-          <p>No tips or tricks found for this vehicle.</p>
+  <!-- Comments Modal -->
+  <div class="comments-modal-overlay" *ngIf="isCommentsModalOpen" (click)="closeCommentsModal()">
+    <div class="comments-modal-container" (click)="$event.stopPropagation()">
+      <div class="comments-modal-header">
+        <div class="header-left">
+          <button class="modal-back-btn" (click)="closeCommentsModal()">
+            <ion-icon name="chevron-back-outline"></ion-icon>
+          </button>
+          <span class="modal-title">COMMENTS</span>
         </div>
-      </ng-template>
+        <button class="modal-close-btn" (click)="closeCommentsModal()">
+          <ion-icon name="close-outline"></ion-icon>
+        </button>
+      </div>
+      <div class="comments-modal-content">
+        <p class="modal-description">
+          Below you will find all of the feedback from the last 90 days from users trying to program a key to a
+          <strong>{{ getVehicleYearsRange() + ' ' + selectedMake + ' ' + selectedModel | titlecase }}</strong> with the
+          <strong>{{ normalizeKey(selectedTool) }}</strong>.
+        </p>
 
-    </div>
-
-    <!-- ─── TAB: PARTS ─── -->
-    <div class="vd-tab-panel" *ngIf="activeTab === 'parts'">
-      <div class="vd-section-block">
-        <div class="vd-section-header">
-          <h2 class="vd-section-heading">Vehicle Parts</h2>
-        </div>
-
-        <ng-container *ngIf="vehicleParts && vehicleParts.length && vehicleParts[0].name; else noParts">
-          <div class="vd-parts-grid">
-            <div class="vd-part-card" *ngFor="let part of vehicleParts"
-              [routerLink]="part.itemID ? ['/product', part.itemID] : null">
-            <img [src]="part.image || 'assets/images/no-image-available.jpg'" [alt]="part.name"
-              onerror="this.src='assets/images/no-image-available.jpg'" class="vd-part-img">
-              <div class="vd-part-info">
-                <div class="vd-part-name">{{ part.name }}</div>
-                <div class="d-flex align-items-center justify-content-between mt-2 mb-2">
-                  <div class="vd-part-price" *ngIf="part.price" style="margin: 0;">${{ part.price | number:'1.2-2' }}</div>
-                  <button class="vd-part-cart-btn" *ngIf="part.itemID" (click)="addToCart(part, 'part'); $event.stopPropagation();">
-                    <ion-icon name="cart-outline"></ion-icon>
-                  </button>
-                </div>
-                <div class="vd-part-stock" [class.in-stock]="part.inStock">
-                  {{ part.inStock ? 'In Stock' : 'Check Availability' }}
-                </div>
-              </div>
+        <!-- List of comments -->
+        <div class="comments-list" *ngIf="getSelectedToolComments().length > 0; else noComments">
+          <div class="comment-item" *ngFor="let c of getSelectedToolComments()">
+            <div class="comment-header">
+              <span class="comment-username">{{ c.userName || 'Anonymous' }}</span>
+              <span class="comment-date">{{ c.time | date:'mediumDate' }}</span>
             </div>
+            <div class="comment-body">
+              "{{ c.comment }}"
+            </div>
+            <!-- <div class="comment-footer">
+              <span class="result-badge" [class.working]="c.result === 'working'" [class.not-working]="c.result !== 'working'">
+                {{ c.result === 'working' ? 'Working' : 'Not Working' }}
+              </span>
+            </div> -->
           </div>
-        </ng-container>
-        <ng-template #noParts>
-          <div class="vd-empty-state">
-            <ion-icon name="construct-outline"></ion-icon>
-            <p>No parts listed for this vehicle.</p>
+        </div>
+        <ng-template #noComments>
+          <div class="no-comments-state">
+            <p>No feedback comments found for this programmer.</p>
           </div>
         </ng-template>
       </div>
     </div>
-
-  </ng-container>
-
-  <!-- Empty state -->
-  <div class="vd-empty-state" *ngIf="!vehicle">
-    <ion-icon name="car-outline"></ion-icon>
-    <p>No vehicle data available.</p>
   </div>
 
-</div>
-<app-footer></app-footer>
+  <!-- Add Comment Modal -->
+  <div class="comments-modal-overlay" *ngIf="isAddCommentModalOpen" (click)="closeAddCommentModal()">
+    <div class="comments-modal-container add-comment-container" (click)="$event.stopPropagation()">
+      <div class="comments-modal-header">
+        <div class="header-left">
+          <button class="modal-back-btn" (click)="closeAddCommentModal()">
+            <ion-icon name="chevron-back-outline"></ion-icon>
+          </button>
+          <span class="modal-title">{{ addCommentResult ? 'WHAT WENT RIGHT?' : 'WHAT WENT WRONG?' }}</span>
+        </div>
+        <button class="modal-close-btn" (click)="closeAddCommentModal()">
+          <ion-icon name="close-outline"></ion-icon>
+        </button>
+      </div>
+      <div class="comments-modal-content add-comment-content">
+        <div class="rating-info-grid">
+          <div class="rating-info-row">
+            <span class="info-label">Key Type:</span>
+            <select class="key-type-select" [(ngModel)]="selectedKeyType">
+              <option *ngFor="let kt of keyTypes" [value]="kt">{{ kt }}</option>
+            </select>
+          </div>
+          <div class="rating-info-row">
+            <span class="info-label">Result:</span>
+            <span class="info-value font-weight-bold">{{ addCommentResult ? 'It Worked For Me' : "It Didn't Work For Me"
+              }}</span>
+          </div>
+          <div class="rating-info-row">
+            <span class="info-label">Vehicle:</span>
+            <span class="info-value font-weight-bold">{{ selectedMake + ' ' + selectedModel | titlecase }} ({{
+              getVehicleYearsRange() }})</span>
+          </div>
+          <div class="rating-info-row">
+            <span class="info-label">Programmer:</span>
+            <span class="info-value font-weight-bold">{{ normalizeKey(addCommentTool) }}</span>
+          </div>
+        </div>
+
+        <p class="help-text">
+          Please help us by providing any information below that could assist the manufacturer or other users.
+        </p>
+
+        <textarea class="comment-textarea" [(ngModel)]="commentText" placeholder=""></textarea>
+
+        <div class="action-buttons-row">
+          <button class="action-btn skip-btn" (click)="submitRating(true)">SKIP</button>
+          <button class="action-btn submit-btn" (click)="submitRating(false)"
+            [disabled]="!commentText.trim()">SUBMIT</button>
+          <button class="action-btn cancel-btn" (click)="closeAddCommentModal()">CANCEL</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
 </ion-content>

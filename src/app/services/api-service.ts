@@ -445,6 +445,18 @@ export class ApiService {
     return this.request('POST', 'cart/delete', data, skipLoader);
   }
 
+  getCartInvoice(data: any) {
+    return this.request('POST', 'cart/invoice', data);
+  }
+
+  checkoutCart(data: any) {
+    return this.request('POST', 'cart/checkout', data);
+  }
+
+  sendOrderTrackingSms(data: any) {
+    return this.request('POST', 'order/tracking-sms', data);
+  }
+
   // =========================
   // FIREBASE APIs (AUTHENTICATED)
   // =========================
@@ -461,6 +473,28 @@ export class ApiService {
       environment.api_firebase_url +
       'vehicle1/' + vehicleId + '.json'
     );
+  }
+
+  getVehicleKeyProgramming(vehicleId: string) {
+    return this.http.get(
+      environment.api_firebase_url +
+      'vehicle1/' + vehicleId + '/vehicle_info/key_programming.json'
+    );
+  }
+
+  getVehicleKeyProgrammingRating(vehicleId: string) {
+    return this.http.get(
+      environment.api_firebase_url +
+      'keyprogramming_ratings/' + vehicleId + '.json'
+    );
+  }
+
+  addVehicleKeyProgrammingRating(vehicleId: string, ratingData: any): Observable<any> {
+    const programmer = ratingData?.programmer;
+    const ratingsRef = ref(this.db, `keyprogramming_ratings/${vehicleId}/${programmer}`);
+    const newRatingRef = push(ratingsRef);
+    ratingData.key = newRatingRef.key;
+    return from(set(newRatingRef, ratingData));
   }
 
   getKeyBlanks() {
