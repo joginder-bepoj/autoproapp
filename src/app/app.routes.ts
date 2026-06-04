@@ -43,11 +43,6 @@ export const routes: Routes = [
     loadComponent: () => import('./components/credit-cards/credit-cards.component').then((m) => m.CreditCardsComponent),
   },
   {
-    path: 'add-credit-card',
-    canActivate: [authGuard],
-    loadComponent: () => import('./components/add-credit-card/add-credit-card.component').then((m) => m.AddCreditCardComponent),
-  },
-  {
     path: 'feedback',
     canActivate: [authGuard],
     loadComponent: () => import('./shared/feedback/feedback.component').then((m) => m.FeedbackComponent),

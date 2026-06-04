@@ -74,7 +74,6 @@ export class ShoppingCartComponent implements OnInit, OnDestroy {
         return newItem;
       });
 
-      // this.recalculateLocally();
     });
     this.cartUpdateSubject.pipe(
       debounceTime(500)

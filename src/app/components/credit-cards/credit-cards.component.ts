@@ -8,6 +8,7 @@ import { UtilService } from 'src/app/services/util.service';
 import { FooterComponent } from 'src/app/shared/footer/footer.component';
 import { ApiService } from 'src/app/services/api-service';
 import { forkJoin } from 'rxjs';
+import { AddCreditCardModalComponent } from '../add-credit-card-modal/add-credit-card-modal.component';
 
 interface SavedCard {
   id: string | number;
@@ -33,10 +34,12 @@ interface SavedCard {
   templateUrl: './credit-cards.component.html',
   styleUrls: ['./credit-cards.component.scss'],
   standalone: true,
-  imports: [CommonModule, IonContent, IonIcon, FooterComponent],
+  imports: [CommonModule, IonContent, IonIcon, FooterComponent, AddCreditCardModalComponent],
 })
 export class CreditCardsComponent implements OnInit {
   cards: SavedCard[] = [];
+  user: any = null;
+  showAddCardModal = false;
 
   constructor(
     private router: Router,
@@ -59,6 +62,7 @@ export class CreditCardsComponent implements OnInit {
       next: ({ cardsRes, profileRes }: any) => {
         const cardsPayload = cardsRes?.data ?? cardsRes;
         const profile = profileRes?.data ?? profileRes;
+        this.user = profile;
 
         const list =
           cardsPayload?.customerSavedCards ??
@@ -189,7 +193,16 @@ export class CreditCardsComponent implements OnInit {
   }
 
   addNewCard() {
-    this.router.navigate(['/add-credit-card']);
+    this.showAddCardModal = true;
+  }
+
+  onAddCardCancel() {
+    this.showAddCardModal = false;
+  }
+
+  onCardSaved() {
+    this.showAddCardModal = false;
+    this.fetchCards();
   }
 
   back() {

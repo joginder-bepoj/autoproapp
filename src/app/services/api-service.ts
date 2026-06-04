@@ -169,8 +169,20 @@ export class ApiService {
     return this.request('GET', 'customer/credit-card');
   }
 
+  getCustomerStoreCredit() {
+    return this.request('GET', 'customer/store-credit');
+  }
+
   addCustomerCreditCard(data: any) {
     return this.request('POST', 'customer/credit-card/add', data);
+  }
+
+  addCustomerAddress(data: any) {
+    return this.request('POST', 'customer/address/add', data);
+  }
+
+  deleteCustomerAddress(addressId: string | number) {
+    return this.request('POST', `customer/address/delete/${addressId}`);
   }
 
   updateCustomerPoints(points: number, reason: string) {
@@ -449,12 +461,29 @@ export class ApiService {
     return this.request('POST', 'cart/invoice', data);
   }
 
+  // Updates shipping method / store credit on the active cart
+  postCart(data: any) {
+    return this.request('POST', 'cart/post', data);
+  }
+
   checkoutCart(data: any) {
     return this.request('POST', 'cart/checkout', data);
   }
 
   sendOrderTrackingSms(data: any) {
     return this.request('POST', 'order/tracking-sms', data);
+  }
+
+  getShippingQuotes(id: any) {
+    return this.request('GET', `cart/quote/${id}`);
+  }
+
+  getPaymentMethods(addressId: any) {
+    return this.request('GET', `cart/payment/${addressId}`);
+  }
+
+  getZones() {
+    return this.request('GET', 'zones');
   }
 
   // =========================

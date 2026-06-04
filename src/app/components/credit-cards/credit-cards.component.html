@@ -57,5 +57,13 @@
     </div>
   </div>
 
+  <app-add-credit-card-modal
+    *ngIf="showAddCardModal"
+    [addresses]="user?.addresses || []"
+    [selectedAddressId]="user?.defaultShippingAddressID"
+    (saved)="onCardSaved()"
+    (cancel)="onAddCardCancel()"
+  ></app-add-credit-card-modal>
+
   <app-footer></app-footer>
 </ion-content>

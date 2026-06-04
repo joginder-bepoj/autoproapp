@@ -5,7 +5,7 @@
     <header class="checkout-header">
       <div>
         <h1>Checkout</h1>
-        <p>Confirm shipping, payment, and order details.</p>
+        <p>Choose your address, shipping method, and payment option.</p>
       </div>
       <ion-button fill="outline" routerLink="/cart">
         <ion-icon slot="start" name="cart-outline"></ion-icon>
@@ -13,178 +13,231 @@
       </ion-button>
     </header>
 
-    <div class="checkout-steps">
-      <button class="step-button" type="button" *ngFor="let step of steps; let i = index"
-        [class.active]="activeStep === step.key" [class.complete]="i < stepIndex" [disabled]="!canOpenStep(step.key)"
-        (click)="setStep(step.key)">
-        <span class="step-icon">
-          <ion-icon [name]="i < stepIndex ? 'checkmark-circle-outline' : step.icon"></ion-icon>
-        </span>
-        <span>{{ step.label }}</span>
-      </button>
-    </div>
-
-    <div class="checkout-layout" *ngIf="items.length > 0; else emptyCart">
+    <div class="checkout-layout">
       <main class="checkout-main">
-        <section class="checkout-panel" *ngIf="activeStep === 'shipping'">
+        <div class="checkout-steps">
+          <button type="button" class="step-tab" [class.active]="currentStep === 1" [class.done]="selectedAddressId" (click)="goToStep(1)">
+            <span>1</span>
+            Address
+          </button>
+          <button type="button" class="step-tab" [class.active]="currentStep === 2" [class.done]="selectedShippingOption" (click)="goToStep(2)">
+            <span>2</span>
+            Shipping
+          </button>
+          <button type="button" class="step-tab" [class.active]="currentStep === 3" [class.done]="canPlaceOrder()" (click)="goToStep(3)">
+            <span>3</span>
+            Payment
+          </button>
+        </div>
+
+        <section class="checkout-panel" *ngIf="currentStep === 1">
           <div class="panel-header">
             <h2>Shipping Address</h2>
-            <button type="button" class="text-action" (click)="addAddress()">Add Address</button>
+            <button type="button" class="text-action" (click)="openChangeAddressModal()">Change Address</button>
           </div>
 
-          <div class="choice-list" *ngIf="addresses.length > 0; else noAddress">
-            <label class="choice-card" *ngFor="let address of addresses; trackBy: trackById">
-              <input type="radio" name="shippingAddress" [value]="address.id" [(ngModel)]="selectedAddressId">
-              <span class="choice-body">
-                <strong>{{ address.name }}</strong>
-                <span *ngIf="address.company">{{ address.company }}</span>
-                <span>{{ address.addressFirstLine }}</span>
-                <span *ngIf="address.addressSecondLine">{{ address.addressSecondLine }}</span>
-                <span>{{ address.city }} {{ address.state }} {{ address.postalCode }}</span>
-                <span *ngIf="address.phoneNumber">{{ address.phoneNumber }}</span>
-              </span>
-            </label>
+          <div class="address-card" *ngIf="defaultShippingAddress; else noSelectedAddress">
+            <strong>{{ user?.firstName }} {{ user?.lastName }}</strong>
+            <p *ngIf="defaultShippingAddress?.company">{{ defaultShippingAddress?.company }}</p>
+            <p>{{ defaultShippingAddress?.street || defaultShippingAddress?.addressFirstLine }}</p>
+            <p>
+              {{ defaultShippingAddress?.city }}<span *ngIf="defaultShippingAddress?.city && defaultShippingAddress?.state">, </span>
+              {{ defaultShippingAddress?.state }} {{ defaultShippingAddress?.postalCode }}
+            </p>
+            <p>{{ defaultShippingAddress?.country }}</p>
           </div>
 
-          <ng-template #noAddress>
-            <div class="empty-panel">
-              <p>No shipping address found.</p>
-              <ion-button (click)="addAddress()">Add Shipping Address</ion-button>
-            </div>
+          <ng-template #noSelectedAddress>
+            <div class="empty-panel">Select a shipping address to continue.</div>
           </ng-template>
+
+          <button type="button" class="btn-primary mt-4" [disabled]="!selectedAddressId" (click)="goToStep(2)">
+            Continue To Shipping
+          </button>
         </section>
 
-        <section class="checkout-panel" *ngIf="activeStep === 'payment'">
+        <section class="checkout-panel" *ngIf="currentStep === 2">
           <div class="panel-header">
-            <h2>Payment Method</h2>
-            <button type="button" class="text-action" (click)="addCard()">Add Card</button>
+            <h2>Shipping Method</h2>
+            <button type="button" class="text-action" (click)="goToStep(1)">Edit Address</button>
           </div>
 
-          <div class="choice-list" *ngIf="cards.length > 0; else noCard">
-            <label class="choice-card" *ngFor="let card of cards; trackBy: trackById">
-              <input type="radio" name="paymentCard" [value]="card.id" [(ngModel)]="selectedCardId">
-              <span class="choice-body">
-                <strong>{{ card.brand || 'Saved Card' }}</strong>
-                <span>Ending in {{ card.last4 || '----' }}</span>
-                <span *ngIf="card.expDisplay">Expires {{ card.expDisplay }}</span>
-              </span>
-            </label>
-          </div>
+          <div class="shipping-quotes" *ngIf="shippingQuotes?.shippingRates?.length; else noShippingRates">
+            <div class="shipping-group" *ngFor="let group of shippingQuotes.shippingRates">
+              <h3 class="group-title">{{ group.courierName }}</h3>
 
-          <ng-template #noCard>
-            <div class="empty-panel">
-              <p>No saved payment method found.</p>
-              <ion-button (click)="addCard()">Add Payment Method</ion-button>
+              <label class="quote-row" *ngFor="let rate of group.rates" [class.selected]="isSelected(group, rate)">
+                <input
+                  type="radio"
+                  name="shippingMethod"
+                  [checked]="isSelected(group, rate)"
+                  (change)="selectShipping(group, rate)"
+                />
+                <span class="quote-name">{{ rate.methodName }}</span>
+                <span class="quote-price">{{ rate.price === 0 ? 'Free' : ('$' + rate.price) }}</span>
+              </label>
             </div>
+          </div>
+
+          <ng-template #noShippingRates>
+            <div class="empty-panel">Shipping methods will appear after quotes load.</div>
           </ng-template>
+
+          <div class="step-actions">
+            <button type="button" class="btn-secondary" (click)="goToStep(1)">Back</button>
+            <button type="button" class="btn-primary" [disabled]="!selectedShippingOption" (click)="goToStep(3)">
+              Continue To Payment
+            </button>
+          </div>
         </section>
 
-        <section class="checkout-panel" *ngIf="activeStep === 'review'">
+        <section class="checkout-panel" *ngIf="currentStep === 3">
           <div class="panel-header">
-            <h2>Review Order</h2>
+            <h2>{{ getPaymentLabel() ? ('Paying with ' + getPaymentLabel()) : 'Payment Method' }}</h2>
+            <button type="button" class="text-action" (click)="openAddCardModal()">Add Card</button>
           </div>
 
-          <div class="review-grid">
-            <div class="review-box">
-              <span class="review-label">Ship To</span>
-              <strong>{{ selectedAddress?.name }}</strong>
-              <p>{{ selectedAddress?.addressFirstLine }}</p>
-              <p>{{ selectedAddress?.city }} {{ selectedAddress?.state }} {{ selectedAddress?.postalCode }}</p>
-              <button type="button" class="text-action" (click)="setStep('shipping')">Change</button>
+          <div class="payment-section">
+            <h3>Your Credit Cards</h3>
+            <div class="choice-list" *ngIf="savedCards.length; else noCards">
+              <label class="choice-card saved-card" *ngFor="let card of savedCards; trackBy: trackByCardId" [class.selected]="isCardSelected(card)">
+                <input type="radio" name="paymentMethod" [checked]="isCardSelected(card)" (change)="selectCard(card)" />
+                <span class="choice-body">
+                  <strong>{{ getCardLabel(card) }}</strong>
+                  <span *ngIf="card.expDisplay">Expires {{ card.expDisplay }}</span>
+                </span>
+                <span class="default-badge" *ngIf="card.isDefault">Default</span>
+              </label>
             </div>
 
-            <div class="review-box">
-              <span class="review-label">Payment</span>
-              <strong>{{ selectedCard?.brand || 'Saved Card' }}</strong>
-              <p>Ending in {{ selectedCard?.last4 || '----' }}</p>
-              <button type="button" class="text-action" (click)="setStep('payment')">Change</button>
-            </div>
-          </div>
-
-          <div class="order-items">
-            <div class="order-item" *ngFor="let item of items; trackBy: trackByItemId">
-              <img [src]="getImageBaseUrl() + item.image" [alt]="item.name" onerror="this.src='assets/images/logo.png'">
-              <div>
-                <strong>{{ item.name }}</strong>
-                <span>#{{ item.itemID }} - Qty {{ item.qty || 1 }}</span>
+            <ng-template #noCards>
+              <div class="empty-panel compact">
+                <p>No saved cards yet.</p>
               </div>
-              <b>${{ (item.price * (item.qty || 1)) | number:'1.2-2' }}</b>
+            </ng-template>
+
+            <button type="button" class="add-payment-row" (click)="openAddCardModal()">
+              <span class="add-payment-icon">+</span>
+              <span>Add a credit or debit card</span>
+            </button>
+          </div>
+
+          <div class="payment-section" *ngIf="getFilteredPaymentMethods().length">
+            <h3>Other Payment Methods</h3>
+            <div class="choice-list">
+              <label
+                class="choice-card"
+                *ngFor="let method of getFilteredPaymentMethods(); trackBy: trackByPaymentCode"
+                [class.selected]="isPaymentMethodSelected(method)"
+              >
+                <input
+                  type="radio"
+                  name="paymentMethod"
+                  [checked]="isPaymentMethodSelected(method)"
+                  (change)="selectPaymentMethod(method)"
+                />
+                <span class="choice-body">
+                  <strong>{{ method.paymentName }}</strong>
+                </span>
+              </label>
             </div>
           </div>
 
-          <div class="checkout-options">
-            <label class="input-block">
-              <span>Order Comments</span>
-              <textarea [(ngModel)]="orderComments" rows="3" placeholder="Add notes for this order"></textarea>
-            </label>
+          <div class="payment-section" *ngIf="storeCreditAvailable > 0">
+            <h3>Store Credit</h3>
+            <div class="store-credit-box">
+              <div class="store-credit-summary">
+                <span>Available: ${{ storeCreditAvailable | number:'1.2-2' }}</span>
+                <button type="button" class="text-action" *ngIf="appliedStoreCredit > 0" (click)="removeStoreCredit()">Remove</button>
+              </div>
+              <div class="store-credit-form">
+                <input
+                  class="form-control"
+                  [(ngModel)]="storeCreditAmount"
+                  placeholder="0.00"
+                  inputmode="decimal"
+                />
+                <button type="button" class="btn-secondary" (click)="applyStoreCredit()">Apply</button>
+              </div>
+              <p class="store-credit-applied" *ngIf="appliedStoreCredit > 0">
+                Store Credit Applied: ${{ appliedStoreCredit | number:'1.2-2' }}
+              </p>
+              <p class="store-credit-error" *ngIf="storeCreditError">{{ storeCreditError }}</p>
+            </div>
+          </div>
 
-            <label class="sms-option">
-              <input type="checkbox" [(ngModel)]="notifyBySms">
-              <span>Send order tracking SMS</span>
-            </label>
-
-            <label class="input-block" *ngIf="notifyBySms">
-              <span>Mobile Number</span>
-              <input type="tel" [(ngModel)]="mobileNumber" placeholder="Mobile number">
-            </label>
+          <div class="step-actions">
+            <button type="button" class="btn-secondary" (click)="goToStep(2)">Back</button>
+            <button type="button" class="btn-primary" [disabled]="!canPlaceOrder()" (click)="handleCheckout()">
+              {{ placingOrder ? 'Placing Order...' : 'Place Order' }}
+            </button>
           </div>
         </section>
-
-        <div class="step-actions">
-          <ion-button fill="outline" [disabled]="activeStep === 'shipping'" (click)="previousStep()">
-            <ion-icon slot="start" name="chevron-back-outline"></ion-icon>
-            Back
-          </ion-button>
-
-          <ion-button *ngIf="activeStep !== 'review'" (click)="nextStep()">
-            Continue
-            <ion-icon slot="end" name="chevron-forward-outline"></ion-icon>
-          </ion-button>
-
-          <ion-button *ngIf="activeStep === 'review'" (click)="placeOrder()" [disabled]="isPlacingOrder">
-            {{ isPlacingOrder ? 'Placing Order...' : 'Place Order' }}
-            <ion-icon slot="end" name="lock-closed-outline"></ion-icon>
-          </ion-button>
-        </div>
       </main>
 
       <aside class="summary-panel">
-        <h2>Order Summary</h2>
-        <div class="summary-row">
-          <span>Items</span>
-          <strong>{{ items.length }}</strong>
-        </div>
+        <h2>Order Total</h2>
         <div class="summary-row">
           <span>Subtotal</span>
-          <strong>${{ (invoice?.subTotal ?? cart?.subTotal ?? 0) | number:'1.2-2' }}</strong>
+          <strong>${{ cartItems?.subTotal || 0 }}</strong>
         </div>
-        <div class="summary-row muted">
+        <div class="summary-row">
           <span>Shipping</span>
-          <strong>{{ invoice?.shipping !== undefined ? ('$' + (invoice.shipping | number:'1.2-2')) : 'Calculated later'
-            }}</strong>
+          <strong [class.free-shipping]="getSelectedShippingCost() === 0">
+            {{ getSelectedShippingCost() === 0 ? 'Free' : ('$' + getSelectedShippingCost()) }}
+          </strong>
         </div>
-        <div class="summary-row muted" *ngIf="invoice?.coupon?.couponDisco || invoice?.couponDiscount">
-          <span>Coupon</span>
-          <strong>-${{ (invoice?.coupon?.couponDisco ?? invoice?.couponDiscount ?? 0) | number:'1.2-2' }}</strong>
-        </div>
-        <div class="summary-row muted" *ngIf="invoice?.tax !== undefined">
-          <span>Tax</span>
-          <strong>${{ (invoice?.tax || 0) | number:'1.2-2' }}</strong>
+        <div class="summary-row" *ngIf="appliedStoreCredit > 0">
+          <span>Store Credit</span>
+          <strong>-${{ appliedStoreCredit | number:'1.2-2' }}</strong>
         </div>
         <div class="summary-total">
           <span>Total</span>
-          <strong>${{ (invoice?.total ?? cart?.subTotal ?? 0) | number:'1.2-2' }}</strong>
+          <strong>${{ getOrderTotal() | number:'1.2-2' }}</strong>
         </div>
       </aside>
     </div>
 
-    <ng-template #emptyCart>
-      <div class="empty-cart">
-        <ion-icon name="cart-outline"></ion-icon>
-        <h2>Your cart is empty</h2>
-        <ion-button routerLink="/home">Continue Shopping</ion-button>
+    <div class="modal-overlay" *ngIf="showChangeAddressModal">
+      <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="change-address-title">
+        <div class="modal-header">
+          <h3 id="change-address-title">Change Shipping Address</h3>
+          <ion-button fill="clear" (click)="onChangeAddressCancel()" aria-label="Close change address modal">
+            <ion-icon name="close-outline"></ion-icon>
+          </ion-button>
+        </div>
+
+        <div class="modal-body">
+          <div *ngIf="user?.addresses?.length; else noAddresses">
+            <div
+              class="address-row"
+              *ngFor="let address of user?.addresses"
+              [class.selected]="selectedAddressId === (address.addressID ?? address.addressId ?? address.id)"
+              (click)="changeAddress(address.addressID ?? address.addressId ?? address.id)"
+            >
+              <div class="address-line">{{ address?.company }}</div>
+              <div class="address-line">{{ address?.street || address?.addressFirstLine }}</div>
+              <div class="address-line">{{ address?.city }}, {{ address?.state }} {{ address?.postalCode }}</div>
+              <div class="address-line">{{ address?.country }}</div>
+            </div>
+          </div>
+
+          <ng-template #noAddresses>
+            <div class="empty-state">
+              <p>No saved addresses found.</p>
+            </div>
+          </ng-template>
+        </div>
       </div>
-    </ng-template>
+    </div>
+
+    <app-add-credit-card-modal
+      *ngIf="showAddCardModal"
+      [addresses]="user?.addresses || []"
+      [selectedAddressId]="selectedAddressId"
+      (saved)="onCardSaved()"
+      (cancel)="onAddCardCancel()"
+    ></app-add-credit-card-modal>
   </div>
 
   <app-footer></app-footer>

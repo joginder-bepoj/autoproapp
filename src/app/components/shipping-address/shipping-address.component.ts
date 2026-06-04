@@ -1,13 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-import { IonButton, IonContent, IonIcon } from '@ionic/angular/standalone';
+import { IonContent, IonIcon } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { locationOutline, saveOutline, closeOutline, chevronForwardOutline } from 'ionicons/icons';
 import { ApiService } from 'src/app/services/api-service';
 import { UtilService } from 'src/app/services/util.service';
 import { FooterComponent } from 'src/app/shared/footer/footer.component';
 import { BreadcrumbsComponent } from 'src/app/shared/breadcrumbs/breadcrumbs.component';
+import { AddAddressModalComponent } from '../add-address-modal/add-address-modal.component';
 
 type CountryCode = 'usa' | 'canada' | string;
 
@@ -35,14 +36,15 @@ interface ShippingAddress {
     CommonModule,
     IonContent,
     IonIcon,
-    IonButton,
     FooterComponent,
     BreadcrumbsComponent
+    ,AddAddressModalComponent
   ]
 })
 export class ShippingAddressComponent implements OnInit {
   addresses: ShippingAddress[] = [];
   selectedAddressId: string | number | null = null;
+  showAddressModal = false;
 
   constructor(
     private apiService: ApiService,
@@ -138,11 +140,33 @@ export class ShippingAddressComponent implements OnInit {
   }
 
   addNewAddress() {
-    this.utilService.showToast('Add address coming soon', 'primary');
+    this.showAddressModal = true;
   }
 
   editAddress(a: ShippingAddress) {
     const label = a.company || this.getFullName(a) || 'this address';
     this.utilService.showToast(`Edit ${label} coming soon`, 'primary');
+  }
+
+  onAddressSaved(data: any) {
+    this.showAddressModal = false;
+    this.utilService.showLoader();
+    this.apiService.getCustomerProfile().subscribe({
+      next: (res: any) => {
+        const profile = res?.data ?? res;
+        if (profile) {
+          this.utilService.setUserProfile(profile);
+          this.hydrateAddressesFromProfile(profile);
+        }
+        this.utilService.hideLoader();
+      },
+      error: () => {
+        this.utilService.hideLoader();
+      }
+    });
+  }
+
+  onAddressCancel() {
+    this.showAddressModal = false;
   }
 }

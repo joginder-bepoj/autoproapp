@@ -3,38 +3,12 @@ import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { IonButton, IonContent, IonIcon } from '@ionic/angular/standalone';
-import { addIcons } from 'ionicons';
-import {
-  cardOutline,
-  cartOutline,
-  checkmarkCircleOutline,
-  chevronBackOutline,
-  chevronForwardOutline,
-  locationOutline,
-  lockClosedOutline,
-  receiptOutline
-} from 'ionicons/icons';
-import { forkJoin, of, switchMap } from 'rxjs';
+import { firstValueFrom, forkJoin } from 'rxjs';
 import { ApiService } from 'src/app/services/api-service';
 import { UtilService } from 'src/app/services/util.service';
+import { AddCreditCardModalComponent } from '../add-credit-card-modal/add-credit-card-modal.component';
 import { BreadcrumbsComponent } from 'src/app/shared/breadcrumbs/breadcrumbs.component';
 import { FooterComponent } from 'src/app/shared/footer/footer.component';
-
-type CheckoutStep = 'shipping' | 'payment' | 'review';
-
-interface CheckoutAddress {
-  id: string | number;
-  name: string;
-  company?: string;
-  addressFirstLine?: string;
-  addressSecondLine?: string;
-  city?: string;
-  state?: string;
-  postalCode?: string;
-  country?: string;
-  phoneNumber?: string;
-  isDefault?: boolean;
-}
 
 interface CheckoutCard {
   id: string | number;
@@ -44,6 +18,12 @@ interface CheckoutCard {
   expDisplay?: string;
   isDefault?: boolean;
   paymentCode?: string;
+}
+
+interface CheckoutPaymentMethod {
+  paymentCode?: string;
+  paymentName?: string;
+  paymentMethod?: string;
 }
 
 @Component({
@@ -58,290 +38,737 @@ interface CheckoutCard {
     IonContent,
     IonIcon,
     IonButton,
+    AddCreditCardModalComponent,
     BreadcrumbsComponent,
-    FooterComponent
-  ]
+    FooterComponent,
+  ],
 })
 export class CheckoutComponent implements OnInit {
-  cart: any = null;
-  items: any[] = [];
-  addresses: CheckoutAddress[] = [];
-  cards: CheckoutCard[] = [];
-  selectedAddressId: string | number | null = null;
-  selectedCardId: string | number | null = null;
-  activeStep: CheckoutStep = 'shipping';
-  invoice: any = null;
-  orderComments = '';
-  notifyBySms = false;
-  mobileNumber = '';
-  isPlacingOrder = false;
-
-  readonly steps: Array<{ key: CheckoutStep; label: string; icon: string }> = [
-    { key: 'shipping', label: 'Shipping', icon: 'location-outline' },
-    { key: 'payment', label: 'Payment', icon: 'card-outline' },
-    { key: 'review', label: 'Review', icon: 'receipt-outline' }
-  ];
-
   constructor(
     private apiService: ApiService,
     private utilService: UtilService,
     private router: Router
-  ) {
-    addIcons({
-      cardOutline,
-      cartOutline,
-      checkmarkCircleOutline,
-      chevronBackOutline,
-      chevronForwardOutline,
-      locationOutline,
-      lockClosedOutline,
-      receiptOutline
-    });
-  }
+  ) {}
+
+  defaultShippingAddress: any = null;
+  shippingQuotes: any = null;
+  cartItems: any = null;
+  user: any = null;
+  savedCards: CheckoutCard[] = [];
+  paymentMethods: CheckoutPaymentMethod[] = [];
+  showChangeAddressModal = false;
+  showAddCardModal = false;
+  selectedAddressId: any = null;
+  selectedShippingOption: any = null;
+  selectedCardId: any = null;
+  selectedPaymentMethod: any = null;
+  storeCreditAvailable = 0;
+  storeCreditAmount = '';
+  appliedStoreCredit = 0;
+  storeCreditError = '';
+  currentStep = 1;
+  placingOrder = false;
+  orderComments = '';
 
   ngOnInit(): void {
-    this.loadCheckoutData();
+    this.user = this.utilService.getUserProfile();
+    if (!this.user) {
+      this.router.navigate(['/login'], {
+        queryParams: { redirect: '/checkout' },
+      });
+      return;
+    }
+    this.selectedAddressId = this.user.defaultShippingAddressID ?? null;
+    this.setAddress(this.selectedAddressId);
+    this.getCheckoutData();
   }
 
-  private loadCheckoutData(): void {
-    this.utilService.showLoader();
+  getCurrentUser() {
+    return this.utilService.getUserProfile();
+  }
+
+  getCheckoutData() {
     forkJoin({
       cartRes: this.apiService.getCartItems(),
-      profileRes: this.apiService.getCustomerProfile(),
-      cardsRes: this.apiService.getCustomerCreditCards()
+      cardsRes: this.apiService.getCustomerCreditCards(),
     }).subscribe({
-      next: ({ cartRes, profileRes, cardsRes }: any) => {
-        const cart = cartRes?.data ?? cartRes;
-        const profile = profileRes?.data ?? profileRes;
-        const cardsPayload = cardsRes?.data ?? cardsRes;
-
-        this.cart = cart;
-        this.items = cart?.products ?? [];
-        this.utilService.setCart(cart);
-        if (profile) this.utilService.setUserProfile(profile);
-
-        this.addresses = this.normalizeAddresses(profile);
-        this.cards = this.normalizeCards(cardsPayload);
-        this.selectedAddressId = this.addresses.find((a) => a.isDefault)?.id ?? this.addresses[0]?.id ?? null;
-        this.selectedCardId = this.cards.find((c) => c.isDefault)?.id ?? this.cards[0]?.id ?? null;
-        this.mobileNumber = profile?.phoneNumber ?? profile?.phone ?? '';
-        this.loadInvoice();
-        this.utilService.hideLoader();
-      },
-      error: (err: any) => {
-        this.utilService.hideLoader();
-        this.utilService.showToast(this.utilService.parseErrorMessage(err) || 'Unable to load checkout.', 'danger');
-      }
-    });
-  }
-
-  private normalizeAddresses(profile: any): CheckoutAddress[] {
-    const list = Array.isArray(profile?.addresses) ? profile.addresses : [];
-    if (list.length) {
-      return list.map((a: any, idx: number) => this.toAddress(a, idx, profile));
-    }
-
-    const fallback = this.toAddress(profile, 0, profile);
-    const hasAddress = !!fallback.addressFirstLine || !!fallback.city || !!fallback.state || !!fallback.postalCode;
-    return hasAddress ? [fallback] : [];
-  }
-
-  private toAddress(a: any, idx: number, profile: any): CheckoutAddress {
-    const firstName = a?.firstName ?? a?.firstname ?? profile?.firstName ?? '';
-    const lastName = a?.lastName ?? a?.lastname ?? profile?.lastName ?? '';
-
-    return {
-      id: a?.id ?? a?.addressId ?? a?.addressID ?? a?.address_id ?? idx,
-      name: `${firstName} ${lastName}`.trim() || profile?.email || 'Shipping Address',
-      company: a?.company ?? a?.Company,
-      addressFirstLine: a?.addressFirstLine ?? a?.address1 ?? a?.Address1 ?? a?.street,
-      addressSecondLine: a?.addressSecondLine ?? a?.address2 ?? a?.Address2 ?? a?.suburb,
-      city: a?.city ?? a?.City,
-      state: a?.state ?? a?.stateCode ?? a?.State ?? a?.StateCode,
-      postalCode: a?.postalCode ?? a?.zip ?? a?.Zip,
-      country: a?.country ?? a?.countryCode ?? a?.Country ?? a?.CountryCode,
-      phoneNumber: a?.phoneNumber ?? a?.phone ?? a?.PhoneNumber ?? profile?.phoneNumber,
-      isDefault: !!(a?.isDefault ?? a?.default ?? a?.is_default)
-    };
-  }
-
-  private normalizeCards(payload: any): CheckoutCard[] {
-    const list =
-      payload?.customerSavedCards ??
-      payload?.savedCards ??
-      payload?.cards ??
-      (Array.isArray(payload) ? payload : []);
-
-    return Array.isArray(list)
-      ? list.map((c: any, idx: number) => {
-        const maskedNumber = c?.cardMaskedNumber ?? c?.maskedNumber ?? c?.card_masked_number ?? c?.masked;
-        const digits = String(maskedNumber ?? '').replace(/\D+/g, '');
-        const last4 = c?.last4 ?? c?.cardLast4 ?? (digits.length >= 4 ? digits.slice(-4) : undefined);
-        const expMonth = String(c?.expMonth ?? c?.exp_month ?? c?.cardExpMonth ?? '').padStart(2, '0');
-        const expYear = String(c?.expYear ?? c?.exp_year ?? c?.cardExpYear ?? '');
-        const expDisplay = c?.expirationDate ?? c?.expiryDate ?? (expMonth.trim() && expYear.trim() ? `${expMonth}/${expYear.slice(-2)}` : undefined);
-
-        return {
-          id: c?.savedCardID ?? c?.savedCardId ?? c?.id ?? idx,
-          brand: c?.cardInfo ?? c?.brand ?? c?.cardBrand ?? c?.cardType,
-          maskedNumber,
-          last4,
-          expDisplay,
-          isDefault: !!(c?.isDefault ?? c?.default ?? c?.is_default ?? c?.defaultCard),
-          paymentCode: c?.paymentCode ?? c?.payment_method ?? c?.methodCode
-        };
-      })
-      : [];
-  }
-
-  private loadInvoice(): void {
-    this.apiService.getCartInvoice(this.buildInvoicePayload()).subscribe({
-      next: (res: any) => {
-        const payload = res?.data ?? res;
-        this.invoice = payload?.orderDetails ?? payload?.invoice?.orderDetails ?? payload;
+      next: ({ cartRes, cardsRes }: any) => {
+        this.cartItems = cartRes?.data ?? cartRes ?? null;
+        this.hydrateCards(cardsRes?.data ?? cardsRes);
+        this.getShippingQuotes(this.selectedAddressId);
+        this.getPaymentMethods();
+        this.getStoreCredit();
       },
       error: () => {
-        this.invoice = null;
-      }
+        this.utilService.showToast('Failed to load checkout details', 'danger');
+      },
     });
   }
 
-  private buildInvoicePayload(): any {
-    const shippingMethod = this.cart?.shippingMethod ?? this.cart?.selectedShippingMethod ?? {};
-    return {
-      shippingMethod: {
-        courierCode: shippingMethod?.courierCode ?? shippingMethod?.code ?? '',
-        methodName: shippingMethod?.methodName ?? shippingMethod?.name ?? '',
-        applyStoreCredit: shippingMethod?.applyStoreCredit ?? '',
-        couponCode: this.cart?.couponCode ?? ''
-      }
+  getShippingQuotes(addressId: string) {
+    if (addressId) {
+      this.apiService.getShippingQuotes(addressId).subscribe({
+        next: (res: any) => {
+          if (res.data) {
+            this.shippingQuotes = res?.data;
+            this.setDefaultShippingMethod();
+          }
+        },
+        error: () => {
+          this.utilService.showToast('Failed to fetch shipping quotes', 'danger');
+        },
+      });
+    }
+  }
+
+  setAddress(id: any) {
+    this.selectedAddressId = id;
+    this.defaultShippingAddress =
+      this.user?.addresses?.find((a: any) => {
+        const addressId = a?.addressID ?? a?.addressId ?? a?.id;
+        return addressId === id;
+      }) ??
+      this.user?.addresses?.[0] ??
+      null;
+
+    const addressId =
+      this.defaultShippingAddress?.addressID ??
+      this.defaultShippingAddress?.addressId ??
+      this.defaultShippingAddress?.id;
+    if (addressId && addressId !== this.selectedAddressId) {
+      this.selectedAddressId = addressId;
+    }
+  }
+
+  changeAddress(id: any) {
+    this.setAddress(id);
+    this.selectedShippingOption = null;
+    this.shippingQuotes = null;
+    this.getShippingQuotes(this.selectedAddressId);
+    this.getPaymentMethods();
+    this.onChangeAddressCancel();
+  }
+
+  openChangeAddressModal() {
+    this.showChangeAddressModal = true;
+  }
+
+  onChangeAddressCancel() {
+    this.showChangeAddressModal = false;
+  }
+
+  openAddCardModal() {
+    this.showAddCardModal = true;
+  }
+
+  onAddCardCancel() {
+    this.showAddCardModal = false;
+  }
+
+  onCardSaved() {
+    this.showAddCardModal = false;
+    this.refreshSavedCards(true);
+  }
+
+  getPaymentMethods() {
+    if (!this.selectedAddressId) {
+      this.paymentMethods = [];
+      return;
+    }
+
+    this.apiService.getPaymentMethods(this.selectedAddressId).subscribe({
+      next: (res: any) => {
+        const data = res?.data ?? res;
+        const modules =
+          data?.paymentModules ??
+          data?.payments ??
+          data?.paymentMethods ??
+          (Array.isArray(data) ? data : []);
+        this.paymentMethods = Array.isArray(modules) ? modules : [];
+      },
+      error: () => {
+        this.paymentMethods = [];
+      },
+    });
+  }
+
+  getStoreCredit() {
+    this.apiService.getCustomerStoreCredit().subscribe({
+      next: (res: any) => {
+        const data = res?.data ?? res;
+        this.storeCreditAvailable =
+          Number(data?.storeCredit ?? data?.data?.storeCredit ?? 0) || 0;
+      },
+      error: () => {
+        this.storeCreditAvailable = 0;
+      },
+    });
+  }
+
+  selectShipping(group: any, rate: any) {
+    this.selectedShippingOption = {
+      courierCode: group.courierCode,
+      courierName: group.courierName,
+      methodName: rate.methodName,
+      price: rate.price,
     };
   }
 
-  get selectedAddress(): CheckoutAddress | undefined {
-    return this.addresses.find((a) => a.id === this.selectedAddressId);
+  isSelected(group: any, rate: any): boolean {
+    return (
+      this.selectedShippingOption?.courierCode === group.courierCode &&
+      this.selectedShippingOption?.methodName === rate.methodName
+    );
   }
 
-  get selectedCard(): CheckoutCard | undefined {
-    return this.cards.find((c) => c.id === this.selectedCardId);
-  }
-
-  get stepIndex(): number {
-    return this.steps.findIndex((step) => step.key === this.activeStep);
-  }
-
-  setStep(step: CheckoutStep): void {
-    if (this.canOpenStep(step)) this.activeStep = step;
-  }
-
-  canOpenStep(step: CheckoutStep): boolean {
-    if (step === 'shipping') return true;
-    if (step === 'payment') return !!this.selectedAddressId;
-    return !!this.selectedAddressId && !!this.selectedCardId;
-  }
-
-  nextStep(): void {
-    if (this.activeStep === 'shipping') {
-      if (!this.selectedAddressId) {
-        this.utilService.showToast('Please select a shipping address.', 'warning');
-        return;
-      }
-      this.activeStep = 'payment';
+  setDefaultShippingMethod(): void {
+    if (!this.shippingQuotes?.shippingRates?.length) {
       return;
     }
 
-    if (this.activeStep === 'payment') {
-      if (!this.selectedCardId) {
-        this.utilService.showToast('Please select a payment method.', 'warning');
-        return;
-      }
-      this.activeStep = 'review';
-    }
-  }
+    const allRates: any[] = [];
 
-  previousStep(): void {
-    if (this.activeStep === 'review') {
-      this.activeStep = 'payment';
-      return;
-    }
-    if (this.activeStep === 'payment') this.activeStep = 'shipping';
-  }
+    this.shippingQuotes.shippingRates.forEach((shippingItem: any) => {
+      shippingItem?.rates?.forEach((rate: any) => {
+        allRates.push({
+          ...rate,
+          courierCode: shippingItem.courierCode,
+          courierName: shippingItem.courierName,
+        });
+      });
+    });
 
-  addAddress(): void {
-    this.router.navigate(['/shipping-address']);
-  }
-
-  addCard(): void {
-    this.router.navigate(['/add-credit-card']);
-  }
-
-  placeOrder(): void {
-    if (!this.selectedCardId) {
-      this.utilService.showToast('Please select a payment method.', 'warning');
+    if (!allRates.length) {
       return;
     }
 
-    const payload: any = {
-      orderComments: this.orderComments.trim(),
-      paymentMethod: this.selectedCard?.paymentCode || 'savedcard',
-      cardInfo: {
-        savedCardID: this.selectedCardId
+    const freeRates = allRates.filter((rate) => Number(rate.price) === 0);
+    const freeUSPS = freeRates.find(
+      (rate) =>
+        rate.methodName?.toLowerCase().includes('usps') ||
+        rate.methodName?.toLowerCase().includes('postal')
+    );
+
+    if (freeUSPS) {
+      this.selectedShippingOption = freeUSPS;
+      return;
+    }
+
+    let cheapestRate = allRates[0];
+
+    allRates.forEach((rate) => {
+      if (Number(rate.price) < Number(cheapestRate.price)) {
+        cheapestRate = rate;
       }
+    });
+
+    this.selectedShippingOption = cheapestRate;
+  }
+
+  goToStep(step: number) {
+    if (step === 2 && !this.selectedAddressId) {
+      this.utilService.showToast('Please select a shipping address', 'warning');
+      return;
+    }
+
+    if (step === 3 && !this.selectedShippingOption) {
+      this.utilService.showToast('Please select a shipping method', 'warning');
+      return;
+    }
+
+    this.currentStep = step;
+  }
+
+  selectCard(card: CheckoutCard) {
+    this.selectedCardId = card.id;
+    this.selectedPaymentMethod = {
+      type: 'card',
+      paymentMethod: 'braintree_api',
+      paymentName: this.getCardLabel(card),
+      cardInfo: { savedCardID: card.id },
     };
+  }
 
-    this.isPlacingOrder = true;
-    this.utilService.showLoader();
-    this.apiService.checkoutCart(payload).pipe(
-      switchMap((res: any) => {
-        const body = res?.data ?? res;
-        const result = (body?.result || body?.Result || '').toString().toLowerCase();
-        if (result && result !== 'ok') {
-          throw new Error(body?.errors?.message || body?.message || 'Unable to place order.');
+  isCardSelected(card: CheckoutCard): boolean {
+    return (
+      this.selectedPaymentMethod?.type === 'card' &&
+      this.selectedCardId === card.id
+    );
+  }
+
+  selectPaymentMethod(method: CheckoutPaymentMethod) {
+    this.selectedCardId = null;
+    this.selectedPaymentMethod = {
+      type: 'method',
+      ...method,
+    };
+  }
+
+  isPaymentMethodSelected(method: CheckoutPaymentMethod): boolean {
+    return (
+      this.selectedPaymentMethod?.type === 'method' &&
+      this.selectedPaymentMethod?.paymentCode === method?.paymentCode
+    );
+  }
+
+  getFilteredPaymentMethods(): CheckoutPaymentMethod[] {
+    const excludedCodes = [
+      'braintree_api',
+      'storecredit',
+      'store_credit',
+      'leasing',
+      'purchaseorder',
+      'purchase_order',
+      'checkmoneyorder',
+      'check_money_order',
+      'banktransfer',
+      'bank_transfer',
+    ];
+    const excludedNames = [
+      'check',
+      'cash',
+      'bank deposit',
+      'leasing',
+      'purchase order',
+      'store credit',
+    ];
+
+    return this.paymentMethods.filter((method) => {
+      const code = (
+        method?.paymentCode ||
+        method?.paymentMethod ||
+        ''
+      ).toLowerCase();
+      const name = (method?.paymentName || '').toLowerCase();
+      return (
+        !excludedCodes.some((excluded) => code.includes(excluded)) &&
+        !excludedNames.some((excluded) => name.includes(excluded))
+      );
+    });
+  }
+
+  applyStoreCredit() {
+    const amount = Number(this.storeCreditAmount);
+    this.storeCreditError = '';
+
+    if (!amount || amount <= 0) {
+      this.storeCreditError = 'Enter a valid store credit amount.';
+      return;
+    }
+
+    if (amount > this.storeCreditAvailable) {
+      this.storeCreditError = `Amount cannot exceed available store credit ($${this.storeCreditAvailable.toFixed(
+        2
+      )})`;
+      return;
+    }
+
+    if (amount > this.getOrderTotalBeforeCredit()) {
+      this.storeCreditError = `Amount cannot exceed order total ($${this.getOrderTotalBeforeCredit().toFixed(
+        2
+      )})`;
+      return;
+    }
+
+    this.appliedStoreCredit = Math.min(amount, this.getMaxUsableStoreCredit());
+
+    if (this.getOrderTotal() === 0) {
+      this.selectedCardId = null;
+      this.selectedPaymentMethod = {
+        type: 'storecredit',
+        paymentCode: 'storecredit',
+        paymentName: `Store Credit: $${this.appliedStoreCredit.toFixed(2)}`,
+      };
+    }
+  }
+
+  removeStoreCredit() {
+    this.appliedStoreCredit = 0;
+    this.storeCreditAmount = '';
+    this.storeCreditError = '';
+    if (this.selectedPaymentMethod?.type === 'storecredit') {
+      this.selectedPaymentMethod = null;
+    }
+  }
+
+  canPlaceOrder(): boolean {
+    return (
+      !this.placingOrder &&
+      (!!this.selectedPaymentMethod || this.getOrderTotal() === 0)
+    );
+  }
+
+  getSelectedShippingCost(): number {
+    return Number(
+      this.selectedShippingOption?.price ??
+        this.shippingQuotes?.shippingCost ??
+        0
+    );
+  }
+
+  getOrderTotalBeforeCredit(): number {
+    return (
+      Number(this.cartItems?.subTotal ?? 0) + this.getSelectedShippingCost()
+    );
+  }
+
+  getMaxUsableStoreCredit(): number {
+    return Math.min(
+      this.storeCreditAvailable,
+      this.getOrderTotalBeforeCredit()
+    );
+  }
+
+  getOrderTotal(): number {
+    return Math.max(
+      0,
+      this.getOrderTotalBeforeCredit() - this.appliedStoreCredit
+    );
+  }
+
+  getCardLabel(card: CheckoutCard): string {
+    const brand = card.brand || 'Card';
+    const last4 = card.last4 || this.extractLast4(card.maskedNumber);
+    return last4 ? `${brand} ****${last4}` : brand;
+  }
+
+  getPaymentLabel(): string {
+    const paymentLabel = this.selectedPaymentMethod?.paymentName || '';
+    if (
+      this.appliedStoreCredit > 0 &&
+      this.selectedPaymentMethod?.type !== 'storecredit'
+    ) {
+      return paymentLabel
+        ? `${paymentLabel} + Store Credit ($${this.appliedStoreCredit.toFixed(
+            2
+          )})`
+        : `Store Credit ($${this.appliedStoreCredit.toFixed(2)})`;
+    }
+
+    return paymentLabel;
+  }
+
+  trackByCardId = (_: number, item: CheckoutCard) => item.id ?? _;
+  trackByPaymentCode = (_: number, item: CheckoutPaymentMethod) =>
+    item.paymentCode ?? item.paymentMethod ?? _;
+
+  private refreshSavedCards(selectLatest = false) {
+    this.apiService.getCustomerCreditCards().subscribe({
+      next: (res: any) => {
+        const previousId = this.selectedCardId;
+        this.hydrateCards(res?.data ?? res);
+
+        if (selectLatest && this.savedCards.length) {
+          const latest = this.savedCards[this.savedCards.length - 1];
+          this.selectedCardId = latest.id;
+          this.selectCard(latest);
+          return;
         }
 
-        const checkoutResult = body?.data?.checkoutResult ?? body?.checkoutResult;
-        const redirectUrl = checkoutResult?.reDirectUrl ?? checkoutResult?.redirectUrl;
-        if (redirectUrl) {
-          window.location.href = redirectUrl;
-          return of(checkoutResult);
-        }
-
-        const orderID = checkoutResult?.orderID ?? checkoutResult?.orderId;
-        const paymentSettled = checkoutResult?.paymentSettled ?? checkoutResult?.isPaymentSettled;
-        if (!paymentSettled || !orderID) return of(checkoutResult);
-
-        if (!this.notifyBySms) return of(checkoutResult);
-
-        return this.apiService.sendOrderTrackingSms({
-          phoneNumber: this.mobileNumber,
-          orderID,
-          notify: this.notifyBySms
-        }).pipe(switchMap(() => of(checkoutResult)));
-      })
-    ).subscribe({
-      next: (checkoutResult: any) => {
-        const orderID = checkoutResult?.orderID ?? checkoutResult?.orderId;
-        this.isPlacingOrder = false;
-        this.utilService.hideLoader();
-        this.utilService.showToast('Order placed successfully.', 'success');
-        if (orderID) {
-          this.router.navigate(['/order-history', orderID]);
-        } else {
-          this.router.navigate(['/order-history']);
+        if (
+          previousId &&
+          this.savedCards.some((card) => card.id === previousId)
+        ) {
+          this.selectedCardId = previousId;
         }
       },
-      error: (err: any) => {
-        this.isPlacingOrder = false;
-        this.utilService.hideLoader();
-        this.utilService.showToast(err?.message || this.utilService.parseErrorMessage(err) || 'Unable to place order.', 'danger');
-      }
+      error: () => {
+        this.utilService.showToast(
+          'Card saved, but failed to refresh saved cards',
+          'warning'
+        );
+      },
     });
   }
 
-  getImageBaseUrl(): string {
-    return this.utilService.getImgBaseUrl();
+  private hydrateCards(cardsPayload: any) {
+    const list =
+      cardsPayload?.customerSavedCards ??
+      cardsPayload?.savedCards ??
+      cardsPayload?.cards ??
+      (Array.isArray(cardsPayload) ? cardsPayload : []);
+
+    if (!Array.isArray(list)) {
+      this.savedCards = [];
+      return;
+    }
+
+    this.savedCards = list.map((card: any, index: number) => {
+      const maskedNumber =
+        card?.cardMaskedNumber ??
+        card?.maskedNumber ??
+        card?.card_masked_number ??
+        card?.masked;
+      const last4 =
+        card?.last4 ??
+        card?.Last4 ??
+        card?.cardLast4 ??
+        card?.card_last4 ??
+        this.extractLast4(maskedNumber);
+      const expMonth =
+        card?.expMonth ??
+        card?.exp_month ??
+        card?.expiryMonth ??
+        card?.ExpMonth ??
+        card?.cardExpMonth;
+      const expYear =
+        card?.expYear ??
+        card?.exp_year ??
+        card?.expiryYear ??
+        card?.ExpYear ??
+        card?.cardExpYear;
+
+      return {
+        id: card?.savedCardID ?? card?.savedCardId ?? card?.id ?? index,
+        brand:
+          card?.cardInfo ?? card?.brand ?? card?.cardBrand ?? card?.cardType,
+        last4,
+        maskedNumber,
+        expDisplay: this.formatExpiration(
+          expMonth,
+          expYear,
+          card?.expirationDate ?? card?.expiryDate ?? card?.cardExpirationDate
+        ),
+        isDefault: !!(
+          card?.isDefault ??
+          card?.default ??
+          card?.is_default ??
+          card?.defaultCard
+        ),
+        paymentCode: card?.paymentCode,
+      };
+    });
+
+    const defaultCard =
+      this.savedCards.find((card) => card.isDefault) ?? this.savedCards[0];
+    this.selectedCardId = defaultCard?.id ?? null;
+    if (defaultCard && !this.selectedPaymentMethod) {
+      this.selectCard(defaultCard);
+    }
   }
 
-  trackById = (_: number, item: { id: string | number }) => item.id;
-  trackByItemId = (_: number, item: any) => item.itemID ?? _;
+  private extractLast4(masked: string | undefined): string | undefined {
+    const digits = (masked || '').replace(/\D+/g, '');
+    return digits.length >= 4 ? digits.slice(-4) : undefined;
+  }
+
+  private formatExpiration(
+    expMonth: any,
+    expYear: any,
+    expRaw?: string
+  ): string | undefined {
+    const raw = (expRaw || '').trim();
+    if (raw) return raw;
+
+    const month = String(expMonth ?? '').trim();
+    const year = String(expYear ?? '').trim();
+    if (!month || !year) return undefined;
+
+    return `${month.padStart(2, '0')}/${
+      year.length === 4 ? year.slice(-2) : year
+    }`;
+  }
+
+  async handleCheckout(): Promise<void> {
+    if (!this.selectedPaymentMethod && this.getOrderTotal() > 0) {
+      this.utilService.showToast(
+        'Please complete your payment selection.',
+        'warning'
+      );
+      return;
+    }
+
+    if (!this.selectedShippingOption) {
+      this.utilService.showToast(
+        'Please complete your shipping selection.',
+        'warning'
+      );
+      return;
+    }
+
+    const shippingAddressID =
+      this.defaultShippingAddress?.addressID ??
+      this.defaultShippingAddress?.addressId ??
+      this.defaultShippingAddress?.id ??
+      this.selectedAddressId;
+
+    if (!shippingAddressID) {
+      this.utilService.showToast(
+        'Please select a shipping address.',
+        'warning'
+      );
+      return;
+    }
+
+    // Use the same address as billing since the component
+    // doesn't expose a separate billing address selector.
+    const billingAddressID = shippingAddressID;
+
+    this.placingOrder = true;
+
+    try {
+      // STEP 1 - Verify Cart
+      const cartResponse: any = await firstValueFrom(
+        this.apiService.getCartItems()
+      );
+
+      const cartProducts =
+        cartResponse?.data?.products ||
+        cartResponse?.products ||
+        [];
+
+      if (cartProducts.length === 0) {
+        this.utilService.showToast('Your cart is empty.', 'warning');
+        this.placingOrder = false;
+        return;
+      }
+
+      // STEP 2 - Shipping Quote
+      await firstValueFrom(this.apiService.getShippingQuotes(shippingAddressID));
+
+      // STEP 3 - Finalize Cart (shipping method + store credit)
+      const postCartBody: any = {
+        shippingMethod: {
+          courierCode: this.selectedShippingOption.courierCode || '',
+          methodName: this.selectedShippingOption.methodName || '',
+        },
+      };
+
+      if (this.appliedStoreCredit > 0 && this.storeCreditAvailable > 0) {
+        postCartBody.aplyStoreCredit = Number(
+          this.appliedStoreCredit.toFixed(2)
+        );
+      }
+
+      await firstValueFrom(this.apiService.postCart(postCartBody));
+
+      // STEP 4 - Load Payment Methods
+      await firstValueFrom(
+        this.apiService.getPaymentMethods(billingAddressID)
+      );
+
+      const adjustedTotal = this.getOrderTotal();
+
+      const baseBody: any = {
+        origin: 'WEB',
+        orderComments: this.orderComments || '',
+      };
+
+      // If the order is fully covered by store credit, bypass card payment
+      if (adjustedTotal === 0) {
+        const body = {
+          ...baseBody,
+          paymentMethod: 'storecredit',
+        };
+
+        const result: any = await firstValueFrom(
+          this.apiService.checkoutCart(body)
+        );
+
+        if (result?.result === 'OK') {
+          this.utilService.showToast('Order placed successfully', 'success');
+          this.router.navigate(['/']);
+        } else {
+          this.utilService.showToast(
+            result?.error_message || 'Checkout failed',
+            'danger'
+          );
+        }
+        return;
+      }
+
+      let checkoutBody: any = {
+        ...baseBody,
+        paymentMethod:
+          this.selectedPaymentMethod?.paymentMethod ||
+          this.selectedPaymentMethod?.paymentCode,
+      };
+
+      // SAVED CARD
+      if (
+        checkoutBody.paymentMethod === 'braintree_api' &&
+        this.selectedPaymentMethod?.cardInfo?.savedCardID
+      ) {
+        checkoutBody.cardInfo = {
+          savedCardID: this.selectedPaymentMethod.cardInfo.savedCardID,
+        };
+      }
+      // NEW CARD
+      else if (
+        checkoutBody.paymentMethod === 'braintree_api' &&
+        this.selectedPaymentMethod?.cardInfo?.cardNumber
+      ) {
+        checkoutBody.cardInfo = {
+          savedCard:
+            this.selectedPaymentMethod.cardInfo.savedCard !== false,
+          cardNumber: this.selectedPaymentMethod.cardInfo.cardNumber,
+          cvv: this.selectedPaymentMethod.cardInfo.cvv,
+          cardExpMonth: this.selectedPaymentMethod.cardInfo.cardExpMonth,
+          cardExpYear: this.selectedPaymentMethod.cardInfo.cardExpYear,
+        };
+      }
+      // SPLIT CARD
+      else if (this.selectedPaymentMethod?.splitCardInfo) {
+        checkoutBody.splitCardInfo = this.selectedPaymentMethod.splitCardInfo;
+        checkoutBody.paymentMethod = 'braintree_api';
+      }
+      // PAYPAL
+      else if (
+        checkoutBody.paymentMethod === 'paypalwpp' ||
+        checkoutBody.paymentMethod === 'paypalpl'
+      ) {
+        const paypalResult: any = await firstValueFrom(
+          this.apiService.checkoutCart(checkoutBody)
+        );
+
+        const redirectUrl = paypalResult?.checkoutResult?.reDirectUrl;
+
+        if (redirectUrl) {
+          window.open(redirectUrl, '_blank');
+        } else {
+          this.utilService.showToast(
+            'PayPal redirect URL was not returned.',
+            'warning'
+          );
+        }
+        return;
+      }
+
+      // FINAL CHECKOUT
+      const checkoutResult: any = await firstValueFrom(
+        this.apiService.checkoutCart(checkoutBody)
+      );
+
+      if (checkoutResult?.result === 'OK') {
+        const result = checkoutResult.checkoutResult;
+
+        if (result?.paymentSettled) {
+          this.utilService.showToast(
+            `Order Success! Order ID: ${result.orderID}`,
+            'success'
+          );
+          this.router.navigate(['/']);
+        } else if (result?.reDirectUrl) {
+          window.open(result.reDirectUrl, '_blank');
+        } else {
+          this.utilService.showToast('Payment processing...', 'success');
+          this.router.navigate(['/']);
+        }
+      } else {
+        this.utilService.showToast(
+          checkoutResult?.error_message || 'Checkout failed',
+          'danger'
+        );
+      }
+    } catch (error: any) {
+      console.error('Checkout error', error);
+      const message =
+        this.utilService.parseErrorMessage?.(error) ||
+        error?.error?.message ||
+        'Something went wrong!';
+      this.utilService.showToast(message, 'danger');
+    } finally {
+      this.placingOrder = false;
+    }
+  }
 }
