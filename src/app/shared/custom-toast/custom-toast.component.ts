@@ -39,7 +39,18 @@ import { Observable } from 'rxjs';
       gap: 12px;
       pointer-events: none;
     }
-    @media (min-width: 576px) {
+    @media (max-width: 768px) {
+      .toast-wrapper {
+        top: auto;
+        right: 0;
+        bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+        left: 0;
+        align-items: center;
+        gap: 8px;
+        padding: 0 16px;
+      }
+    }
+    @media (min-width: 769px) {
       .toast-wrapper {
         top: 20px;
         left: auto;
@@ -60,6 +71,21 @@ import { Observable } from 'rxjs';
       animation: toastSlideDown 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
       transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
       border: 1px solid #e0e0e0;
+    }
+    @media (max-width: 768px) {
+      .toast-item {
+        width: auto;
+        max-width: min(78vw, 360px);
+        min-width: 160px;
+        padding: 5px 12px;
+        border: 0;
+        border-radius: 999px;
+        background: rgba(38, 38, 38, 0.96);
+        color: #ffffff;
+        box-shadow: 0 16px 34px rgba(0, 0, 0, 0.2);
+        align-items: center;
+        animation: mobileToastIn 0.22s ease-out forwards;
+      }
     }
     .toast-content {
       display: flex;
@@ -83,6 +109,28 @@ import { Observable } from 'rxjs';
       font-size: 16px;
       font-weight: 500;
       letter-spacing: -0.01em;
+    }
+    @media (max-width: 768px) {
+      .toast-content {
+        justify-content: center;
+      }
+      .toast-left {
+        justify-content: center;
+        gap: 0;
+      }
+      .toast-icon,
+      .toast-close,
+      .toast-progress {
+        display: none;
+      }
+      .toast-message {
+        color: #ffffff;
+        font-size: 13px;
+        font-weight: 600;
+        line-height: 1.2;
+        text-align: center;
+        white-space: normal;
+      }
     }
     .toast-close {
       background: none;
@@ -130,6 +178,10 @@ import { Observable } from 'rxjs';
     @keyframes toastSlideDown {
       from { transform: translateY(-40px); opacity: 0; }
       to { transform: translateY(0); opacity: 1; }
+    }
+    @keyframes mobileToastIn {
+      from { transform: translateY(18px) scale(0.98); opacity: 0; }
+      to { transform: translateY(0) scale(1); opacity: 1; }
     }
     @keyframes toastProgress {
       from { width: 100%; }

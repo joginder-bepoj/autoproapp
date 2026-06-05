@@ -1,22 +1,23 @@
 <ion-content>
   <div class="page-container">
     <div class="settings-container container">
-      <app-breadcrumbs></app-breadcrumbs>
+      <app-breadcrumbs [breadcrumb]="breadcrumb"></app-breadcrumbs>
       <div class="settings-card">
-        <div class="section-header align-items-center">
-          <div class="icon-wrapper">
-            <ion-icon name="location-outline"></ion-icon>
+        <div class="section-header align-items-center justify-content-between">
+          <div class="d-flex align-items-center gap-2">
+            <div class="icon-wrapper">
+              <ion-icon name="location-outline"></ion-icon>
+            </div>
+            <div class="header-text">
+              <h2 class="title">Shipping Address</h2>
+              <p class="subtitle">Saved addresses for shipping.</p>
+            </div>
           </div>
-          <div class="header-text">
-            <h2 class="title">Shipping Address</h2>
-            <p class="subtitle">Saved addresses for shipping.</p>
-          </div>
-        </div>
 
-        <button type="button" class="add-row" (click)="addNewAddress()">
-          <span class="add-text">Add A New Address</span>
-          <ion-icon name="chevron-forward-outline"></ion-icon>
-        </button>
+          <button type="button" class="add-row" (click)="addNewAddress()">
+            Add Address
+          </button>
+        </div>
 
         <div class="address-list" *ngIf="addresses.length > 0; else empty">
           <div class="address-row" *ngFor="let a of addresses; trackBy: trackByAddressId" (click)="selectAddress(a)">
@@ -63,4 +64,5 @@
   <app-footer></app-footer>
 </ion-content>
 
-<app-add-address-modal *ngIf="showAddressModal" (saved)="onAddressSaved($event)" (cancel)="onAddressCancel()"></app-add-address-modal>
+<app-add-address-modal *ngIf="showAddressModal" (saved)="onAddressSaved($event)"
+  (cancel)="onAddressCancel()"></app-add-address-modal>

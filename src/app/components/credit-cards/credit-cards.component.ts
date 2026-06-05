@@ -9,6 +9,7 @@ import { FooterComponent } from 'src/app/shared/footer/footer.component';
 import { ApiService } from 'src/app/services/api-service';
 import { forkJoin } from 'rxjs';
 import { AddCreditCardModalComponent } from '../add-credit-card-modal/add-credit-card-modal.component';
+import { BreadcrumbsComponent } from 'src/app/shared/breadcrumbs/breadcrumbs.component';
 
 interface SavedCard {
   id: string | number;
@@ -34,12 +35,15 @@ interface SavedCard {
   templateUrl: './credit-cards.component.html',
   styleUrls: ['./credit-cards.component.scss'],
   standalone: true,
-  imports: [CommonModule, IonContent, IonIcon, FooterComponent, AddCreditCardModalComponent],
+  imports: [CommonModule, IonContent, IonIcon, FooterComponent, AddCreditCardModalComponent, BreadcrumbsComponent],
 })
 export class CreditCardsComponent implements OnInit {
   cards: SavedCard[] = [];
   user: any = null;
   showAddCardModal = false;
+  breadcrumb = [
+    { label: 'setting', url: '/account-settings' },
+  ];
 
   constructor(
     private router: Router,

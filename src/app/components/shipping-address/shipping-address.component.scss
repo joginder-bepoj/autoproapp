@@ -65,13 +65,13 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  width: 100%;
+  // width: 100%;
   border: 0;
   border-radius: 12px;
-  background: #e7eef3;
+  background: var(--main-bg-color);
   padding: 14px 16px;
   margin-bottom: 12px;
-  color: #0f172a;
+  color: white;
   font-weight: 800;
   letter-spacing: 0.3px;
   cursor: pointer;

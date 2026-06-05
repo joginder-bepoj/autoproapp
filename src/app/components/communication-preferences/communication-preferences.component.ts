@@ -40,8 +40,7 @@ export class CommunicationPreferencesComponent implements OnInit, OnDestroy {
   isSaving = false;
 
   readonly breadcrumb = [
-    { label: 'Account Settings', url: '/account-settings' },
-    { label: 'Communications Preferences', url: null },
+    { label: 'Settings', url: '/account-settings' }
   ];
 
   private readonly destroy$ = new Subject<void>();

@@ -463,11 +463,15 @@ export class ApiService {
 
   // Updates shipping method / store credit on the active cart
   postCart(data: any) {
-    return this.request('POST', 'cart/post', data);
+    return this.request('POST', 'cart', data);
   }
 
   checkoutCart(data: any) {
     return this.request('POST', 'cart/checkout', data);
+  }
+
+  confirmPaypalPayment(data: any) {
+    return this.request('POST', 'cart/paypal/confirm', data);
   }
 
   sendOrderTrackingSms(data: any) {

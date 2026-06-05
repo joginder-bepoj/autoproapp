@@ -1,9 +1,9 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { IonButton, IonContent, IonIcon } from '@ionic/angular/standalone';
-import { firstValueFrom, forkJoin } from 'rxjs';
+import { firstValueFrom, forkJoin, Subscription } from 'rxjs';
 import { ApiService } from 'src/app/services/api-service';
 import { UtilService } from 'src/app/services/util.service';
 import { AddCreditCardModalComponent } from '../add-credit-card-modal/add-credit-card-modal.component';
@@ -43,11 +43,12 @@ interface CheckoutPaymentMethod {
     FooterComponent,
   ],
 })
-export class CheckoutComponent implements OnInit {
+export class CheckoutComponent implements OnInit, OnDestroy {
   constructor(
     private apiService: ApiService,
     private utilService: UtilService,
-    private router: Router
+    private router: Router,
+    private route: ActivatedRoute
   ) {}
 
   defaultShippingAddress: any = null;
@@ -69,25 +70,65 @@ export class CheckoutComponent implements OnInit {
   currentStep = 1;
   placingOrder = false;
   orderComments = '';
+  private paypalReturnSub?: Subscription;
+  private paypalConfirming = false;
 
   ngOnInit(): void {
     this.user = this.utilService.getUserProfile();
-    if (!this.user) {
-      this.router.navigate(['/login'], {
-        queryParams: { redirect: '/checkout' },
-      });
+    this.watchPaypalReturn();
+
+    if (this.user) {
+      this.initializeCheckoutFromUser();
       return;
     }
-    this.selectedAddressId = this.user.defaultShippingAddressID ?? null;
-    this.setAddress(this.selectedAddressId);
-    this.getCheckoutData();
+
+    this.fetchUserAndInitializeCheckout();
+  }
+
+  ngOnDestroy(): void {
+    this.paypalReturnSub?.unsubscribe();
   }
 
   getCurrentUser() {
     return this.utilService.getUserProfile();
   }
 
+  private initializeCheckoutFromUser(): void {
+    this.selectedAddressId = this.user.defaultShippingAddressID ?? null;
+    this.setAddress(this.selectedAddressId);
+    this.getCheckoutData();
+  }
+
+  private fetchUserAndInitializeCheckout(): void {
+    this.utilService.showLoader();
+
+    this.apiService.getCustomerProfile().subscribe({
+      next: (res: any) => {
+        const profile = res?.data ?? res;
+
+        if (profile) {
+          this.user = profile;
+          this.utilService.setUserProfile(profile);
+          this.initializeCheckoutFromUser();
+        } else {
+          this.router.navigate(['/login'], {
+            queryParams: { redirect: '/checkout' },
+          });
+        }
+
+        this.utilService.hideLoader();
+      },
+      error: () => {
+        this.utilService.hideLoader();
+        this.router.navigate(['/login'], {
+          queryParams: { redirect: '/checkout' },
+        });
+      },
+    });
+  }
+
   getCheckoutData() {
+    this.utilService.showLoader();
     forkJoin({
       cartRes: this.apiService.getCartItems(),
       cardsRes: this.apiService.getCustomerCreditCards(),
@@ -98,8 +139,10 @@ export class CheckoutComponent implements OnInit {
         this.getShippingQuotes(this.selectedAddressId);
         this.getPaymentMethods();
         this.getStoreCredit();
+        this.utilService.hideLoader();
       },
       error: () => {
+        this.utilService.hideLoader();
         this.utilService.showToast('Failed to load checkout details', 'danger');
       },
     });
@@ -605,6 +648,7 @@ export class CheckoutComponent implements OnInit {
     const billingAddressID = shippingAddressID;
 
     this.placingOrder = true;
+    this.utilService.showLoader();
 
     try {
       // STEP 1 - Verify Cart
@@ -620,6 +664,7 @@ export class CheckoutComponent implements OnInit {
       if (cartProducts.length === 0) {
         this.utilService.showToast('Your cart is empty.', 'warning');
         this.placingOrder = false;
+        this.utilService.hideLoader();
         return;
       }
 
@@ -640,7 +685,34 @@ export class CheckoutComponent implements OnInit {
         );
       }
 
-      await firstValueFrom(this.apiService.postCart(postCartBody));
+      const couponCode = this.extractCouponCode(this.orderComments);
+      if (couponCode) {
+        postCartBody.couponCode = couponCode;
+      }
+
+      const postCartResult: any = await firstValueFrom(
+        this.apiService.postCart(postCartBody)
+      );
+
+      const postCartData = postCartResult?.data ?? postCartResult;
+      if (postCartData?.result === 'ERROR') {
+        const errorCode = postCartData?.errors?.code;
+        const errorMessage =
+          postCartData?.errors?.message ||
+          postCartData?.error_message ||
+          'Failed to finalize cart';
+
+        if (errorCode === '3028') {
+          this.utilService.showToast(
+            'Your cart has expired or been updated. Please review your cart and try again.',
+            'warning'
+          );
+        } else {
+          this.utilService.showToast(errorMessage, 'danger');
+        }
+        this.utilService.hideLoader();
+        return;
+      }
 
       // STEP 4 - Load Payment Methods
       await firstValueFrom(
@@ -664,16 +736,22 @@ export class CheckoutComponent implements OnInit {
         const result: any = await firstValueFrom(
           this.apiService.checkoutCart(body)
         );
+        const resultData = result?.data ?? result;
 
-        if (result?.result === 'OK') {
-          this.utilService.showToast('Order placed successfully', 'success');
+        if (resultData?.result === 'OK') {
+          const checkoutResult = resultData?.checkoutResult;
+          this.utilService.showToast(
+            `Order placed successfully! Order ID: ${checkoutResult?.orderID || ''}`,
+            'success'
+          );
           this.router.navigate(['/']);
         } else {
           this.utilService.showToast(
-            result?.error_message || 'Checkout failed',
+            resultData?.error_message || 'Checkout failed',
             'danger'
           );
         }
+        this.utilService.hideLoader();
         return;
       }
 
@@ -720,16 +798,25 @@ export class CheckoutComponent implements OnInit {
         const paypalResult: any = await firstValueFrom(
           this.apiService.checkoutCart(checkoutBody)
         );
+        const paypalStatus =
+          paypalResult?.data?.result ?? paypalResult?.result;
+        const paypalCheckoutResult =
+          paypalResult?.data?.checkoutResult ?? paypalResult?.checkoutResult;
+        const redirectUrl =
+          paypalCheckoutResult?.reDirectUrl ??
+          paypalCheckoutResult?.redirectUrl;
 
-        const redirectUrl = paypalResult?.checkoutResult?.reDirectUrl;
-
-        if (redirectUrl) {
-          window.open(redirectUrl, '_blank');
+        if (paypalStatus === 'OK' && redirectUrl) {
+          window.location.href = redirectUrl;
+          this.utilService.showToast('Redirecting to PayPal...', 'success');
         } else {
           this.utilService.showToast(
-            'PayPal redirect URL was not returned.',
+            paypalResult?.data?.error_message ||
+              paypalResult?.error_message ||
+              'Failed to initiate PayPal payment',
             'warning'
           );
+          this.utilService.hideLoader();
         }
         return;
       }
@@ -738,9 +825,11 @@ export class CheckoutComponent implements OnInit {
       const checkoutResult: any = await firstValueFrom(
         this.apiService.checkoutCart(checkoutBody)
       );
+      const checkoutData = checkoutResult?.data ?? checkoutResult;
 
-      if (checkoutResult?.result === 'OK') {
-        const result = checkoutResult.checkoutResult;
+      if (checkoutData?.result === 'OK') {
+        const result =
+          checkoutData?.checkoutResult || checkoutData?.data?.checkoutResult;
 
         if (result?.paymentSettled) {
           this.utilService.showToast(
@@ -749,14 +838,20 @@ export class CheckoutComponent implements OnInit {
           );
           this.router.navigate(['/']);
         } else if (result?.reDirectUrl) {
-          window.open(result.reDirectUrl, '_blank');
+          window.location.href = result.reDirectUrl;
+          this.utilService.showToast(
+            'Redirecting to complete payment...',
+            'success'
+          );
         } else {
           this.utilService.showToast('Payment processing...', 'success');
           this.router.navigate(['/']);
         }
       } else {
         this.utilService.showToast(
-          checkoutResult?.error_message || 'Checkout failed',
+          checkoutData?.error_message ||
+            checkoutData?.errors?.message ||
+            'Checkout failed. Please try again.',
           'danger'
         );
       }
@@ -769,6 +864,129 @@ export class CheckoutComponent implements OnInit {
       this.utilService.showToast(message, 'danger');
     } finally {
       this.placingOrder = false;
+      this.utilService.hideLoader();
     }
+  }
+
+  private async handlePaypalReturn(): Promise<void> {
+    if (this.paypalConfirming) {
+      return;
+    }
+
+    const { payerID, paymentID } = this.getPaypalReturnParams();
+
+    if (!payerID || !paymentID) {
+      return;
+    }
+
+    this.paypalConfirming = true;
+    this.placingOrder = true;
+    this.utilService.showLoader();
+    let navigatedAway = false;
+
+    try {
+      const response: any = await firstValueFrom(
+        this.apiService.confirmPaypalPayment({ payerID, paymentID })
+      );
+      const data = response?.data ?? response;
+
+      if (data?.result === 'OK') {
+        const checkoutResult = data?.checkoutResult;
+
+        if (checkoutResult?.paymentSettled) {
+          this.utilService.showToast(
+            `Order Success! Order ID: ${checkoutResult.orderID}`,
+            'success'
+          );
+          navigatedAway = true;
+          await this.router.navigate(['/home']);
+        } else {
+          this.utilService.showToast('Payment processing...', 'success');
+        }
+      } else {
+        this.utilService.showToast(
+          data?.error_message || 'PayPal confirmation failed. Please try again.',
+          'danger'
+        );
+      }
+    } catch (error: any) {
+      console.error('PayPal confirmation error', error);
+      const message =
+        this.utilService.parseErrorMessage?.(error) ||
+        error?.error?.message ||
+        'Something went wrong with PayPal confirmation!';
+      this.utilService.showToast(message, 'danger');
+    } finally {
+      this.placingOrder = false;
+      this.paypalConfirming = false;
+      this.utilService.hideLoader();
+      if (navigatedAway) {
+        return;
+      }
+      this.router.navigate([], {
+        relativeTo: this.route,
+        queryParams: {
+          payerID: null,
+          PayerID: null,
+          paymentID: null,
+          paymentId: null,
+          payment_id: null,
+        },
+        queryParamsHandling: 'merge',
+        replaceUrl: true,
+      });
+    }
+  }
+
+  private extractCouponCode(comments: string): string | null {
+    const match = comments?.match(/COUPON:(\w+)/);
+    return match?.[1] ?? null;
+  }
+
+  private watchPaypalReturn(): void {
+    this.paypalReturnSub = this.route.queryParamMap.subscribe(() => {
+      this.handlePaypalReturn();
+    });
+    this.handlePaypalReturn();
+  }
+
+  private getPaypalReturnParams(): {
+    payerID: string | null;
+    paymentID: string | null;
+  } {
+    const queryParams = this.route.snapshot.queryParamMap;
+    const browserParams = this.getBrowserUrlParams();
+
+    return {
+      payerID:
+        queryParams.get('payerID') ||
+        queryParams.get('PayerID') ||
+        queryParams.get('payerId') ||
+        browserParams.get('payerID') ||
+        browserParams.get('PayerID') ||
+        browserParams.get('payerId'),
+      paymentID:
+        queryParams.get('paymentID') ||
+        queryParams.get('paymentId') ||
+        queryParams.get('payment_id') ||
+        browserParams.get('paymentID') ||
+        browserParams.get('paymentId') ||
+        browserParams.get('payment_id'),
+    };
+  }
+
+  private getBrowserUrlParams(): URLSearchParams {
+    const params = new URLSearchParams(window.location.search);
+    const hashQuery = window.location.hash.includes('?')
+      ? window.location.hash.split('?')[1]
+      : '';
+
+    new URLSearchParams(hashQuery).forEach((value, key) => {
+      if (!params.has(key)) {
+        params.set(key, value);
+      }
+    });
+
+    return params;
   }
 }

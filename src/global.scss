@@ -294,3 +294,35 @@ ion-input input:-webkit-autofill:active {
 .category-page {
   min-height: calc(100dvh - 145px) !important;
 }
+
+ion-toast.android-native-toast {
+  --background: rgba(38, 38, 38, 0.96);
+  --color: #ffffff;
+  --border-radius: 9999px;
+  --box-shadow: 0 16px 34px rgba(0, 0, 0, 0.22);
+  --width: fit-content;
+  --min-width: 0;
+  --max-width: min(78vw, 220px);
+  --start: 0;
+  --end: 0;
+  --bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+  --padding-top: 0;
+  --padding-bottom: 0;
+  --padding-start: 0;
+  --padding-end: 0;
+  text-align: center;
+  justify-content: center;
+}
+
+ion-toast.android-native-toast::part(container) {
+  padding: 5px 12px;
+  margin: 0 auto;
+}
+
+ion-toast.android-native-toast::part(message) {
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.2;
+  text-align: center;
+}

@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { IonIcon, IonInput, IonContent, IonButton } from "@ionic/angular/standalone";
 import { addIcons } from 'ionicons';
+import { BreadcrumbsComponent } from 'src/app/shared/breadcrumbs/breadcrumbs.component';
 import {
   personOutline,
   mailOutline,
@@ -27,7 +28,7 @@ import { UtilService } from 'src/app/services/util.service';
   templateUrl: './change-password.component.html',
   styleUrls: ['./change-password.component.scss'],
   standalone: true,
-  imports: [CommonModule, FormsModule, IonContent, IonIcon, IonInput, IonButton, FooterComponent]
+  imports: [CommonModule, FormsModule, IonContent, IonIcon, IonInput, FooterComponent, BreadcrumbsComponent]
 })
 export class ChangePasswordComponent implements OnInit {
 
@@ -45,6 +46,10 @@ export class ChangePasswordComponent implements OnInit {
   showConfirm = false;
 
   private originalEmail = '';
+
+  breadcrumb = [
+    { label: 'setting', url: '/account-settings' },
+  ];
 
   constructor(
     private apiService: ApiService,

@@ -1,106 +1,102 @@
 <ion-content>
-<div class="page-container ion-padding">
-  <div class="feedback-container container">
+  <div class="page-container ion-padding">
+    <div class="feedback-container container">
 
-    <!-- Feedback Form Card -->
-    <div class="settings-card">
+      <!-- Feedback Form Card -->
+      <div class="settings-card">
 
-      <!-- Card Header -->
-      <div class="section-header align-items-center">
-        <div class="icon-wrapper">
-          <ion-icon name="chatbubble-ellipses-outline"></ion-icon>
-        </div>
-        <div class="header-text">
-          <h2 class="title">Send Feedback</h2>
-          <p class="subtitle">We'd love to hear from you. Share your thoughts or report an issue.</p>
-        </div>
-      </div>
-
-      <div class="form-wrapper">
-
-        <!-- Subject -->
-        <div class="input-group">
-          <label>Subject</label>
-          <div class="widget-row">
-            <ion-icon name="create-outline" class="input-icon"></ion-icon>
-            <ion-input [(ngModel)]="subject" type="text" placeholder="What is your feedback about?"></ion-input>
+        <!-- Card Header -->
+        <div class="section-header align-items-center">
+          <div class="icon-wrapper">
+            <ion-icon name="chatbubble-ellipses-outline"></ion-icon>
+          </div>
+          <div class="header-text">
+            <h2 class="title">Send Feedback</h2>
+            <p class="subtitle">We'd love to hear from you. Share your thoughts or report an issue.</p>
           </div>
         </div>
 
-        <!-- Message -->
-        <div class="input-group">
-          <label>Feedback</label>
-          <div class="textarea-row">
-            <ion-icon name="document-text-outline" class="textarea-icon"></ion-icon>
-            <ion-textarea [(ngModel)]="message" placeholder="Describe your feedback in detail..." [rows]="5"
-              auto-grow="false"></ion-textarea>
-          </div>
-          <div class="char-count">
-            <span [class.over-limit]="message.length > 1000">{{ message.length }}</span> / 1000
-          </div>
-        </div>
+        <div class="form-wrapper">
 
-        <!-- Attachments -->
-        <div class="input-group">
-          <label>Attachments <span class="optional-tag">optional</span></label>
-          <div class="drop-zone" [class.drag-over]="isDragOver" (dragover)="onDragOver($event)"
-            (dragleave)="isDragOver = false" (drop)="onDrop($event)" (click)="fileInput.click()">
-            <ion-icon name="cloud-upload-outline" class="upload-icon"></ion-icon>
-            <p class="drop-text">Drag & drop files here, or <span class="browse-link">browse</span></p>
-            <p class="drop-hint">Images, PDFs, and documents up to 10 MB each (max 3 files)</p>
-            <input #fileInput type="file" multiple style="display:none"
-              (change)="onFileSelected($event)" />
-          </div>
-
-          <!-- Attached Files List -->
-          <div class="file-list" *ngIf="attachments.length > 0">
-            <div class="file-item" *ngFor="let file of attachments; let i = index">
-              <div class="file-meta">
-                <ion-icon [name]="getFileIcon(file)" class="file-type-icon"></ion-icon>
-                <div class="file-info">
-                  <span class="file-name">{{ file.name }}</span>
-                  <span class="file-size">{{ formatSize(file.size) }}</span>
-                </div>
-              </div>
-              <button class="remove-file-btn" (click)="removeAttachment(i)">
-                <ion-icon name="close-circle-outline"></ion-icon>
-              </button>
+          <!-- Subject -->
+          <div class="input-group">
+            <label>Subject</label>
+            <div class="widget-row">
+              <ion-icon name="create-outline" class="input-icon"></ion-icon>
+              <ion-input [(ngModel)]="subject" type="text" placeholder="What is your feedback about?"></ion-input>
             </div>
           </div>
+
+          <!-- Message -->
+          <div class="input-group">
+            <label>Feedback</label>
+            <div class="textarea-row">
+              <ion-icon name="document-text-outline" class="textarea-icon"></ion-icon>
+              <ion-textarea [(ngModel)]="message" placeholder="Describe your feedback in detail..." [rows]="5"
+                auto-grow="false"></ion-textarea>
+            </div>
+            <div class="char-count">
+              <span [class.over-limit]="message.length > 1000">{{ message.length }}</span> / 1000
+            </div>
+          </div>
+
+          <!-- Attachments -->
+          <div class="input-group">
+            <label>Attachments <span class="optional-tag">optional</span></label>
+            <div class="drop-zone" [class.drag-over]="isDragOver" (dragover)="onDragOver($event)"
+              (dragleave)="isDragOver = false" (drop)="onDrop($event)" (click)="fileInput.click()">
+              <ion-icon name="cloud-upload-outline" class="upload-icon"></ion-icon>
+              <p class="drop-text">Drag & drop files here, or <span class="browse-link">browse</span></p>
+              <p class="drop-hint">Images, PDFs, and documents up to 10 MB each (max 3 files)</p>
+              <input #fileInput type="file" multiple style="display:none" (change)="onFileSelected($event)" />
+            </div>
+
+            <!-- Attached Files List -->
+            <div class="file-list" *ngIf="attachments.length > 0">
+              <div class="file-item" *ngFor="let file of attachments; let i = index">
+                <div class="file-meta">
+                  <ion-icon [name]="getFileIcon(file)" class="file-type-icon"></ion-icon>
+                  <div class="file-info">
+                    <span class="file-name">{{ file.name }}</span>
+                    <span class="file-size">{{ formatSize(file.size) }}</span>
+                  </div>
+                </div>
+                <button class="remove-file-btn" (click)="removeAttachment(i)">
+                  <ion-icon name="close-circle-outline"></ion-icon>
+                </button>
+              </div>
+            </div>
+          </div>
+
+        </div><!-- /form-wrapper -->
+
+        <!-- Action Row -->
+        <div class="action-row justify-content-end">
+          <button class="btn btn-secondary me-2" (click)="resetForm()">
+            Reset
+          </button>
+          <button class="btn btn-primary" (click)="submitFeedback()" [disabled]="isSubmitting">
+            {{ isSubmitting ? 'Sending…' : 'Send Feedback' }}
+          </button>
         </div>
 
-      </div><!-- /form-wrapper -->
+      </div><!-- /settings-card -->
 
-      <!-- Action Row -->
-      <div class="action-row justify-content-end">
-        <button class="btn btn-secondary me-2" (click)="resetForm()">
-          <ion-icon name="refresh-outline" class="btn-icon"></ion-icon>
-          Reset
+      <!-- Success Banner (shown after submit) -->
+      <div class="success-banner" *ngIf="isSubmitted">
+        <div class="success-icon-wrap">
+          <ion-icon name="checkmark-circle-outline"></ion-icon>
+        </div>
+        <div class="success-text">
+          <h3>Thank you for your feedback!</h3>
+          <p>We'll review your message and get back to you shortly.</p>
+        </div>
+        <button class="btn btn-secondary" (click)="resetForm()">
+          Send Another
         </button>
-        <button class="btn btn-primary" (click)="submitFeedback()" [disabled]="isSubmitting">
-          <ion-icon [name]="isSubmitting ? 'hourglass-outline' : 'send-outline'" class="btn-icon"
-            [class.spin]="isSubmitting"></ion-icon>
-          {{ isSubmitting ? 'Sending…' : 'Send Feedback' }}
-        </button>
       </div>
 
-    </div><!-- /settings-card -->
-
-    <!-- Success Banner (shown after submit) -->
-    <div class="success-banner" *ngIf="isSubmitted">
-      <div class="success-icon-wrap">
-        <ion-icon name="checkmark-circle-outline"></ion-icon>
-      </div>
-      <div class="success-text">
-        <h3>Thank you for your feedback!</h3>
-        <p>We'll review your message and get back to you shortly.</p>
-      </div>
-      <button class="btn btn-secondary" (click)="resetForm()">
-        Send Another
-      </button>
     </div>
-
   </div>
-</div>
-<app-footer></app-footer>
+  <app-footer></app-footer>
 </ion-content>

@@ -77,6 +77,10 @@ export class AppComponent implements OnInit {
       }
     });
 
+    App.addListener('appUrlOpen', (event) => {
+      this.handleAppUrlOpen(event.url);
+    });
+
     const privateKey = this.utilService.getPrivateKey();
     if (!privateKey) return;
 
@@ -113,6 +117,33 @@ export class AppComponent implements OnInit {
         },
         error: (err) => console.error('Ez Pages error:', err)
       });
+    }
+  }
+
+  private handleAppUrlOpen(url: string) {
+    try {
+      const openedUrl = new URL(url);
+      const payerID =
+        openedUrl.searchParams.get('payerID') ||
+        openedUrl.searchParams.get('PayerID') ||
+        openedUrl.searchParams.get('payerId');
+      const paymentID =
+        openedUrl.searchParams.get('paymentID') ||
+        openedUrl.searchParams.get('paymentId') ||
+        openedUrl.searchParams.get('payment_id');
+
+      if (payerID && paymentID) {
+        this.router.navigate(['/checkout'], {
+          queryParams: { payerID, paymentID },
+        });
+        return;
+      }
+
+      if (openedUrl.pathname) {
+        this.router.navigateByUrl(openedUrl.pathname + openedUrl.search);
+      }
+    } catch (error) {
+      console.error('App URL open error:', error);
     }
   }
 

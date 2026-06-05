@@ -42,10 +42,7 @@
           <div class="tool-list">
             <label class="tool-row" *ngFor="let child of group.children; trackBy: trackByChild">
               <span class="tool-name">{{ child.name }}</span>
-              <ion-toggle
-                [(ngModel)]="child.show"
-                [attr.aria-label]="'Show ' + child.name"
-              ></ion-toggle>
+              <ion-toggle [(ngModel)]="child.show" [attr.aria-label]="'Show ' + child.name"></ion-toggle>
             </label>
           </div>
         </section>
@@ -58,7 +55,6 @@
         </div>
 
         <ion-button (click)="saveChanges()" [disabled]="isSaving || !hasChanges">
-          <ion-icon name="save-outline" slot="start"></ion-icon>
           Save Changes
         </ion-button>
       </div>

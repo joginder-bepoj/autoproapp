@@ -6,6 +6,7 @@ import { ApiService } from './api-service';
 import { Storage } from '@ionic/storage-angular';
 import { Capacitor } from '@capacitor/core';
 import { AppToastService } from './app-toast.service';
+import { ToastController } from '@ionic/angular/standalone';
 
 @Injectable({
   providedIn: 'root'
@@ -15,6 +16,8 @@ export class UtilService {
   private apiService = inject(ApiService);
   private storage = inject(Storage);
   private customToast = inject(AppToastService);
+  private toastController = inject(ToastController);
+  private activeMobileToast?: HTMLIonToastElement;
 
   private _storageReady: Promise<Storage>;
 
@@ -255,8 +258,46 @@ export class UtilService {
   // ─── Toast ─────────────────────────────────────────────────────────────────
 
   async showToast(message: string, color: 'success' | 'danger' | 'warning' | 'primary' = 'primary', duration: number = 3000) {
+    if (this.shouldUseMobileToast()) {
+      await this.showMobileToast(message, duration);
+      return;
+    }
+
     const type = color === 'primary' ? 'info' : color;
     this.customToast.show(message, type, duration);
+  }
+
+  private shouldUseMobileToast(): boolean {
+    return (
+      Capacitor.isNativePlatform() ||
+      (typeof window !== 'undefined' &&
+        window.matchMedia('(max-width: 768px)').matches)
+    );
+  }
+
+  private async showMobileToast(message: string, duration: number): Promise<void> {
+    try {
+      await this.activeMobileToast?.dismiss();
+    } catch {
+      // Already dismissed.
+    }
+
+    const toast = await this.toastController.create({
+      message,
+      duration,
+      position: 'bottom',
+      mode: 'md',
+      cssClass: 'android-native-toast',
+      animated: true,
+    });
+
+    this.activeMobileToast = toast;
+    toast.onDidDismiss().then(() => {
+      if (this.activeMobileToast === toast) {
+        this.activeMobileToast = undefined;
+      }
+    });
+    await toast.present();
   }
 
   // ─── Cart ──────────────────────────────────────────────────────────────────

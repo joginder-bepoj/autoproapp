@@ -391,6 +391,7 @@
         gap: 16px;
         transition: all 0.3s;
         position: relative;
+        cursor: pointer;
 
         &:hover {
             border-color: var(--main-bg-color);
@@ -1288,8 +1289,13 @@
 }
 
 @keyframes modalFadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
 }
 
 @keyframes modalSlideUp {
@@ -1297,6 +1303,7 @@
         opacity: 0;
         transform: translateY(20px) scale(0.95);
     }
+
     to {
         opacity: 1;
         transform: translateY(0) scale(1);
@@ -1441,4 +1448,3 @@
         }
     }
 }
-

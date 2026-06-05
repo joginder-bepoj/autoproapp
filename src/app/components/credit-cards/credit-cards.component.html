@@ -1,21 +1,22 @@
 <ion-content>
   <div class="page-container">
     <div class="settings-container container">
+      <app-breadcrumbs [breadcrumb]="breadcrumb"></app-breadcrumbs>
       <div class="settings-card">
-        <div class="section-header align-items-center">
-          <div class="icon-wrapper">
-            <ion-icon name="card-outline"></ion-icon>
+        <div class="section-header align-items-center justify-content-between">
+          <div class=" d-flex align-items-center gap-2">
+            <div class="icon-wrapper">
+              <ion-icon name="card-outline"></ion-icon>
+            </div>
+            <div class="header-text">
+              <h2 class="title">Credit Cards</h2>
+              <p class="subtitle">Manage your saved payment methods.</p>
+            </div>
           </div>
-          <div class="header-text">
-            <h2 class="title">Credit Cards</h2>
-            <p class="subtitle">Manage your saved payment methods.</p>
-          </div>
+          <button type="button" class="add-row" (click)="addNewCard()">
+            Add Card
+          </button>
         </div>
-
-        <button type="button" class="add-row" (click)="addNewCard()">
-          <span class="add-text">Add A New Card</span>
-          <ion-icon name="chevron-forward-outline"></ion-icon>
-        </button>
 
         <div class="card-list" *ngIf="cards.length > 0; else empty">
           <div class="card-row" *ngFor="let c of cards; trackBy: trackByCardId">
@@ -57,13 +58,9 @@
     </div>
   </div>
 
-  <app-add-credit-card-modal
-    *ngIf="showAddCardModal"
-    [addresses]="user?.addresses || []"
-    [selectedAddressId]="user?.defaultShippingAddressID"
-    (saved)="onCardSaved()"
-    (cancel)="onAddCardCancel()"
-  ></app-add-credit-card-modal>
+  <app-add-credit-card-modal *ngIf="showAddCardModal" [addresses]="user?.addresses || []"
+    [selectedAddressId]="user?.defaultShippingAddressID" (saved)="onCardSaved()"
+    (cancel)="onAddCardCancel()"></app-add-credit-card-modal>
 
   <app-footer></app-footer>
 </ion-content>

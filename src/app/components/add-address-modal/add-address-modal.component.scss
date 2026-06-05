@@ -1,46 +1,135 @@
 .modal-overlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0,0,0,0.5);
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1200;
-  padding: 20px;
+  z-index: 99999;
+  padding: 16px;
+  overflow-y: auto;
 }
 
 .modal-box {
   background: #fff;
   width: 100%;
   max-width: 520px;
-  border-radius: 10px;
-  padding: 16px;
+  border-radius: 12px;
+  padding: 20px;
+  margin: auto;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.12);
 }
 
 .modal-header {
-  display:flex;
-  align-items:center;
+  display: flex;
+  align-items: center;
   justify-content: space-between;
+
+  h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #0f172a;
+  }
 }
 
 .modal-body {
-  margin-top: 12px;
-  display:flex;
+  margin-top: 18px;
+  display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
+}
+
+.card-input {
+  --background: #ffffff;
+  --border-color: #d8e1ea;
+  --border-radius: 8px;
+  --border-style: solid;
+  --border-width: 1px;
+  --color: #0f172a;
+  --highlight-color-focused: var(--main-bg-color, #0085be);
+  --padding-bottom: 12px;
+  --padding-end: 14px;
+  --padding-start: 14px;
+  --padding-top: 12px;
+  min-height: 48px;
+  border: 1px solid #d8e1ea;
+  border-radius: 8px;
+  color: #0f172a;
+  font-size: 0.95rem;
+  overflow: hidden;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+
+  &.ion-focused {
+    border-color: var(--main-bg-color, #0085be);
+    box-shadow: 0 0 0 3px rgba(0, 133, 190, 0.12);
+  }
+}
+
+.card-input::part(native) {
+  padding-inline-start: 14px;
+  padding-inline-end: 14px;
+}
+
+.card-input::part(input) {
+  font-size: 0.95rem;
+}
+
+.card-input input::placeholder {
+  color: #64748b;
+  opacity: 1;
+}
+
+.card-select {
+  --background: #ffffff;
+  --border-color: #d8e1ea;
+  --border-radius: 8px;
+  --border-style: solid;
+  --border-width: 1px;
+  --color: #0f172a;
+  --highlight-color-focused: var(--main-bg-color, #0085be);
+  --padding-bottom: 12px;
+  --padding-end: 14px;
+  --padding-start: 14px;
+  --padding-top: 12px;
+  min-height: 48px;
+  border: 1px solid #d8e1ea;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+
+  &.ion-focused {
+    border-color: var(--main-bg-color, #0085be);
+    box-shadow: 0 0 0 3px rgba(0, 133, 190, 0.12);
+  }
+}
+
+.card-select::part(label) {
+  color: #64748b;
 }
 
 .row.two {
-  display:flex;
-  gap:8px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin: 0%;
 }
 
 .actions {
-  margin-top: 12px;
-  display:flex;
-  gap:8px;
+  margin-top: 14px;
+  display: flex;
+  gap: 8px;
   flex-direction: column;
+
+  ion-button {
+    --border-radius: 8px;
+    min-height: 42px;
+    font-weight: 800;
+  }
+}
+
+@media (max-width: 480px) {
+  .row.two {
+    grid-template-columns: 1fr;
+  }
 }

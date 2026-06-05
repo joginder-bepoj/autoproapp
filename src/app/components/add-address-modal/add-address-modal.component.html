@@ -7,28 +7,29 @@
       </div>
 
       <div class="modal-body">
-        <ion-input placeholder="Address Nickname (ie. Work)" [(ngModel)]="nickname" class="mb-2"></ion-input>
+        <ion-input class="card-input" placeholder="Address Nickname (ie. Work)" [(ngModel)]="nickname"></ion-input>
+
         <div class="row two">
-          <ion-input placeholder="First Name" [(ngModel)]="firstName"></ion-input>
-          <ion-input placeholder="Last Name" [(ngModel)]="lastName"></ion-input>
+          <ion-input class="card-input" placeholder="First Name" [(ngModel)]="firstName"></ion-input>
+          <ion-input class="card-input" placeholder="Last Name" [(ngModel)]="lastName"></ion-input>
         </div>
 
-        <ion-input placeholder="Company Name" [(ngModel)]="company" class="mb-2"></ion-input>
-        <ion-input placeholder="Address Line 1" [(ngModel)]="addressFirstLine" class="mb-2"></ion-input>
-        <ion-input placeholder="Address Line 2" [(ngModel)]="addressSecondLine" class="mb-2"></ion-input>
+        <ion-input class="card-input" placeholder="Company Name" [(ngModel)]="company"></ion-input>
+        <ion-input class="card-input" placeholder="Address Line 1" [(ngModel)]="addressFirstLine"></ion-input>
+        <ion-input class="card-input" placeholder="Address Line 2" [(ngModel)]="addressSecondLine"></ion-input>
 
-        <ion-select placeholder="Select Country" [(ngModel)]="country" (ionChange)="onCountryChange()" interface="popover">
+        <ion-select class="card-select" placeholder="Select Country" [(ngModel)]="country" (ionChange)="onCountryChange()" interface="popover">
           <ion-select-option *ngFor="let c of countries" [value]="c.code">{{ c.name }}</ion-select-option>
         </ion-select>
 
-        <ion-select placeholder="State / Province" [(ngModel)]="state" interface="popover" class="mt-2">
+        <ion-select class="card-select" placeholder="State / Province" [(ngModel)]="state" interface="popover">
           <ion-select-option *ngFor="let s of filteredStates" [value]="s.code">{{ s.name }}</ion-select-option>
           <ion-select-option *ngIf="filteredStates.length === 0" value="">No states available</ion-select-option>
         </ion-select>
 
-        <ion-input placeholder="City" [(ngModel)]="city" class="mb-2"></ion-input>
-        <ion-input placeholder="Zip / Postal Code" [(ngModel)]="postalCode" class="mb-2"></ion-input>
-        <ion-input placeholder="Phone Number" [(ngModel)]="phoneNumber" class="mb-2"></ion-input>
+        <ion-input class="card-input" placeholder="City" [(ngModel)]="city"></ion-input>
+        <ion-input class="card-input" placeholder="Zip / Postal Code" [(ngModel)]="postalCode"></ion-input>
+        <ion-input class="card-input" placeholder="Phone Number" [(ngModel)]="phoneNumber" type="tel"></ion-input>
 
         <div class="actions">
           <ion-button expand="block" (click)="submit()" [disabled]="isSaving">{{ isSaving ? 'Saving...' : 'Submit' }}</ion-button>

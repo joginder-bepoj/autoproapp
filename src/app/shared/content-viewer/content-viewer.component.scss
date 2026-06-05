@@ -192,6 +192,7 @@
 
         &:hover {
             color: var(--main-bg-color);
+
             ion-icon {
                 color: var(--main-bg-color);
             }
@@ -204,7 +205,7 @@
         table {
             border-collapse: separate;
             border-spacing: 0;
-            margin: 25px 0;
+            margin: 12px 0;
             font-size: 14px;
             background-color: #fff;
             border-radius: 12px;

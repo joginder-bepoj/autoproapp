@@ -8,6 +8,10 @@ const config: CapacitorConfig = {
   server: {
     allowNavigation: [
       'https://api.americankeysupply.com',
+      'https://www.paypal.com',
+      'https://paypal.com',
+      'https://www.sandbox.paypal.com',
+      'https://sandbox.paypal.com',
     ]
   },
 

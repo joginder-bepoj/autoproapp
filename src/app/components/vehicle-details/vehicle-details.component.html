@@ -131,7 +131,8 @@
             <h2 class="vd-section-heading">The Keys</h2>
           </div>
           <div class="vd-item-list">
-            <div class="vd-item-card" *ngFor="let key of mechanicalKeys">
+            <div [routerLink]="['/product-details/', getFirstProductId(key.products.products_id)]" class="vd-item-card"
+              *ngFor="let key of mechanicalKeys">
               <div class="vd-item-type">Mechanical Key</div>
               <img *ngIf="key.image" [src]="imgBaseUrl + key.image"
                 onerror="this.src='assets/images/no-image-available.jpg'" class="vd-item-img">
@@ -141,14 +142,14 @@
                   [routerLink]="['/product', getFirstProductId(key.products.products_id)]" class="vd-item-price">${{
                   key.products.least_price | number:'1.2-2' }}</a>
               </div>
-              <button class="vd-tool-btn" *ngIf="key.products?.products_id"
+              <!-- <button class="vd-tool-btn" *ngIf="key.products?.products_id"
                 (click)="addToCart(key, 'key'); $event.stopPropagation();" style="margin-right: 8px;">
                 <ion-icon name="cart-outline"></ion-icon>
-              </button>
-              <button class="vd-tool-btn" *ngIf="key.products?.products_id"
-                [routerLink]="['/product', getFirstProductId(key.products.products_id)]">
+              </button> -->
+              <!-- <button class="vd-tool-btn" *ngIf="key.products?.products_id"
+                >
                 <ion-icon name="build-outline"></ion-icon>
-              </button>
+              </button> -->
             </div>
           </div>
         </div>

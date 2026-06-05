@@ -45,6 +45,9 @@ export class OrderHistoryComponent implements OnInit {
 
   isLoading = false;
   orders: NormalizedOrder[] = [];
+  breadcrumb = [
+    { label: 'setting', url: '/account-settings' },
+  ];
 
   constructor(
     private apiService: ApiService,

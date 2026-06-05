@@ -20,6 +20,8 @@
   display: flex;
   align-items: center;
   transition: all 0.2s ease;
+  cursor: pointer;
+  text-transform: capitalize;
 }
 
 .breadcrumb-sep {

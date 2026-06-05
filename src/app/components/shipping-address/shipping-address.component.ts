@@ -38,14 +38,16 @@ interface ShippingAddress {
     IonIcon,
     FooterComponent,
     BreadcrumbsComponent
-    ,AddAddressModalComponent
+    , AddAddressModalComponent
   ]
 })
 export class ShippingAddressComponent implements OnInit {
   addresses: ShippingAddress[] = [];
   selectedAddressId: string | number | null = null;
   showAddressModal = false;
-
+  breadcrumb = [
+    { label: 'setting', url: '/account-settings' },
+  ];
   constructor(
     private apiService: ApiService,
     private utilService: UtilService,
