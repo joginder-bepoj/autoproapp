@@ -108,15 +108,6 @@ export class AppComponent implements OnInit {
         error: (err) => console.error('Cart error:', err)
       });
 
-      this.apiService.getEzPages().subscribe({
-        next: (res: any) => {
-          if (res) {
-            console.log(res, 'res data');
-            this.utilService.setEzPages(res);
-          }
-        },
-        error: (err) => console.error('Ez Pages error:', err)
-      });
     }
   }
 

@@ -11,6 +11,10 @@
     </h1>
     <p class="results-subtitle" *ngIf="products.length > 0">Find the best products for your needs according to your
       search ({{products.length}} items)</p>
+    <p class="results-subtitle" *ngIf="!isCategoryPage && finalEzProducts.length > 0">
+      EZ Products: {{ finalEzProducts.length }}<span *ngIf="ezTotalResults"> of {{ ezTotalResults }}</span>
+      | Standard Products: {{ finalStandardProducts.length }}
+    </p>
   </header>
 
 
@@ -24,16 +28,22 @@
   <!-- Product Grid -->
   <div class="product-grid" *ngIf="!loading && !error && products.length > 0">
     <div class="product-card" *ngFor="let product of products; trackBy: trackByProductId">
-      <!-- <div class="card-overlay-top">
-        <span class="status-tag" [ngClass]="{'out-of-stock': product.status === 'Out of Stock'}">
-          {{ product.status }}
+      <div class="card-overlay-top" *ngIf="product.searchGroup">
+        <span class="status-tag" [class.ez-product]="product.searchGroup === 'EZ Product'">
+          {{ product.searchGroup }}
         </span>
-      </div> -->
+      </div>
 
       <!-- Image Section -->
       <div class="image-section" (click)="navigateToDetails(product.itemID)">
 
-        <img [src]="getImageBaseUrl() + product.image || '/assets/images/logo.png'" [alt]="product.name">
+        <img
+          [src]="product.image ? baseUrl + product.image : 'assets/images/no-image-available.jpg'"
+          [alt]="product.name"
+          loading="lazy"
+          decoding="async"
+          onerror="this.src='assets/images/no-image-available.jpg'"
+        >
       </div>
 
       <!-- Info Section -->
@@ -58,7 +68,7 @@
         <div class="cta-section">
           <button [ngClass]="{'out-of-stock': !product.inStock}" class="action-btn primary-btn"
             (click)="addToCart(product)">
-            {{getProductStatus(product)}}
+            {{ product.inStock ? 'ADD TO CART' : 'IN STOCK SOON' }}
           </button>
         </div>
       </div>
@@ -66,7 +76,7 @@
   </div>
 
   <!-- Numerical Pagination -->
-  <div class="pagination-container" *ngIf="!loading && !error && totalPages > 1">
+  <div class="pagination-container" *ngIf="!loading && !error && isCategoryPage && totalPages > 1">
     <button class="pag-btn prev-btn" [disabled]="currentPage === 0" (click)="goToPage(currentPage - 1)">
       <ion-icon name="chevron-back-outline"></ion-icon>
     </button>
@@ -87,6 +97,12 @@
 
     <button class="pag-btn next-btn" [disabled]="currentPage === totalPages - 1" (click)="goToPage(currentPage + 1)">
       <ion-icon name="chevron-forward-outline"></ion-icon>
+    </button>
+  </div>
+
+  <div class="load-more-container" *ngIf="!loading && !error && canLoadMoreEz">
+    <button class="load-more-btn" (click)="loadMoreEzProducts()" [disabled]="isLoadingMoreEz">
+      {{ isLoadingMoreEz ? 'Loading...' : 'Load More EZ Products' }}
     </button>
   </div>
 

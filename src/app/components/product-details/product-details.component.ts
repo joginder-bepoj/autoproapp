@@ -52,12 +52,14 @@ export class ProductDetailsComponent implements OnInit {
   loading: boolean = false;
   error: string | null = null;
   selectedOptions: any = {};
+  baseUrl: string;
   private apiService = inject(ApiService);
   private route = inject(ActivatedRoute);
 
 
   constructor(private utilService: UtilService) {
     addIcons({ addOutline, removeOutline, cartOutline, heartOutline, shareOutline, chevronForwardOutline, chevronDownOutline, checkmarkCircleOutline, carOutline, buildOutline, alertCircleOutline, checkmarkOutline, closeOutline });
+    this.baseUrl = this.utilService.getImgBaseUrl();
   }
 
   ngOnInit() {
@@ -109,10 +111,6 @@ export class ProductDetailsComponent implements OnInit {
     }
   }
 
-  getImageBaseUrl() {
-    return this.utilService.getImgBaseUrl();
-  }
-
   onOptionChange(optionId: any, value: any) {
     this.selectedOptions[optionId] = value;
   }
@@ -123,4 +121,3 @@ export class ProductDetailsComponent implements OnInit {
     this.utilService.addToCart(this.product);
   }
 }
-

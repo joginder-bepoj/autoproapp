@@ -5,7 +5,7 @@
     <div class="hero-section">
       <div class="hero-bg-wrapper">
         <div class="hero-overlay"></div>
-        <img src="assets/images/aks-hero-bg.jpg" alt="Hero background" class="hero-bg-img">
+        <img src="assets/images/aks-hero-bg.jpg" alt="Hero background" class="hero-bg-img" fetchpriority="high" decoding="async">
       </div>
 
       <div class="container hero-container">
@@ -76,11 +76,12 @@
               (keyup.enter)="onVinSearch()"></ion-input>
             <div class="action-btns d-flex">
               <button class="inner-search-btn me-2" (click)="onVinSearch()">Search</button>
-              <button class="icon-camera-btn">
+              <button class="icon-camera-btn" (click)="openVinScanner()" type="button">
                 <ion-icon name="camera-outline"></ion-icon>
               </button>
             </div>
           </div>
+          <p class="vin-error" *ngIf="scannerError">{{ scannerError }}</p>
         </div>
       </div>
 
@@ -93,7 +94,7 @@
 
         <ion-grid class="tools-grid">
           <ion-row>
-            <ion-col size="12" size-md="4" *ngFor="let tool of tools">
+            <ion-col size="12" size-md="4" *ngFor="let tool of tools; trackBy: trackByToolTitle">
               <div
                 class="tool-card"
                 [ngClass]="{'disabled': !tool.url}"
@@ -114,4 +115,18 @@
     </div>
   </div>
   <app-footer></app-footer>
+
+  <div class="vin-scanner-overlay" *ngIf="isVinScannerOpen">
+    <video #scannerVideo class="vin-scanner-video" playsinline muted></video>
+    <div class="vin-scanner-frame">
+      <span></span>
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+    <p class="vin-scanner-help">
+      {{ scannerMode === 'vin' ? 'Scan VIN barcode' : 'Scan product barcode' }}
+    </p>
+    <button class="vin-scanner-cancel" (click)="closeVinScanner()" type="button">Cancel</button>
+  </div>
 </ion-content>

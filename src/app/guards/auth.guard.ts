@@ -7,7 +7,7 @@ import { UtilService } from '../services/util.service';
  * Checks if the user is fully logged in (has private key + profile data).
  */
 export const authGuard: CanActivateFn = (route, state) => {
-  return true
+  // return true
   const utilService = inject(UtilService);
   const router = inject(Router);
 

@@ -25,9 +25,15 @@
     <div class="cart-content" *ngIf="!loading && items.length > 0">
       <!-- Left Column: Items -->
       <div class="cart-items-section">
-        <div class="cart-item-card" *ngFor="let item of items">
+        <div class="cart-item-card" *ngFor="let item of items; trackBy: trackByItemId">
           <div class="item-img" [routerLink]="['/product-details', item.itemID]">
-            <img [src]="getImageBaseUrl() + item.image" [alt]="item.name" onerror="this.src='assets/images/logo.png'">
+            <img
+              [src]="item.image ? baseUrl + item.image : 'assets/images/no-image-available.jpg'"
+              [alt]="item.name"
+              loading="lazy"
+              decoding="async"
+              onerror="this.src='assets/images/no-image-available.jpg'"
+            >
           </div>
 
           <div class="item-details">

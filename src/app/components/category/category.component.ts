@@ -59,7 +59,6 @@ export class CategoryComponent implements OnInit {
         this.categoryData = res;
         if (this.vehicleSearchQuery) {
           const results = this.searchVehicle();
-          console.log(results, 'result from the make')
           this.makes = results
         } else {
           this.makes = Object.values(res)
@@ -73,7 +72,6 @@ export class CategoryComponent implements OnInit {
   }
 
   onMakeChange(selectedMake: any) {
-    console.log(selectedMake)
     this.selectedModel = {
       modelName: '',
       modelID: '',
@@ -88,7 +86,6 @@ export class CategoryComponent implements OnInit {
     if (selectedMake && this.categoryData[selectedMake.make]) {
       this.currentStep = 2;
       this.selectedMake = selectedMake;
-      console.log(this.selectedMake)
     } else {
       this.currentStep = 1;
     }

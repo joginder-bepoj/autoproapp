@@ -107,7 +107,6 @@ export class ProfileComponent implements OnInit {
         this.userProfile = user;
         this.displayName = this.getProfileDisplayName(user);
         this.apiService.getCustomerContributions(this.userProfile?.customerID).subscribe((data: any) => {
-          console.log('Customer Contributions Raw Data:', data);
           if (data) {
             this.userDetailsOptions[1].options = Object.keys(data).map(key => ({
               key: key,
@@ -115,7 +114,6 @@ export class ProfileComponent implements OnInit {
               value: data[key],
               icon: this.contributionMetadata[key]?.icon || 'help-outline'
             }));
-            console.log('Mapped Options:', this.userDetailsOptions[1].options);
           }
         });
         this.apiService.getDeviceLogins(this.userProfile?.customerID).subscribe((data: any) => {

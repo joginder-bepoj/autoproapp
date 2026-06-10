@@ -187,7 +187,6 @@ export class NissanBcmToPinComponent implements OnInit, OnDestroy {
     this.apiService.getCustomerPoints().subscribe({
       next: (res: any) => {
         if (res) {
-          console.log(res);
           this.user.points = res.data.balance;
         }
       },
@@ -218,7 +217,6 @@ export class NissanBcmToPinComponent implements OnInit, OnDestroy {
       this.utilService.showToast('Sorry, you dont have enough points to convert', 'danger');
     } else {
       this.perform20DigitConversion(bcmCode);
-      console.log(bcmCode, 'bcm code')
 
     }
   }
@@ -249,7 +247,6 @@ export class NissanBcmToPinComponent implements OnInit, OnDestroy {
 
     formattedPin = formattedPin.trim();
     this.pinResult = formattedPin;
-    console.log(formattedPin, 'formatted pin');
     this.showResult = true;
     this.utilService.hideLoader();
 

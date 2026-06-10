@@ -140,7 +140,6 @@ export class VehicleDetailsComponent implements OnInit {
         if (res) {
           this.vehicle = res;
           this.parseVehicleData();
-          console.log(this.vehicle.vehicle_info?.decode_with);
         }
       },
       error: () => {
@@ -150,7 +149,6 @@ export class VehicleDetailsComponent implements OnInit {
 
     this.apiService.getVehicleKeyProgrammingRating(id).subscribe({
       next: (res: any) => {
-        console.log(res)
         if (res) {
           this.keyProgrammingRating = res;
         }
@@ -220,9 +218,7 @@ export class VehicleDetailsComponent implements OnInit {
     // 8. Year Management
     if (this.vehicle.years && this.vehicle.years.length) {
       const currentId = this.route.snapshot.paramMap.get('id');
-      console.log(this.vehicle.years);
       this.activeYear = this.vehicle.years.find((y: any) => y.vehicleID == currentId) || this.vehicle.years[0];
-      console.log(this.activeYear);
     }
 
     // 9. Key Cutting
@@ -331,7 +327,6 @@ export class VehicleDetailsComponent implements OnInit {
   }
 
   reportProgrammingResult(tool: string, worked: boolean) {
-    console.log(`Reporting ${worked ? 'Success' : 'Failure'} for ${tool}`);
     this.addCommentTool = tool;
     this.addCommentResult = worked;
     this.selectedKeyType = 'Standard Transponder';
@@ -380,7 +375,6 @@ export class VehicleDetailsComponent implements OnInit {
   }
 
   viewToolComments(tool: string) {
-    console.log(`Viewing comments for ${tool}`);
     this.selectedTool = tool;
     this.isCommentsModalOpen = true;
   }

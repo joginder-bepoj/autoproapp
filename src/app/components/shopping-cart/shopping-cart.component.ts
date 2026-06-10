@@ -31,6 +31,7 @@ export class ShoppingCartComponent implements OnInit, OnDestroy {
   cart: any = null;
   items: any[] = [];
   loading: boolean = false;
+  baseUrl: string;
 
   pendingUpdates = new Set<number>();
   private cartUpdateSubject = new Subject<{ item: any, qty: number }>();
@@ -54,6 +55,7 @@ export class ShoppingCartComponent implements OnInit, OnDestroy {
       pricetagOutline,
       lockClosedOutline
     });
+    this.baseUrl = this.utilService.getImgBaseUrl();
   }
 
   ngOnInit() {
@@ -130,8 +132,8 @@ export class ShoppingCartComponent implements OnInit, OnDestroy {
     this.utilService.removeFromCart(item);
   }
 
-  getImageBaseUrl() {
-    return this.utilService.getImgBaseUrl();
+  trackByItemId(index: number, item: any): string {
+    return item.itemID;
   }
 
 }

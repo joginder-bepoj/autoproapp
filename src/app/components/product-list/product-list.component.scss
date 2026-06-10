@@ -87,20 +87,20 @@
       left: 8px;
       z-index: 5;
 
-      // .status-tag {
-      //   font-size: 9px;
-      //   font-weight: 700;
-      //   padding: 3px 6px;
-      //   border-radius: 6px;
-      //   background: #e6f6ed;
-      //   color: #1a7f37;
-      //   text-transform: uppercase;
+      .status-tag {
+        font-size: 9px;
+        font-weight: 700;
+        padding: 4px 7px;
+        border-radius: 6px;
+        background: #eef2f6;
+        color: #475569;
+        text-transform: uppercase;
 
-      //   &.out-of-stock {
-      //     background: #ffebe9;
-      //     color: #cf222e;
-      //   }
-      // }
+        &.ez-product {
+          background: #e6f6ed;
+          color: #1a7f37;
+        }
+      }
     }
 
     .out-of-stock {
@@ -361,6 +361,29 @@
       font-size: 16px;
       font-weight: 700;
       user-select: none;
+    }
+  }
+
+  .load-more-container {
+    display: flex;
+    justify-content: center;
+    margin: 40px 0 30px;
+
+    .load-more-btn {
+      border: none;
+      border-radius: 10px;
+      background: var(--main-bg-color);
+      color: #ffffff;
+      font-size: 14px;
+      font-weight: 700;
+      padding: 12px 22px;
+      cursor: pointer;
+      transition: opacity 0.2s ease;
+
+      &:disabled {
+        cursor: not-allowed;
+        opacity: 0.65;
+      }
     }
   }
 }

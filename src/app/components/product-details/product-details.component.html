@@ -22,8 +22,13 @@
       <!-- Left Column: Gallery / Previews -->
       <section class="product-viewer">
         <div class="main-image-card">
-          <img [src]="getImageBaseUrl() + product.image" [alt]="product.name"
-            onerror="this.src='/assets/images/logo.png'">
+          <img
+            [src]="product.image ? baseUrl + product.image : 'assets/images/no-image-available.jpg'"
+            [alt]="product.name"
+            loading="lazy"
+            decoding="async"
+            onerror="this.src='assets/images/no-image-available.jpg'"
+          >
           <!-- <div class="status-overlay" [ngClass]="{'in-stock': product.status === 'In Stock'}">
             {{ product.status }}
           </div> -->

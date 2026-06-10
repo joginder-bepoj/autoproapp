@@ -7,7 +7,7 @@ import { addIcons } from 'ionicons';
 import { BreadcrumbsComponent } from '../../shared/breadcrumbs/breadcrumbs.component';
 import { addOutline, removeOutline, cartOutline, heartOutline, optionsOutline, chevronForwardOutline, alertCircleOutline, searchOutline, chevronDownOutline, chevronBackOutline } from 'ionicons/icons';
 import { ApiService } from '../../services/api-service';
-import { combineLatest, finalize } from 'rxjs';
+import { catchError, combineLatest, finalize, forkJoin, map, of, switchMap } from 'rxjs';
 import { UtilService } from 'src/app/services/util.service';
 
 interface Product {
@@ -19,6 +19,9 @@ interface Product {
   inStock: boolean;
   image: string;
   category: string;
+  products_remote?: string;
+  ez?: string;
+  searchGroup?: 'EZ Product' | 'Standard Product';
 }
 
 @Component({
@@ -42,6 +45,11 @@ export class ProductListComponent implements OnInit {
   breadcrumb: any[] = [];
   isCategoryPage: boolean = false;
   categoryId: string = '';
+  finalEzProducts: Product[] = [];
+  finalStandardProducts: Product[] = [];
+  ezCurrentPage: number = 1;
+  ezTotalResults: number = 0;
+  isLoadingMoreEz: boolean = false;
 
   // Pagination properties
   currentPage: number = 0;
@@ -94,19 +102,91 @@ export class ProductListComponent implements OnInit {
     this.currentPage = page;
     this.utilService.showLoader();
     this.error = null;
+    this.products = [];
+    this.finalEzProducts = [];
+    this.finalStandardProducts = [];
+    this.ezCurrentPage = 1;
+    this.ezTotalResults = 0;
 
-    this.apiService.searchProducts(this.searchQuery, page)
-      .pipe(finalize(() => this.utilService.hideLoader()))
+    const searchText = this.extractSearchText(this.searchQuery);
+
+    forkJoin({
+      productSearch: this.apiService.searchProducts(searchText),
+      ezSearch: this.apiService.searchEzProducts(searchText, 1),
+    })
+      .pipe(
+        switchMap(({ productSearch, ezSearch }: any) => {
+          const standardProducts = this.getProductsFromResponse(productSearch);
+          const productsToEnrich = standardProducts
+            .filter((product: Product) => !product.products_remote && !product.ez && product.itemID)
+            .slice(0, 15);
+
+          if (!productsToEnrich.length) {
+            return of({ standardProducts, ezSearch });
+          }
+
+          return forkJoin(
+            productsToEnrich.map((product: Product) =>
+              this.apiService.getProductRemote(product.itemID).pipe(
+                map((res: any) => ({ product, remote: res?.data || res })),
+                catchError(() => of({ product, remote: null })),
+              )
+            )
+          ).pipe(
+            map((remoteResults: any[]) => {
+              remoteResults.forEach(({ product, remote }) => {
+                product.products_remote = remote?.products_remote || product.products_remote;
+                product.ez = remote?.ez || product.ez;
+              });
+
+              return { standardProducts, ezSearch };
+            })
+          );
+        }),
+        finalize(() => this.utilService.hideLoader())
+      )
       .subscribe({
-        next: (res: any) => {
-          this.products = res?.data?.products || [];
-          this.totalResults = res?.data?.totalResults || 0;
-          this.displayResult = res?.data?.displayResult || 60;
-          console.log(this.products, 'i am the products');
+        next: ({ standardProducts, ezSearch }: any) => {
+          const ezProducts = this.getProductsFromResponse(ezSearch);
+          this.ezTotalResults = this.getTotalResultsFromResponse(ezSearch);
+          this.applySearchResults(searchText, standardProducts, ezProducts);
         },
         error: (err: any) => {
           this.error = 'Failed to load products. Please try again.';
           console.error('Search error:', err);
+        }
+      });
+  }
+
+  loadMoreEzProducts() {
+    if (!this.canLoadMoreEz || this.isLoadingMoreEz) return;
+
+    this.isLoadingMoreEz = true;
+    const nextPage = this.ezCurrentPage + 1;
+    const searchText = this.extractSearchText(this.searchQuery);
+
+    this.apiService.searchEzProducts(searchText, nextPage)
+      .pipe(finalize(() => this.isLoadingMoreEz = false))
+      .subscribe({
+        next: (res: any) => {
+          this.ezCurrentPage = nextPage;
+          const nextEzProducts = this.getProductsFromResponse(res).map((product: Product) => ({
+            ...product,
+            searchGroup: 'EZ Product' as const,
+          }));
+
+          this.finalEzProducts = this.mergeAndDeduplicateProducts([
+            ...this.finalEzProducts,
+            ...nextEzProducts,
+          ]);
+          this.products = this.mergeAndDeduplicateProducts([
+            ...this.finalEzProducts,
+            ...this.finalStandardProducts,
+          ]);
+          this.totalResults = this.products.length;
+        },
+        error: () => {
+          this.error = 'Failed to load more EZ products. Please try again.';
         }
       });
   }
@@ -123,7 +203,6 @@ export class ProductListComponent implements OnInit {
           this.products = res?.data?.products || [];
           this.totalResults = res?.data?.totalResults || 0;
           this.displayResult = res?.data?.displayResult || 60;
-          console.log(this.products, 'i am the products');
         },
         error: (err: any) => {
           this.error = 'Failed to load products. Please try again.';
@@ -170,6 +249,10 @@ export class ProductListComponent implements OnInit {
     this.content?.scrollToTop(400);
   }
 
+  get canLoadMoreEz(): boolean {
+    return !this.isCategoryPage && this.finalEzProducts.length < this.ezTotalResults;
+  }
+
   addToCart(product: Product) {
     this.utilService.addToCart({
       itemID: product.itemID,
@@ -187,14 +270,6 @@ export class ProductListComponent implements OnInit {
     }
   }
 
-  getImageBaseUrl() {
-    return this.utilService.getImgBaseUrl();
-  }
-
-  getProductStatus(product: Product) {
-    return product.inStock ? 'ADD TO CART' : 'IN STOCK SOON';
-  }
-
   navigateToDetails(id: string) {
     this.router.navigate([this.searchQuery, 'product-details', id]);
   }
@@ -202,5 +277,73 @@ export class ProductListComponent implements OnInit {
   trackByProductId(index: number, product: Product): string {
     return product.itemID;
   }
-}
 
+  private applySearchResults(searchText: string, standardProducts: Product[], ezProducts: Product[]) {
+    const categorized = this.categorizeProducts(searchText, standardProducts);
+    this.finalEzProducts = this.mergeAndDeduplicateProducts([
+      ...ezProducts.map((product: Product) => ({ ...product, searchGroup: 'EZ Product' as const })),
+      ...categorized.ezProducts,
+    ]);
+    this.finalStandardProducts = categorized.standardProducts;
+    this.products = this.mergeAndDeduplicateProducts([
+      ...this.finalEzProducts,
+      ...this.finalStandardProducts,
+    ]);
+    this.totalResults = this.products.length;
+  }
+
+  private categorizeProducts(searchText: string, products: Product[]) {
+    const normalizedSearch = this.normalizeSearchValue(searchText);
+    const ezProducts: Product[] = [];
+    const standardProducts: Product[] = [];
+
+    products.forEach((product: Product) => {
+      const remote = this.normalizeSearchValue(product.products_remote || '');
+      const ez = this.normalizeSearchValue(product.ez || '');
+      const isEzMatch = !!normalizedSearch && (remote.includes(normalizedSearch) || ez.includes(normalizedSearch));
+
+      if (isEzMatch) {
+        ezProducts.push({ ...product, searchGroup: 'EZ Product' });
+      } else {
+        standardProducts.push({ ...product, searchGroup: 'Standard Product' });
+      }
+    });
+
+    return { ezProducts, standardProducts };
+  }
+
+  private mergeAndDeduplicateProducts(products: Product[]): Product[] {
+    const seen = new Set<string>();
+
+    return products.filter((product: Product) => {
+      const id = product.itemID || (product as any).products_id || product.name;
+      if (!id || seen.has(id)) return false;
+      seen.add(id);
+      return true;
+    });
+  }
+
+  private getProductsFromResponse(res: any): Product[] {
+    return res?.data?.products || res?.products || [];
+  }
+
+  private getTotalResultsFromResponse(res: any): number {
+    return Number(res?.data?.totalResults || res?.totalResults || this.getProductsFromResponse(res).length || 0);
+  }
+
+  private extractSearchText(value: string): string {
+    const trimmed = (value || '').trim();
+
+    try {
+      const url = new URL(trimmed);
+      const lastSegment = url.pathname.split('/').filter(Boolean).pop();
+      return lastSegment || trimmed;
+    } catch {
+      return trimmed;
+    }
+  }
+
+  private normalizeSearchValue(value: string): string {
+    return (value || '').toString().trim().toLowerCase();
+  }
+}

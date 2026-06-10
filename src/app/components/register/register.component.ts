@@ -55,7 +55,6 @@ export class RegisterComponent implements OnInit {
 
   getCustomerQuestion() {
     this.apiService.getCustomerQuestion().subscribe((res) => {
-      console.log('Customer Questions Response:', res);
       const target = res && res.data ? res.data : res;
       if (target) {
         const list = [];
@@ -84,7 +83,6 @@ export class RegisterComponent implements OnInit {
           }
         }
         this.questionList = list;
-        console.log('Parsed questionList:', this.questionList);
       }
     });
   }
@@ -227,11 +225,9 @@ export class RegisterComponent implements OnInit {
       signUpSource: 'autoProApp'
     };
 
-    console.log('Submitting registration payload:', signUpData);
 
     this.apiService.createCustomer(signUpData).subscribe({
       next: (res: any) => {
-        console.log('Customer creation response:', res);
         const data = res && res.data ? res.data : res;
         if (data && (data.result === 'OK' || data.result === 'SUCCESS')) {
           this.utilService.showToast('Account created successfully!', 'success');

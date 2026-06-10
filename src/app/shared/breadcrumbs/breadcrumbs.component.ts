@@ -32,9 +32,7 @@ export class BreadcrumbsComponent implements OnInit, OnDestroy {
     addIcons({ homeOutline, chevronForwardOutline });
   }
 
-  ngOnInit() {
-    console.log(this.breadcrumb, 'i am the breadcrumb');
-  }
+  ngOnInit() { }
 
   ngOnDestroy() {
     this.destroy$.next();

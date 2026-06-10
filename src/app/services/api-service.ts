@@ -415,11 +415,19 @@ export class ApiService {
   // =========================
 
   searchProducts(searchTerm: string, page?: number) {
-    let endpoint = 'product-search/' + searchTerm;
+    let endpoint = 'product-search/' + encodeURIComponent(searchTerm);
     if (page !== undefined && page !== null) {
       endpoint += '?page=' + page;
     }
     return this.request('GET', endpoint);
+  }
+
+  searchEzProducts(searchTerm: string, page: number = 1) {
+    return this.request('GET', `ez-products/${encodeURIComponent(searchTerm)}?page=${page}`);
+  }
+
+  getProductRemote(itemID: string | number) {
+    return this.request('GET', `product-remote/${itemID}`);
   }
 
   getProductDetail(itemID: number) {
@@ -498,6 +506,18 @@ export class ApiService {
     return this.http.get(
       environment.api_firebase_url +
       'vehicle_category_list/categoryList.json'
+    );
+  }
+
+  getVehicleMake(){
+    return this.http.get(
+      environment.api_firebase_url +'getMakes'
+    );
+  }
+
+  decodeVin(vin: string): Observable<any> {
+    return this.http.get(
+      `https://vpic.nhtsa.dot.gov/api/vehicles/DecodeVinValues/${encodeURIComponent(vin)}?format=json`
     );
   }
 

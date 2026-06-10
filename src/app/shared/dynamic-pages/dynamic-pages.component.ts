@@ -1,6 +1,6 @@
 import { FooterComponent } from 'src/app/shared/footer/footer.component';
 import { CommonModule, NgFor } from '@angular/common';
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { IonGrid, IonRow, IonCol, IonIcon, IonContent } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
@@ -47,7 +47,6 @@ export class DynamicPagesComponent implements OnInit {
   ngOnInit() {
     this.route.params.subscribe((params: any) => {
       this.pageQuery = params?.page?.replace(/-/g, ' ');
-      console.log("pageQuery", this.pageQuery);
       if (this.pageQuery === "Articles Tutorials") {
         this.pageQuery = "Articles & Tutorials";
       }
@@ -78,11 +77,9 @@ export class DynamicPagesComponent implements OnInit {
 
   filterEzPages() {
     if (!this.pageQuery) return;
-    console.log("pageQuery", this.pageQuery);
     this.pageData = this.ezPages.filter((page: any) => {
       return page && page.Location && page.Location.toLowerCase().includes(this.pageQuery.toLowerCase());
     }).sort((a: any, b: any) => (a?.['Sort Order'] || 0) - (b?.['Sort Order'] || 0));
-    console.log("pageData", this.pageData);
   }
 
   handlePageClick(page: any) {
