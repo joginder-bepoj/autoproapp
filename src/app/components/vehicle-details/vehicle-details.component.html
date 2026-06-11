@@ -113,16 +113,45 @@
             </div>
           </div>
           <!-- Decoder Info Section -->
-          <div class="decoder-info" *ngIf="this.vehicle.vehicle_info?.decode_with">
+          <div class="decoder-info" *ngIf="getDecoderTools().length">
             <h3 class="section-subtitle basic-info">Decoder Tooling</h3>
-            <div class="basic-info-grid">
-              <div class="basic-info-group mt-3">
-                <div class="basic-info-item" *ngFor="let item of vehicle.vehicle_info?.decode_with | keyvalue">
-                  <span class="info-label">{{ normalizeKey(item.key)}}</span>
 
+            @for (decoder of getDecoderTools(); track $index) {
+              <div class="decoder-meta-card">
+                <div class="decoder-name">{{ normalizeKey(decoder.key) }}</div>
+                <div class="decoder-details">
+                  <ng-container *ngFor="let field of getEntries(decoder.value)">
+                    <div class="decoder-detail-row" *ngIf="field.key !== 'products' && field.key !== 'value' && field.value && field.value !== '-' && field.value !== 'N/A'">
+                      <span class="decoder-detail-label">{{ normalizeKey(field.key) }}:</span>
+                      <span class="decoder-detail-value">{{ getDisplayValue(field.value) }}</span>
+                    </div>
+                  </ng-container>
                 </div>
               </div>
-            </div>
+              <div class="vd-item-list">
+                <div [routerLink]="decoder.value.products?.products_id ? ['/product-details/', getFirstProductId(decoder.value.products.products_id)] : null"
+                  [class.clickable]="decoder.value.products?.products_id"
+                  class="vd-item-card">
+
+                  
+                  
+                  <img [src]="decoder.value.products?.imagePath ? (imgBaseUrl + decoder.value.products.imagePath) : 'assets/images/no-image-available.jpg'"
+                    loading="lazy" decoding="async" onerror="this.src='assets/images/no-image-available.jpg'" class="vd-item-img">
+                  
+                  <div class="vd-item-info">
+                    <div class="vd-item-name">{{ decoder.value.value || 'Decoder' }}</div>
+                    
+                    <!-- Meta Fields -->
+                  
+                    
+                    <a *ngIf="decoder.value.products?.products_id"
+                      [routerLink]="['/product', getFirstProductId(decoder.value.products.products_id)]" class="vd-item-price">
+                      ${{ decoder.value.products.least_price | number:'1.2-2' }}
+                    </a>
+                  </div>
+                </div>
+              </div>
+            }
           </div>
         </div>
 

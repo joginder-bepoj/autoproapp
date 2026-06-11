@@ -23,7 +23,20 @@ if (!function_exists('getallheaders')) {
 /**
  * 🎯 Target API
  */
-$targetBaseUrl = "https://api.americankeysupply.com/V1";
+$api = $_GET['api'] ?? 'v1';
+
+switch ($api) {
+
+    case 'autoApi':
+        $targetBaseUrl = "https://autoproapp.com/autoApi";
+        break;
+
+    case 'v1':
+    default:
+        $targetBaseUrl = "https://api.americankeysupply.com/V1";
+        break;
+}
+
 $path = isset($_GET['path']) ? ltrim($_GET['path'], '/') : '';
 $targetUrl = rtrim($targetBaseUrl, '/') . '/' . $path;
 
@@ -31,8 +44,11 @@ $targetUrl = rtrim($targetBaseUrl, '/') . '/' . $path;
  * 🔗 Query params
  */
 $queryString = $_SERVER['QUERY_STRING'] ?? '';
+
+$queryString = preg_replace('/(^|&)api=[^&]*/', '', $queryString);
 $queryString = preg_replace('/(^|&)path=[^&]*/', '', $queryString);
-$queryString = ltrim($queryString, '&');
+
+$queryString = trim($queryString, '&');
 
 if (!empty($queryString)) {
     $targetUrl .= "?" . $queryString;

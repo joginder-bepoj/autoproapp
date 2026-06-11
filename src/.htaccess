@@ -1,28 +1,33 @@
 <IfModule mod_rewrite.c>
     RewriteEngine On
     RewriteBase /autoproapp/www/
- 
-    # 🔥 FORCE IMPORTANT HEADERS INTO PHP
+
+    # Pass custom headers to PHP
     RewriteCond %{HTTP:Authorization} ^(.*)
     RewriteRule .* - [E=HTTP_AUTHORIZATION:%1]
- 
+
     RewriteCond %{HTTP:Key} ^(.*)
     RewriteRule .* - [E=HTTP_KEY:%1]
- 
+
     RewriteCond %{HTTP:Time} ^(.*)
     RewriteRule .* - [E=HTTP_TIME:%1]
- 
-    RewriteRule ^/?V1/(.*)$ proxy.php?path=$1 [QSA,L]
- 
+
+    # API Proxy Routes
+    RewriteRule ^V1/(.*)$ proxy.php?api=v1&path=$1 [QSA,L]
+    RewriteRule ^autoApi/(.*)$ proxy.php?api=autoApi&path=$1 [QSA,L]
+
+    # Don't rewrite API requests to Angular
     RewriteCond %{REQUEST_URI} !^/autoproapp/www/V1/
- 
-    # 🌐 ANGULAR SPA ROUTING
+    RewriteCond %{REQUEST_URI} !^/autoproapp/www/autoApi/
+
+    # Angular SPA
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteRule . /autoproapp/www/index.html [L]
 </IfModule>
- 
+
 <IfModule mod_headers.c>
     Header always set Access-Control-Allow-Origin "*"
     Header always set Access-Control-Allow-Headers "Authorization, Key, Time, Content-Type"
+    Header always set Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"
 </IfModule>

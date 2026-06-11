@@ -1,11 +1,14 @@
 export const environment = {
   production: true,
 
-  // api_base_url: "https://sandbox.bepoj.com/autoproapp/www/V1/",
-  api_base_url: "https://api.americankeysupply.com/V1/",
-  // api_base_url: "V1/",
+  api_base_url: "https://sandbox.bepoj.com/autoproapp/www/V1/",
+  autopro_base_url:"https://sandbox.bepoj.com/autoproapp/www/autoApi/",
+
+  // api_base_url: "https://api.americankeysupply.com/V1/",
+  // autopro_base_url:"https://autoproapp.com/autoApi/",
 
   api_firebase_url: "https://autoproapp2017.firebaseio.com/",
+
   firebase: {
     apiKey: "AIzaSyDwsJxPwwJ3p5z3I-GTLY7QwX7RaMZ3yUY",
     // apiKey: "AIzaSyA1kkLsRv7v_tTafk5aCQWnXeWV_plC5_k",

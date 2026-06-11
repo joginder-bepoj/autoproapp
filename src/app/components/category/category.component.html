@@ -33,7 +33,7 @@
             <ion-item lines="none" class="custom-item">
               <ion-select placeholder="Select Make" [(ngModel)]="selectedMake" (ionChange)="onMakeChange(selectedMake)"
                 interface="popover" toggleIcon="chevron-forward-outline">
-                <ion-select-option *ngFor="let make of makes" [value]="make">{{make.make}}</ion-select-option>
+                <ion-select-option *ngFor="let make of makes" [value]="make">{{make.name}}</ion-select-option>
                 <ion-select-option *ngIf="!makes || makes.length == 0" disabled>No Makes Available</ion-select-option>
               </ion-select>
             </ion-item>
@@ -51,9 +51,9 @@
               <ion-select placeholder="Select Model" [(ngModel)]="selectedModel"
                 (ionChange)="onModelChange(selectedModel)" [disabled]="!selectedMake" interface="popover"
                 toggleIcon="chevron-forward-outline">
-                <ion-select-option *ngFor="let model of selectedMake.model"
-                  [value]="model">{{model.modelName}}</ion-select-option>
-                <ion-select-option *ngIf="selectedMake && selectedMake.model.length === 0" disabled>No Models
+                <ion-select-option *ngFor="let model of models"
+                  [value]="model">{{model.name}}</ion-select-option>
+                <ion-select-option *ngIf="selectedMake" disabled>No Models
                   Available</ion-select-option>
               </ion-select>
             </ion-item>
@@ -71,7 +71,7 @@
             <ion-item lines="none" class="custom-item">
               <ion-select placeholder="Select Year" [(ngModel)]="selectedYear" [disabled]="!selectedModel"
                 interface="popover" toggleIcon="chevron-forward-outline">
-                <ion-select-option *ngFor="let year of selectedModel.years"
+                <ion-select-option *ngFor="let year of years"
                   [value]="year">{{year.year}}</ion-select-option>
                 <ion-select-option *ngIf="selectedModel && selectedModel.years && selectedModel.years.length == 0"
                   disabled>No Years

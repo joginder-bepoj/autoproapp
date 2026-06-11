@@ -1,7 +1,7 @@
 import { FooterComponent } from 'src/app/shared/footer/footer.component';
 import { Component, OnInit } from '@angular/core';
 import { ApiService } from 'src/app/services/api-service';
-import { IonicModule } from "@ionic/angular";
+import { IonicModule } from '@ionic/angular';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { BreadcrumbsComponent } from 'src/app/shared/breadcrumbs/breadcrumbs.component';
@@ -13,140 +13,189 @@ import { UtilService } from 'src/app/services/util.service';
   templateUrl: './category.component.html',
   styleUrls: ['./category.component.scss'],
   standalone: true,
-  imports: [IonicModule, FormsModule, CommonModule, BreadcrumbsComponent, FooterComponent],
+  imports: [
+    IonicModule,
+    FormsModule,
+    CommonModule,
+    BreadcrumbsComponent,
+    FooterComponent,
+  ],
 })
 export class CategoryComponent implements OnInit {
 
-  categoryData: any = {};
-  makes: any = [];
+  makes: any[] = [];
+  allMakes: any[] = [];
+
+  models: any[] = [];
+  years: any[] = [];
+
   breadcrumb = [];
 
-  selectedMake: any = {
-    make: '',
-    makeID: '',
-    model: []
-  };
-
-  selectedModel: any = {
-    modelName: '',
-    modelID: '',
-    years: []
-  };
-
-  selectedYear: any = {
-    year: '',
-    vehicleID: ''
-  };
+  selectedMake: any = {};
+  selectedModel: any = {};
+  selectedYear: any = {};
 
   vehicleSearchQuery: string = '';
 
   currentStep: number = 1;
 
-  constructor(private apiService: ApiService, private router: Router, private utilService: UtilService, private route: ActivatedRoute) { }
+  constructor(
+    private apiService: ApiService,
+    private router: Router,
+    private utilService: UtilService,
+    private route: ActivatedRoute
+  ) {}
 
   ngOnInit() {
-    this.fetchCategories();
     this.route.queryParams.subscribe((params: any) => {
       this.vehicleSearchQuery = params['search'] || '';
+      this.getVehicleMakes();
     });
   }
 
-  fetchCategories() {
+  getVehicleMakes() {
     this.utilService.showLoader();
-    this.apiService.getCategoryList().subscribe({
+
+    this.apiService.getVehicleMake().subscribe({
       next: (res: any) => {
+
         this.utilService.hideLoader();
-        this.categoryData = res;
-        if (this.vehicleSearchQuery) {
-          const results = this.searchVehicle();
-          this.makes = results
+        this.selectedMake = {};
+        this.selectedModel = {};
+        this.selectedYear = {};
+        this.currentStep = 1;
+        const makes = Array.isArray(res?.[0])
+          ? res[0]
+          : Object.values(res?.[0] || {});
+
+        this.allMakes = [...makes];
+
+        if (this.vehicleSearchQuery?.trim()) {
+          this.makes = this.searchVehicle();
         } else {
-          this.makes = Object.values(res)
+          this.makes = [...this.allMakes];
         }
+
+        console.log('Makes:', this.makes);
       },
       error: (error) => {
         this.utilService.hideLoader();
-        console.error('Error fetching categories:', error);
-      }
+        console.error('Error fetching vehicle makes:', error);
+      },
     });
   }
 
   onMakeChange(selectedMake: any) {
-    this.selectedModel = {
-      modelName: '',
-      modelID: '',
-      years: []
-    };
 
-    this.selectedYear = {
-      year: '',
-      vehicleID: ''
-    };
+    this.selectedMake = selectedMake;
 
-    if (selectedMake && this.categoryData[selectedMake.make]) {
-      this.currentStep = 2;
-      this.selectedMake = selectedMake;
-    } else {
-      this.currentStep = 1;
+    // Reset lower levels
+    this.selectedModel = {};
+    this.selectedYear = {};
+
+    this.models = [];
+    this.years = [];
+
+    this.currentStep = 2;
+
+    if (!selectedMake?.id) {
+      return;
     }
+
+    this.utilService.showLoader();
+
+    this.apiService.getVehicleModel(selectedMake.id).subscribe({
+      next: (res: any) => {
+
+        this.utilService.hideLoader();
+
+        this.models = Array.isArray(res?.[0])
+          ? res[0]
+          : Object.values(res?.[0] || {});
+
+        console.log('Models:', this.models);
+      },
+      error: (error) => {
+        this.utilService.hideLoader();
+        console.error('Error fetching vehicle models:', error);
+      },
+    });
   }
 
   onModelChange(selectedModel: any) {
-    this.selectedYear = {
-      year: '',
-      vehicleID: ''
-    };
 
-    if (selectedModel && selectedModel.years) {
-      this.currentStep = 3;
-    } else {
-      this.currentStep = 2;
+    this.selectedModel = selectedModel;
+
+    // Reset year
+    this.selectedYear = {};
+    this.years = [];
+
+    this.currentStep = 3;
+
+    if (!selectedModel?.id) {
+      return;
     }
+
+    this.utilService.showLoader();
+
+    this.apiService.getVehicleYears(selectedModel.id).subscribe({
+      next: (res: any) => {
+
+        this.utilService.hideLoader();
+
+        this.years = Array.isArray(res?.[0])
+          ? res[0]
+          : Object.values(res?.[0] || {});
+
+        console.log('Years:', this.years);
+      },
+      error: (error) => {
+        this.utilService.hideLoader();
+        console.error('Error fetching vehicle years:', error);
+      },
+    });
   }
 
   onSearch() {
-    if (this.selectedMake && this.selectedModel && this.selectedYear) {
-      this.router.navigateByUrl(`${this.normalizeString(this.selectedMake.make)}/${this.normalizeString(this.selectedModel.modelName)}/vehicle-details/${this.selectedYear.vehicleID}`);
+
+    if (this.isSearchDisabled()) {
+      return;
     }
+
+    this.router.navigateByUrl(
+      `${this.normalizeString(this.selectedMake.name)}/` +
+      `${this.normalizeString(this.selectedModel.name)}/` +
+      `vehicle-details/${this.selectedYear.id}`
+    );
   }
 
   isSearchDisabled(): boolean {
-    return !this.selectedMake.make || !this.selectedModel.modelName || !this.selectedYear.vehicleID;
+    return (
+      !this.selectedMake?.id ||
+      !this.selectedModel?.id ||
+      !this.selectedYear?.id
+    );
   }
 
   normalizeString(str: string): string {
     return str
-      .toLowerCase()
-      .replace(/\s+/g, '-')
-      .replace(/\(.*?\)/g, '')
-      .replace(/-+/g, '-')
-      .replace(/^-|-$/g, '');
+      ?.toLowerCase()
+      ?.replace(/\s+/g, '-')
+      ?.replace(/\(.*?\)/g, '')
+      ?.replace(/-+/g, '-')
+      ?.replace(/^-|-$/g, '') || '';
   }
 
   searchVehicle() {
-    const results: any[] = [];
+
     const query = this.vehicleSearchQuery.trim().toLowerCase();
 
-    Object.values(this.categoryData).forEach((item: any) => {
-      const makeName = item.make?.toLowerCase() || "";
+    if (!query) {
+      return [...this.allMakes];
+    }
 
-      if (makeName.includes(query)) {
-        results.push(item);
-      } else {
-        const matchedModels = (item.model || []).filter((model: any) =>
-          model.modelName?.toLowerCase().includes(query)
-        );
-
-        if (matchedModels.length > 0) {
-          results.push({
-            ...item,
-            model: matchedModels,
-          });
-        }
-      }
-    });
-
-    return results;
+    return this.allMakes.filter((make: any) =>
+      make?.name?.toLowerCase().includes(query)
+    );
   }
-
 }

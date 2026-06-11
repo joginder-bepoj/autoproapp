@@ -1013,6 +1013,46 @@
 
 .decoder-info {
     padding: 40px;
+
+    .decoder-meta-card {
+        // background: #f8fafc;
+        // border: 1px solid #e2e8f0;
+        // border-radius: 12px;
+        // padding: 20px 24px;
+        margin-bottom: 20px;
+
+        .decoder-name {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 12px;
+        }
+
+        .decoder-details {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+
+            .decoder-detail-row {
+                display: flex;
+                align-items: baseline;
+                gap: 8px;
+
+                .decoder-detail-label {
+                    font-size: 0.85rem;
+                    font-weight: 600;
+                    color: #64748b;
+                    flex-shrink: 0;
+                }
+
+                .decoder-detail-value {
+                    font-size: 0.9rem;
+                    font-weight: 600;
+                    color: #1e293b;
+                }
+            }
+        }
+    }
 }
 
 @keyframes fadeIn {

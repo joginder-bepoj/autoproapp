@@ -17,6 +17,7 @@ export class ApiService {
   public loginEmail: string | null = null;
 
   private api_base_url = environment.api_base_url;
+  private autopro_base_url = environment.autopro_base_url;
 
   constructor(private http: HttpClient, private db: Database, private storage: Storage) { }
 
@@ -52,6 +53,7 @@ export class ApiService {
       "Key": email,
       "apiKeyPublic": "zg7gy0p7gliy0dioipz0",
       "apiKeySecret": "n3j5b28ecfb5953f237303075",
+      "x-api-key": "AutoProAPP@123",
     };
   }
 
@@ -63,14 +65,15 @@ export class ApiService {
     method: 'GET' | 'POST',
     endpoint: string,
     data: any = null,
-    skipLoader: boolean = false
+    skipLoader: boolean = false,
+    autoproEndpoint: boolean = false
   ): Observable<any> {
 
     let headers = this.constructAPIHeaders(method, endpoint);
     if (skipLoader) {
       headers = { ...headers, 'X-Skip-Loader': 'true' };
     }
-    const fullUrl = this.api_base_url + endpoint;
+    const fullUrl = (autoproEndpoint ? this.autopro_base_url : this.api_base_url) + endpoint;
 
     // Native (Android / iOS)
     if (Capacitor.isNativePlatform()) {
@@ -509,12 +512,6 @@ export class ApiService {
     );
   }
 
-  getVehicleMake(){
-    return this.http.get(
-      environment.api_firebase_url +'getMakes'
-    );
-  }
-
   decodeVin(vin: string): Observable<any> {
     return this.http.get(
       `https://vpic.nhtsa.dot.gov/api/vehicles/DecodeVinValues/${encodeURIComponent(vin)}?format=json`
@@ -604,4 +601,21 @@ export class ApiService {
   //   });
   // }
 
+  // autopro specific APIs
+
+  getVehicleMake(){
+   return this.request('GET','getMakes',null, false, true);
+  }
+
+  getVehicleModel(id: string){
+    return this.request('GET',`getmodel/${id}`,null, false, true);
+  }
+
+  getVehicleYears(id: string){
+    return this.request('GET',`/getyears/${id}`,null, false, true);
+  }
+
+  // getProductsForVehicle(id: string){
+  //   return this.request('GET',`get_vehicle_products/${id}`,null, false, true);
+  // }
 }

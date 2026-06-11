@@ -6,8 +6,10 @@ export const environment = {
   production: false,
   // api_base_url: "https://api.americankeysupply.com/V1/",
   api_base_url: "/V1/",
-
+  autopro_base_url:"/autoApi/",
+  // autopro_base_url:"https://autoproapp.com/autoApi/",
   api_firebase_url: "https://autoproapp2017.firebaseio.com/",
+  
   firebase: {
     apiKey: "AIzaSyDwsJxPwwJ3p5z3I-GTLY7QwX7RaMZ3yUY",
     // apiKey: "AIzaSyA1kkLsRv7v_tTafk5aCQWnXeWV_plC5_k",

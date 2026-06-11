@@ -443,5 +443,20 @@ export class VehicleDetailsComponent implements OnInit {
     return ((totalSuccessRate.length / values.length) * 100).toFixed(0) + '%';
   }
 
+  getDecoderTools(): { key: string, value: any }[] {
+    const decodeWith = this.vehicle?.vehicle_info?.decode_with;
+    if (!decodeWith) return [];
+    return Object.entries(decodeWith)
+      .filter(([_, val]: [string, any]) => {
+        if (!val) return false;
+        if (typeof val === 'object') {
+          const hasValue = val.value && val.value !== '-' && val.value !== 'N/A' && val.value !== '';
+          const hasProduct = val.products && (val.products.products_id || val.products.least_price || val.products.imagePath);
+          return !!(hasValue || hasProduct);
+        }
+        return val !== null && val !== undefined && val !== '' && val !== '-' && val !== 'N/A';
+      })
+      .map(([key, value]) => ({ key, value }));
+  }
 
 }
